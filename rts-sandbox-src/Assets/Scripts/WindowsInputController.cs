@@ -1,7 +1,7 @@
 using Assets.Scripts.Enums;
 using UnityEngine;
 
-public class WindowsController : MonoBehaviour
+public class WindowsInputController : MonoBehaviour
 {
     public float Sensitivity = 30f;
     public float MoveCameraBorderSize = 20f;
@@ -9,21 +9,48 @@ public class WindowsController : MonoBehaviour
 
     private CameraController _cameraController;
     private UnitController _unitController;
+    private SelectionBoxController _gizmosController;
 
     private int MovementSurfaceLayerMask;
 
-    // Start is called before the first frame update
     void Start()
     {
         MovementSurfaceLayerMask = LayerMask.GetMask(Layers.MovementSurface.ToString());
 
         _unitController = Controller.GetComponent<UnitController>();
         _cameraController = Controller.GetComponent<CameraController>();
+        _gizmosController = Controller.GetComponent<SelectionBoxController>();
     }
 
     void Update() 
     {
-        if (Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
+            {
+                _unitController.StartSelection(hit.point);
+                _gizmosController.StartDrawSelection(hit.point);
+            }
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+             _gizmosController.DrawSelection(Input.mousePosition);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
+            {
+                _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
+                _gizmosController.EndDrawSelection();
+            }
+
+        }
+
+        if (Input.GetMouseButtonDown(1))
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
@@ -49,7 +76,7 @@ public class WindowsController : MonoBehaviour
         {
             moveCameraVector += new Vector3(0, 0, Sensitivity);
         }
-        Debug.Log(moveCameraVector);
+
         _cameraController.Move(moveCameraVector * Time.deltaTime);
     }
 }

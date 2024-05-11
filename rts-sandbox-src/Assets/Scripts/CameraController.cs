@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 public class CameraController : MonoBehaviour
 {
     public Camera ControlledCamera;
-
 
     void Start()
     {
