@@ -9,7 +9,7 @@ public class WindowsInputController : MonoBehaviour
 
     private CameraController _cameraController;
     private UnitController _unitController;
-    private SelectionBoxController _gizmosController;
+    private SelectionBoxController _selectionBoxController;
 
     private int MovementSurfaceLayerMask;
 
@@ -19,7 +19,7 @@ public class WindowsInputController : MonoBehaviour
 
         _unitController = Controller.GetComponent<UnitController>();
         _cameraController = Controller.GetComponent<CameraController>();
-        _gizmosController = Controller.GetComponent<SelectionBoxController>();
+        _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
     }
 
     void Update() 
@@ -30,13 +30,13 @@ public class WindowsInputController : MonoBehaviour
             if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
             {
                 _unitController.StartSelection(hit.point);
-                _gizmosController.StartDrawSelection(hit.point);
+                _selectionBoxController.StartDrawSelection(hit.point);
             }
         }
 
         if (Input.GetMouseButton(0))
         {
-             _gizmosController.DrawSelection(Input.mousePosition);
+            _selectionBoxController.DrawSelection(Input.mousePosition);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -45,7 +45,7 @@ public class WindowsInputController : MonoBehaviour
             if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
             {
                 _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
-                _gizmosController.EndDrawSelection();
+                _selectionBoxController.EndDrawSelection();
             }
 
         }
