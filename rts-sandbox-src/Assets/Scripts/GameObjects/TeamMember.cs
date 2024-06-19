@@ -5,11 +5,13 @@ public class TeamMember : MonoBehaviour
 {
     public int TeamId = 1;
 
+    private TeamController _teamController;
+
     void Start()
     {
-        var team = GameObject.FindGameObjectWithTag("GameController")
-            .GetComponent<TeamController>()
-            .Teams.FirstOrDefault(t => t.Id == TeamId);
+        _teamController = GameObject.FindGameObjectWithTag("GameController")
+            .GetComponent<TeamController>();
+        var team = _teamController.Teams.FirstOrDefault(t => t.Id == TeamId);
 
         Renderer renderer = GetComponent<Renderer>();
 

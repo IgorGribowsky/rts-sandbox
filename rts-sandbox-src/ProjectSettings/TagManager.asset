@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MapSurface
   - HasTag
+  - HPBar
   layers:
   - Default
   - TransparentFX

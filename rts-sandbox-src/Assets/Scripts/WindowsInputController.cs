@@ -1,4 +1,4 @@
-using Assets.Scripts.Enums;
+using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
 public class WindowsInputController : MonoBehaviour
@@ -15,7 +15,7 @@ public class WindowsInputController : MonoBehaviour
 
     void Start()
     {
-        MovementSurfaceLayerMask = LayerMask.GetMask(Layers.MovementSurface.ToString());
+        MovementSurfaceLayerMask = LayerMask.GetMask(Layer.MovementSurface.ToString());
 
         _unitController = Controller.GetComponent<UnitController>();
         _cameraController = Controller.GetComponent<CameraController>();
