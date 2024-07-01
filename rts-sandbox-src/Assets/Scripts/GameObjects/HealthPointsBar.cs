@@ -38,6 +38,14 @@ public class HealthPointsBar : MonoBehaviour
         _unitEventManager.HealthPointsChanged += UpdateScale;
     }
 
+    void Update()
+    {
+        if (HpBar.activeSelf)
+        {
+            HpBar.transform.LookAt(transform.position + Camera.main.transform.forward);
+        }
+    }
+
     // Update is called once per frame
     protected void UpdateScale(HealthPointsChangedEventArgs args)
     {

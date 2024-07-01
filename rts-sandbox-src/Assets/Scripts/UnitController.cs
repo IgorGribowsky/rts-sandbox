@@ -1,15 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class UnitController : MonoBehaviour
 {
-    
+    public float ClosenessMultiplyer = 2f;
     public List<GameObject> SelectedUnits = new List<GameObject>();
 
     public Vector3 StartSelectionPoint { get; set; }
 
     public int SelectedUnitsTeam { get; set; }
+
+    private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
 
     private int playerTeamId;
 
@@ -33,7 +36,9 @@ public class UnitController : MonoBehaviour
 
         foreach (var unit in SelectedUnits) 
         {
-            unit.GetComponent<Movement>().MoveTo(point);
+            var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
+            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplyer;
+            unit.GetComponent<Movement>().MoveTo(pointToMove);
         }
     }
 
@@ -62,6 +67,7 @@ public class UnitController : MonoBehaviour
         var selectableUntisInArea = GameObject.FindGameObjectsWithTag("HasTag")
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
+            .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 
         if (selectableUntisInArea.Any())
@@ -78,7 +84,6 @@ public class UnitController : MonoBehaviour
             else
             {
                 selectedUnits = selectableUntisInArea
-                    .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
                     .Take(1)
                     .ToList();
                 teamId = selectedUnits.First().GetComponent<TeamMember>().TeamId;
@@ -89,12 +94,91 @@ public class UnitController : MonoBehaviour
         {
             SelectedUnits.AddRange(selectedUnits.Except(SelectedUnits));
         }
-        else 
+        else
         {
             SelectedUnits = selectedUnits;
         }
 
         SelectedUnitsTeam = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
+
+        CreateMovememtMask();
+    }
+
+    private void CreateMovememtMask()
+    {
+        SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
+        var unitsInserted = 0;
+        var arrayRightSize = 1;
+        var arrayDownSize = 1;
+        var insertDirectionIsRight = false;
+
+        foreach (var unit in SelectedUnits)
+        {
+            int insertIndexX;
+            int insertIndexY;
+
+            if (insertDirectionIsRight)
+            {
+                insertIndexX = arrayRightSize - 1;
+                insertIndexY = unitsInserted - arrayDownSize * (arrayRightSize - 1);
+            }
+            else
+            {
+                insertIndexY = arrayDownSize - 1;
+                insertIndexX = unitsInserted - arrayRightSize * (arrayDownSize - 1);
+            }
+
+            var unitId = unit.GetInstanceID();
+            var value = new UnitMovementMask
+            {
+                UnitId = unitId,
+                PositionX = insertIndexX,
+                PositionY = insertIndexY,
+                PositionFromCenter = Vector3.zero,
+            };
+
+            SelectedUnitsMovementMask.Add(unitId, value);
+            unitsInserted++;
+
+            if (unitsInserted == SelectedUnits.Count)
+            {
+                break;
+            }
+
+            if (unitsInserted == arrayRightSize * arrayDownSize)
+            {
+                if (insertDirectionIsRight)
+                {
+                    arrayDownSize++;
+                }
+                else
+                {
+                    arrayRightSize++;
+                }
+                insertDirectionIsRight = !insertDirectionIsRight;
+            }
+        }
+
+        var centerPoint = (arrayRightSize / 2.0f, arrayDownSize / 2.0f);
+
+        foreach (var unit in SelectedUnits)
+        {
+            var value = SelectedUnitsMovementMask[unit.GetInstanceID()];
+
+            value.PositionFromCenter = new Vector3(value.PositionX - centerPoint.Item1 + 0.5f, 0, value.PositionY - centerPoint.Item2 + 0.5f);
+
+        }
+    }
+
+    public class UnitMovementMask
+    {
+        public float UnitId { get; set; }
+
+        public float PositionX { get; set; }
+
+        public float PositionY { get; set; }
+
+        public Vector3 PositionFromCenter { get; set; }
     }
 }
