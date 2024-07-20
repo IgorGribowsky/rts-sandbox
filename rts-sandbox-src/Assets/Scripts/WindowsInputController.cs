@@ -11,11 +11,14 @@ public class WindowsInputController : MonoBehaviour
     private UnitController _unitController;
     private SelectionBoxController _selectionBoxController;
 
-    private int MovementSurfaceLayerMask;
+    private int ClickLayerMask;
 
     void Start()
     {
-        MovementSurfaceLayerMask = LayerMask.GetMask(Layer.MovementSurface.ToString());
+        ClickLayerMask = LayerMask.GetMask(
+            Layer.MovementSurface.ToString(),
+            Layer.Unit.ToString()
+            );
 
         _unitController = Controller.GetComponent<UnitController>();
         _cameraController = Controller.GetComponent<CameraController>();
@@ -27,7 +30,7 @@ public class WindowsInputController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
+            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
             {
                 _unitController.StartSelection(hit.point);
                 _selectionBoxController.StartDrawSelection(hit.point);
@@ -42,20 +45,27 @@ public class WindowsInputController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
+            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
             {
                 _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
                 _selectionBoxController.EndDrawSelection();
             }
-
         }
 
         if (Input.GetMouseButtonDown(1))
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, MovementSurfaceLayerMask))
+            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
             {
-                _unitController.MoveTo(hit.point);
+                var gameObject = hit.transform.gameObject;
+                if (gameObject.layer == (int)Layer.MovementSurface)
+                {
+                    _unitController.OnGroundRightClick(hit.point);
+                }
+                else if (gameObject.layer == (int)Layer.Unit)
+                {
+                    _unitController.OnUnitRightClick(gameObject);
+                }
             }
         }
 

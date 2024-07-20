@@ -2,6 +2,7 @@
 {
     public enum Layer
     {
-        MovementSurface = 6
+        MovementSurface = 6,
+        Unit = 7
     }
 }

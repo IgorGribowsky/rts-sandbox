@@ -37,7 +37,7 @@ public class UnitHealthPoints : MonoBehaviour
         }
     }
 
-    protected void UnitDiedHandler(UnitDiedEventArgs args)
+    protected void UnitDiedHandler(DiedEventArgs args)
     {
         Destroy(gameObject);
     }

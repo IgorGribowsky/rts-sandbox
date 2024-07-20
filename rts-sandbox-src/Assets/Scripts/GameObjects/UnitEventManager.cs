@@ -1,6 +1,5 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class UnitEventManager : MonoBehaviour
@@ -14,7 +13,7 @@ public class UnitEventManager : MonoBehaviour
         DamageReceived?.Invoke(new DamageReceivedEventArgs(attacker, damageAmount, damageType));
     }
 
-    public event UnitDiedHandler UnitDied;
+    public event DiedHandler UnitDied;
 
     public void OnUnitDied(GameObject killer)
     {
@@ -27,7 +26,7 @@ public class UnitEventManager : MonoBehaviour
             Debug.Log($"{gameObject} killed by {killer}");
         }
 
-        UnitDied?.Invoke(new UnitDiedEventArgs(killer));
+        UnitDied?.Invoke(new DiedEventArgs(killer));
     }
 
     public event HealthPointsChangedHandler HealthPointsChanged;
@@ -37,17 +36,25 @@ public class UnitEventManager : MonoBehaviour
         HealthPointsChanged?.Invoke(new HealthPointsChangedEventArgs(currentHp));
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public event MoveCommandReceivedHandler MoveCommandReceived;
+    public void OnMoveCommandReceived(Vector3 movePoint)
     {
-        
+        MoveCommandReceived?.Invoke(new MoveCommandReceivedEventArgs(movePoint));
     }
 
-    // Update is called once per frame
-    void Update()
+    public event AttackCommandReceivedHandler AttackCommandReceived;
+    public void OnAttackCommandReceived(GameObject target)
     {
-        
+        Debug.Log($"{gameObject} is attacking {target}");
+
+        AttackCommandReceived?.Invoke(new AttackCommandReceivedEventArgs(target));
     }
 
+    public event FollowCommandReceivedHandler FollowCommandReceived;
+    public void OnFollowCommandReceived(GameObject target)
+    {
+        Debug.Log($"{gameObject} is following {target}");
 
+        FollowCommandReceived?.Invoke(new FollowCommandReceivedEventArgs(target));
+    }
 }

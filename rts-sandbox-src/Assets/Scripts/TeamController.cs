@@ -9,16 +9,6 @@ public class TeamController : MonoBehaviour
 
     public List<Alliance> Alliances;
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     public List<int> GetAllyTeams(int targetTeamId)
     {
         return Alliances

@@ -1,44 +1,74 @@
-using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
 public class UnitController : MonoBehaviour
 {
-    public float ClosenessMultiplyer = 2f;
+    public float ClosenessMultiplier = 2f;
     public List<GameObject> SelectedUnits = new List<GameObject>();
 
     public Vector3 StartSelectionPoint { get; set; }
 
-    public int SelectedUnitsTeam { get; set; }
+    public int SelectedUnitsTeamId { get; set; }
 
     private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
+    private TeamController _teamController;
 
     private int playerTeamId;
 
     void Start()
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
+
+        _teamController = GameObject.FindGameObjectWithTag("GameController")
+            .GetComponent<TeamController>();
     }
 
     private void Update()
     {
     }
 
-    public void MoveTo(Vector3 point)
+    public void OnGroundRightClick(Vector3 point)
     {
-        if (SelectedUnitsTeam != playerTeamId)
+        if (SelectedUnitsTeamId != playerTeamId)
         {
             return;
         }
 
         point.y = 0.5f;
 
-        foreach (var unit in SelectedUnits) 
+        foreach (var unit in SelectedUnits)
         {
             var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
-            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplyer;
-            unit.GetComponent<Movement>().MoveTo(pointToMove);
+            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
+            unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove);
+        }
+    }
+
+    public void OnUnitRightClick(GameObject target)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        var targetTeamId = target.GetComponent<TeamMember>().TeamId;
+        var allyTeamIds = _teamController.GetAllyTeams(playerTeamId);
+        if (playerTeamId == targetTeamId || allyTeamIds.Contains(targetTeamId))
+        {
+            foreach (var unit in SelectedUnits)
+            {
+                unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target);
+            }
+        }
+        else
+        {
+            foreach (var unit in SelectedUnits)
+            {
+                unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target);
+                unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target);
+            }
         }
     }
 
@@ -99,7 +129,7 @@ public class UnitController : MonoBehaviour
             SelectedUnits = selectedUnits;
         }
 
-        SelectedUnitsTeam = teamId;
+        SelectedUnitsTeamId = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
         CreateMovememtMask();

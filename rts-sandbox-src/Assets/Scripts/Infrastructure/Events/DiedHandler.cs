@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Events
 {
-    public delegate void UnitDiedHandler(UnitDiedEventArgs args);
+    public delegate void DiedHandler(DiedEventArgs args);
 
-    public class UnitDiedEventArgs : EventArgs
+    public class DiedEventArgs : EventArgs
     {
-        public UnitDiedEventArgs(GameObject killer)
+        public DiedEventArgs(GameObject killer)
         {
             Killer = killer;
         }
