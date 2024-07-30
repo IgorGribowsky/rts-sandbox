@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UnitController : MonoBehaviour
 {
-    public float ClosenessMultiplier = 2f;
+    public float ClosenessMultiplier = 2.5f;
     public List<GameObject> SelectedUnits = new List<GameObject>();
 
     public Vector3 StartSelectionPoint { get; set; }
@@ -29,7 +29,7 @@ public class UnitController : MonoBehaviour
     {
     }
 
-    public void OnGroundRightClick(Vector3 point)
+    public void OnGroundRightClick(Vector3 point, bool addToCommandsQueue = false)
     {
         if (SelectedUnitsTeamId != playerTeamId)
         {
@@ -42,11 +42,11 @@ public class UnitController : MonoBehaviour
         {
             var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
             var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
-            unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove);
+            unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
     }
 
-    public void OnUnitRightClick(GameObject target)
+    public void OnUnitRightClick(GameObject target, bool addToCommandsQueue = false)
     {
         if (SelectedUnitsTeamId != playerTeamId)
         {
@@ -59,15 +59,14 @@ public class UnitController : MonoBehaviour
         {
             foreach (var unit in SelectedUnits)
             {
-                unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target);
+                unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target, addToCommandsQueue);
             }
         }
         else
         {
             foreach (var unit in SelectedUnits)
             {
-                unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target);
-                unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target);
+                unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
             }
         }
     }
@@ -197,7 +196,6 @@ public class UnitController : MonoBehaviour
             var value = SelectedUnitsMovementMask[unit.GetInstanceID()];
 
             value.PositionFromCenter = new Vector3(value.PositionX - centerPoint.Item1 + 0.5f, 0, value.PositionY - centerPoint.Item2 + 0.5f);
-
         }
     }
 

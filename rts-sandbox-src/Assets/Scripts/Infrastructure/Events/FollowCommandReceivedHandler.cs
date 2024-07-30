@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Assets.Scripts.Infrastructure.Events.Common;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Events
 {
     public delegate void FollowCommandReceivedHandler(FollowCommandReceivedEventArgs args);
 
-    public class FollowCommandReceivedEventArgs : EventArgs
+    public class FollowCommandReceivedEventArgs : CommandReceivedEventArgs
     {
-        public FollowCommandReceivedEventArgs(GameObject target)
+        public FollowCommandReceivedEventArgs(GameObject target, bool addToCommandsQueue = false)
+            : base(addToCommandsQueue)
         {
             Target = target;
         }

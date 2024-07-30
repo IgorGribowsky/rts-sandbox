@@ -57,14 +57,15 @@ public class WindowsInputController : MonoBehaviour
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
             {
+                var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                 var gameObject = hit.transform.gameObject;
                 if (gameObject.layer == (int)Layer.MovementSurface)
                 {
-                    _unitController.OnGroundRightClick(hit.point);
+                    _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
                 }
                 else if (gameObject.layer == (int)Layer.Unit)
                 {
-                    _unitController.OnUnitRightClick(gameObject);
+                    _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
                 }
             }
         }

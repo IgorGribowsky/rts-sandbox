@@ -18,16 +18,17 @@ public class Movement : MonoBehaviour
 
         _unitEventManager = GetComponent<UnitEventManager>();
 
-        _unitEventManager.MoveCommandReceived += MoveTo;
+        _unitEventManager.MoveActionStarted += MoveTo;
     }
 
-    public void MoveTo(MoveCommandReceivedEventArgs args)
+    protected void MoveTo(MoveActionStartedEventArgs args)
     {
+        _navmeshAgent.isStopped = false;
         _navmeshAgent.avoidancePriority = 90;
         _navmeshAgent.destination = args.MovePoint;
     }
 
-    public void SetSpeed(float speed)
+    protected void SetSpeed(float speed)
     {
         movementSpeed = speed;
         _navmeshAgent.speed = speed;
@@ -35,15 +36,12 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (!_navmeshAgent.pathPending)
+        if (!_navmeshAgent.isStopped
+            && _navmeshAgent.remainingDistance <= _navmeshAgent.stoppingDistance)
         {
-            if (_navmeshAgent.remainingDistance <= _navmeshAgent.stoppingDistance)
-            {
-                if (!_navmeshAgent.hasPath || _navmeshAgent.velocity.sqrMagnitude == 0f)
-                {
-                    _navmeshAgent.avoidancePriority = 50;
-                }
-            }
+            _navmeshAgent.isStopped = true;
+            _navmeshAgent.avoidancePriority = 50;
+            _unitEventManager.OnMoveActionEnded();
         }
     }
 }

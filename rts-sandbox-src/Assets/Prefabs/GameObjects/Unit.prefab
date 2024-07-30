@@ -193,13 +193,14 @@ GameObject:
   - component: {fileID: 8194165234619379714}
   - component: {fileID: 7161608666239136105}
   - component: {fileID: 8095036300992891173}
+  - component: {fileID: 3793009020323623479}
   - component: {fileID: 6497452628036593396}
   - component: {fileID: 5886164444532057391}
   - component: {fileID: 4606719018469156263}
   - component: {fileID: 2033459207637562773}
   - component: {fileID: 4583760692930494093}
   - component: {fileID: 6873323525821280569}
-  - component: {fileID: -1820083077621830653}
+  - component: {fileID: 406198756278370332}
   m_Layer: 7
   m_Name: Unit
   m_TagString: HasTag
@@ -296,6 +297,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600477bb79d0e0a4f8b4dd33b8d69b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3793009020323623479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274b7ab13f28fd142a71ea9d45b416f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6497452628036593396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,7 +402,7 @@ NavMeshAgent:
   m_Acceleration: 100
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 0.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -423,7 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectionCirclePrefab: {fileID: 5399826479641655892, guid: c049b7d0ae1aa874293df8fa5cbd8bd3, type: 3}
   IsSelected: 0
---- !u!208 &-1820083077621830653
+--- !u!208 &406198756278370332
 NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
