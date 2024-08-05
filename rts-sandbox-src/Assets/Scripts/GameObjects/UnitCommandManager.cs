@@ -39,16 +39,16 @@ namespace Assets.Scripts.GameObjects
 
         protected void StartAttackCommand(AttackCommandReceivedEventArgs args)
         {
-            var moveCommand = new AttackCommand(_unitEventManager, args);
+            var attackCommand = new AttackCommand(_unitEventManager, args);
 
-            StartCommand(moveCommand, args.AddToCommandsQueue);
+            StartCommand(attackCommand, args.AddToCommandsQueue);
         }
 
         protected void StartFollowCommand(FollowCommandReceivedEventArgs args)
         {
-            var moveCommand = new FollowCommand(_unitEventManager, args);
+            var followCommand = new FollowCommand(_unitEventManager, args);
 
-            StartCommand(moveCommand, args.AddToCommandsQueue);
+            StartCommand(followCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
