@@ -53,26 +53,29 @@ namespace Assets.Scripts.GameObjects
 
         protected void RunNextCommand(EventArgs args)
         {
-            if (CommandsQueue.Count == 0)
+            if (CommandsQueue.Count > 0)
             {
-                return;
+                CurrentRunningCommand = CommandsQueue.Dequeue();
+                CurrentRunningCommand.Start();
+            }
+            else
+            {
+                CurrentRunningCommand = null;
             }
 
-            CurrentRunningCommand = CommandsQueue.Dequeue();
-            CurrentRunningCommand.Start();
         }
 
         private void StartCommand(ICommand command , bool addToCommandsQueue)
         {
-
             if (!addToCommandsQueue)
             {
                 CommandsQueue.Clear();
+                CurrentRunningCommand = null;
             }
 
             CommandsQueue.Enqueue(command);
 
-            if (!addToCommandsQueue || CurrentRunningCommand == null)
+            if (CurrentRunningCommand == null)
             {
                 RunNextCommand(new EventArgs());
             }

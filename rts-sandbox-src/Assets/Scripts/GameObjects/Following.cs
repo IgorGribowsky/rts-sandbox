@@ -1,8 +1,8 @@
+using Assets.Scripts.Infrastructure;
 using Assets.Scripts.Infrastructure.Events;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class Following : MonoBehaviour
 {
@@ -31,37 +31,44 @@ public class Following : MonoBehaviour
 
     protected void Follow(FollowActionStartedEventArgs args)
     {
-        _navmeshAgent.isStopped = false;
-        _navmeshAgent.avoidancePriority = 90;
         target = args.Target;
+        _navmeshAgent.avoidancePriority = 90;
         isProcessing = true;
-    }
-
-    protected void SetSpeed(float speed)
-    {
-        movementSpeed = speed;
-        _navmeshAgent.speed = speed;
     }
 
     protected void Stop(EventArgs args)
     {
-        target = null;
-        _navmeshAgent.isStopped = true;
-        _navmeshAgent.avoidancePriority = 50;
-        _unitEventManager.OnMoveActionEnded();
-        isProcessing = false;
+        if (isProcessing)
+        {
+            target = null;
+            _navmeshAgent.avoidancePriority = 50;
+            isProcessing = false;
+        }
     }
 
     void Update()
     {
-        if (target != null)
+        if (isProcessing) 
         {
-            _navmeshAgent.destination = target.transform.position;
+            if (target != null)
+            {
+                var distanceToTarget = (transform.position - target.transform.position).magnitude;
+                if (distanceToTarget > Constants.FollowingDistance)
+                {
+                    _navmeshAgent.destination = target.transform.position;
+                }
+                else
+                {
+                    _navmeshAgent.destination = transform.position;
+                }
+            }
+            else
+            {
+                Stop(new EventArgs());
+                _unitEventManager.OnFollowActionEnded();
+            }
         }
-        else if (isProcessing)
-        {
-            Stop(new EventArgs());
-        }
+
     }
 
 }

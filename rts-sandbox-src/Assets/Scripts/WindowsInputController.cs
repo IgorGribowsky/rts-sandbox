@@ -25,8 +25,14 @@ public class WindowsInputController : MonoBehaviour
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
     }
 
-    void Update() 
+    void Update()
     {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            var center = _unitController.GetTheMostRangedUnitPosition();
+            _cameraController.Set(center);
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);

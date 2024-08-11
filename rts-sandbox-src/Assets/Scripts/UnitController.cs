@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UnitController : MonoBehaviour
@@ -31,10 +32,10 @@ public class UnitController : MonoBehaviour
 
     public void OnGroundRightClick(Vector3 point, bool addToCommandsQueue = false)
     {
-        if (SelectedUnitsTeamId != playerTeamId)
-        {
-            return;
-        }
+        //if (SelectedUnitsTeamId != playerTeamId)
+        //{
+        //    return;
+        //}
 
         point.y = 0.5f;
 
@@ -44,6 +45,13 @@ public class UnitController : MonoBehaviour
             var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
             unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
+    }
+
+    public Vector3 GetTheMostRangedUnitPosition()
+    {
+        var unit = SelectedUnits.OrderByDescending(u => u.GetComponent<UnitValues>().Rang).FirstOrDefault();
+
+        return unit?.transform.position ?? Vector3.zero;
     }
 
     public void OnUnitRightClick(GameObject target, bool addToCommandsQueue = false)

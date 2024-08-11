@@ -1,46 +1,52 @@
 using Assets.Scripts.Infrastructure.Events;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Movement : MonoBehaviour
 {
-    private float movementSpeed;
-
     private NavMeshAgent _navmeshAgent;
     private UnitEventManager _unitEventManager;
+    private UnitValues _unitValues;
+
+    private bool isProcessing = false;
 
     void Start()
     {
-        movementSpeed = gameObject.GetComponent<UnitValues>().MovementSpeed;
+        _unitValues = gameObject.GetComponent<UnitValues>();
         _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();
 
-        _navmeshAgent.speed = movementSpeed;
+        _navmeshAgent.speed = _unitValues.MovementSpeed;
 
         _unitEventManager = GetComponent<UnitEventManager>();
 
         _unitEventManager.MoveActionStarted += MoveTo;
+        _unitEventManager.FollowActionStarted += Stop;
+        _unitEventManager.AttackActionStarted += Stop;
     }
 
     protected void MoveTo(MoveActionStartedEventArgs args)
     {
-        _navmeshAgent.isStopped = false;
+        isProcessing = true;
         _navmeshAgent.avoidancePriority = 90;
         _navmeshAgent.destination = args.MovePoint;
     }
 
-    protected void SetSpeed(float speed)
+    protected void Stop(EventArgs args)
     {
-        movementSpeed = speed;
-        _navmeshAgent.speed = speed;
+        if (isProcessing)
+        {
+            _navmeshAgent.avoidancePriority = 50;
+            isProcessing = false;
+        }
     }
 
     void Update()
     {
-        if (!_navmeshAgent.isStopped
-            && _navmeshAgent.remainingDistance <= _navmeshAgent.stoppingDistance)
+        if (isProcessing && _navmeshAgent.remainingDistance <= _navmeshAgent.stoppingDistance)
         {
-            _navmeshAgent.isStopped = true;
-            _navmeshAgent.avoidancePriority = 50;
+            Stop(new EventArgs());
             _unitEventManager.OnMoveActionEnded();
         }
     }
