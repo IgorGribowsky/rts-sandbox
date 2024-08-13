@@ -2,6 +2,7 @@
 {
     public enum Tag
     {
-        HPBar
+        HPBar,
+        PlayerController,
     }
 }

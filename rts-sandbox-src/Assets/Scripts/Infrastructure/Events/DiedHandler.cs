@@ -7,11 +7,13 @@ namespace Assets.Scripts.Infrastructure.Events
 
     public class DiedEventArgs : EventArgs
     {
-        public DiedEventArgs(GameObject killer)
+        public DiedEventArgs(GameObject killer, GameObject dead)
         {
             Killer = killer;
+            Dead = dead;
         }
 
         public GameObject Killer { get; set; }
+        public GameObject Dead { get; set; }
     }
 }

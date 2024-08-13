@@ -17,7 +17,7 @@ public class UnitEventManager : MonoBehaviour
 
     public event DiedHandler UnitDied;
 
-    public void OnUnitDied(GameObject killer)
+    public void OnUnitDied(GameObject killer, GameObject dead)
     {
         if (killer == null)
         {
@@ -28,7 +28,7 @@ public class UnitEventManager : MonoBehaviour
             Debug.Log($"{gameObject} killed by {killer}");
         }
 
-        UnitDied?.Invoke(new DiedEventArgs(killer));
+        UnitDied?.Invoke(new DiedEventArgs(killer, dead));
     }
 
     public event HealthPointsChangedHandler HealthPointsChanged;

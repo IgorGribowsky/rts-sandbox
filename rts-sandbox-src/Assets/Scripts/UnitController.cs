@@ -1,7 +1,6 @@
+using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class UnitController : MonoBehaviour
@@ -18,12 +17,21 @@ public class UnitController : MonoBehaviour
 
     private int playerTeamId;
 
+    public event DiedHandler SelectedUnitDied;
+
+    public void OnSelectedUnitDied(GameObject dead)
+    {
+        SelectedUnitDied?.Invoke(new DiedEventArgs(null, dead));
+    }
+
     void Start()
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
 
         _teamController = GameObject.FindGameObjectWithTag("GameController")
             .GetComponent<TeamController>();
+
+        SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
     private void Update()
@@ -77,6 +85,11 @@ public class UnitController : MonoBehaviour
                 unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
             }
         }
+    }
+
+    public void SelectedUnitDiedHandler(DiedEventArgs args)
+    {
+        SelectedUnits.Remove(args.Dead);
     }
 
     public void StartSelection(Vector3 point)

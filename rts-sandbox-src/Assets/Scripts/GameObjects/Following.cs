@@ -1,4 +1,4 @@
-using Assets.Scripts.Infrastructure;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using System;
 using UnityEngine;

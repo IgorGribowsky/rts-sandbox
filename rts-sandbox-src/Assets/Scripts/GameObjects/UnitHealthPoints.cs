@@ -6,13 +6,10 @@ public class UnitHealthPoints : MonoBehaviour
 {
     private UnitValues _unitValues;
     private UnitEventManager _unitEventManager;
+    private UnitController _playerUnitController;
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            _unitEventManager.OnDamageReceived(gameObject, 25, DamageType.Magic);
-        }
     }
 
     public void Start()
@@ -21,8 +18,7 @@ public class UnitHealthPoints : MonoBehaviour
         _unitEventManager = GetComponent<UnitEventManager>();
 
         _unitEventManager.DamageReceived += DamageReceivedHandler;
-
-        _unitEventManager.UnitDied += UnitDiedHandler;
+        _playerUnitController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitController>();
     }
 
     protected void DamageReceivedHandler(DamageReceivedEventArgs args)
@@ -33,12 +29,9 @@ public class UnitHealthPoints : MonoBehaviour
 
         if (_unitValues.CurrentHp <= 0)
         {
-            _unitEventManager.OnUnitDied(args.Attacker);
+            Destroy(gameObject);
+            _unitEventManager.OnUnitDied(args.Attacker, gameObject);
+            _playerUnitController.OnSelectedUnitDied(gameObject);
         }
-    }
-
-    protected void UnitDiedHandler(DiedEventArgs args)
-    {
-        Destroy(gameObject);
     }
 }
