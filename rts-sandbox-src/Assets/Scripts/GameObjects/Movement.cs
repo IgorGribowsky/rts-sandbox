@@ -2,7 +2,6 @@ using Assets.Scripts.Infrastructure.Events;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class Movement : MonoBehaviour
 {
@@ -44,7 +43,9 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (isProcessing && _navmeshAgent.remainingDistance <= _navmeshAgent.stoppingDistance)
+        var differenceVector = _navmeshAgent.destination - transform.position;
+        differenceVector.y = 0;
+        if (isProcessing && differenceVector.magnitude <= _navmeshAgent.stoppingDistance)
         {
             Stop(new EventArgs());
             _unitEventManager.OnMoveActionEnded();

@@ -1,16 +1,15 @@
-﻿using UnityEngine.AI;
-using UnityEngine;
+﻿using UnityEngine;
 using Assets.Scripts.Infrastructure.Events;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System;
-using Unity.VisualScripting;
-using Assets.Scripts.Infrastructure.Events.Common;
 
 namespace Assets.Scripts.GameObjects
 {
     public class UnitCommandManager : MonoBehaviour
     {
+        public List<string> CommandListInfo;
+        public string CurrentRunningCommandInfo;
+
         private UnitEventManager _unitEventManager;
 
         private ICommand CurrentRunningCommand;
@@ -55,12 +54,22 @@ namespace Assets.Scripts.GameObjects
         {
             if (CommandsQueue.Count > 0)
             {
+                CommandListInfo.RemoveAt(0);
                 CurrentRunningCommand = CommandsQueue.Dequeue();
-                CurrentRunningCommand.Start();
+                CurrentRunningCommandInfo = CurrentRunningCommand.GetType().Name;
+                if (CurrentRunningCommand.Check())
+                {
+                    CurrentRunningCommand.Start();
+                }
+                else
+                {
+                    RunNextCommand(args);
+                }
             }
             else
             {
                 CurrentRunningCommand = null;
+                CurrentRunningCommandInfo = "";
             }
 
         }
@@ -70,8 +79,13 @@ namespace Assets.Scripts.GameObjects
             if (!addToCommandsQueue)
             {
                 CommandsQueue.Clear();
+                CommandListInfo.Clear();
                 CurrentRunningCommand = null;
+                CurrentRunningCommandInfo = "";
             }
+
+            var commandName = command.GetType().Name;
+            CommandListInfo.Add(commandName);
 
             CommandsQueue.Enqueue(command);
 
@@ -84,6 +98,7 @@ namespace Assets.Scripts.GameObjects
         #region Commands
         private interface ICommand
         {
+            bool Check();
             void Start();
         }
 
@@ -97,6 +112,11 @@ namespace Assets.Scripts.GameObjects
             {
                 this.args = args;
                 _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return args.MovePoint != null;
             }
 
             public void Start()
@@ -117,6 +137,11 @@ namespace Assets.Scripts.GameObjects
                 _unitEventManager = unitEventManager;
             }
 
+            public bool Check()
+            {
+                return args.Target != null;
+            }
+
             public void Start()
             {
                 _unitEventManager.OnAttackActionStarted(args.Target);
@@ -133,6 +158,11 @@ namespace Assets.Scripts.GameObjects
             {
                 this.args = args;
                 _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return args.Target != null;
             }
 
             public void Start()

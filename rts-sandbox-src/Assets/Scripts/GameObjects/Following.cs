@@ -31,6 +31,12 @@ public class Following : MonoBehaviour
 
     protected void Follow(FollowActionStartedEventArgs args)
     {
+        if (args.Target == null)
+        {
+            _unitEventManager.OnFollowActionEnded();
+            return;
+        }
+
         target = args.Target;
         _navmeshAgent.avoidancePriority = 90;
         isProcessing = true;
@@ -42,6 +48,7 @@ public class Following : MonoBehaviour
         {
             target = null;
             _navmeshAgent.avoidancePriority = 50;
+            _navmeshAgent.destination = gameObject.transform.position;
             isProcessing = false;
         }
     }

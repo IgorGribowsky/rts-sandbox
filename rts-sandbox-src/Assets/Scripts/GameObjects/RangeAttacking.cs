@@ -1,10 +1,10 @@
+using Assets.Scripts.GameObjects.Projectiles;
 using Assets.Scripts.Infrastructure.Events;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MeleeAttacking : MonoBehaviour
+public class RangeAttacking : MonoBehaviour
 {
     private NavMeshAgent _navmeshAgent;
     private UnitEventManager _unitEventManager;
@@ -64,7 +64,7 @@ public class MeleeAttacking : MonoBehaviour
             {
                 var distanceToTarget = (transform.position - _target.transform.position).magnitude;
 
-                if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
+                if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
                 {
                     _navmeshAgent.destination = _target.transform.position;
                 }
@@ -73,7 +73,7 @@ public class MeleeAttacking : MonoBehaviour
                     _navmeshAgent.destination = transform.position;
                 }
 
-                if (distanceToTarget < _unitValues.MeleeAttackDistance 
+                if (distanceToTarget < _unitValues.RangeAttackDistance
                     && attackCD <= 0
                     && !attackIsProcessing)
                 {
@@ -83,7 +83,7 @@ public class MeleeAttacking : MonoBehaviour
 
                 if (attackIsProcessing)
                 {
-                    if (distanceToTarget < _unitValues.MeleeAttackDistance + _unitValues.AttackBreakDistance)
+                    if (distanceToTarget < _unitValues.RangeAttackDistance + _unitValues.AttackBreakDistance)
                     {
                         attackAnimation += Time.deltaTime;
                     }
@@ -95,7 +95,9 @@ public class MeleeAttacking : MonoBehaviour
 
                     if (attackAnimation >= _unitValues.AttackRate * _unitValues.AttackDurationPercent)
                     {
-                        _targetEventManager.OnDamageReceived(gameObject, _unitValues.Damage, _unitValues.DamageType);
+                        var projectile = Instantiate(_unitValues.RangeAttackProjectile, transform.position, transform.rotation);
+                        var projectileBehavior = projectile.GetComponent<ProjectileBehavior>();
+                        projectileBehavior.SetProperties(_target, _unitValues.ProjectileSpeed, _unitValues.Damage, _unitValues.DamageType);
 
                         attackIsProcessing = false;
                         attackAnimation = 0;

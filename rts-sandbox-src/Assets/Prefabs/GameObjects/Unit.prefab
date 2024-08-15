@@ -187,7 +187,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5429158580872731003}
-  - component: {fileID: 7336274280725902403}
   - component: {fileID: 3703674016196470308}
   - component: {fileID: 5540399943849020696}
   - component: {fileID: 8194165234619379714}
@@ -226,18 +225,6 @@ Transform:
   - {fileID: 410201097351399592}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7336274280725902403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfc92d4d158e58741800cc2abd3ce27e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3703674016196470308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,10 +256,14 @@ MonoBehaviour:
   Rang: 100
   Damage: 7
   AttackRate: 1
-  AttackDurationPercent: 0.5
-  MeleeAttackDistance: 2
-  MeleeAttackMaxDistancePercent: 2
   DamageType: 0
+  AttackBreakDistance: 2.2
+  AttackDurationPercent: 0.5
+  MeleeAttackDistance: 1.5
+  HasRangeAttack: 0
+  RangeAttackDistance: 10
+  RangeAttackProjectile: {fileID: 0}
+  ProjectileSpeed: 12
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
