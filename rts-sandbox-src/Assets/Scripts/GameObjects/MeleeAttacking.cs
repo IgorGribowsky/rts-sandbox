@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Events;
+using Assets.Scripts.Infrastructure.Helpers;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -62,7 +63,8 @@ public class MeleeAttacking : MonoBehaviour
         {
             if (_target != null)
             {
-                var distanceToTarget = (transform.position - _target.transform.position).magnitude;
+                var distanceToTarget = DistanceHelper.GetDistanceBetweenObjects(gameObject, _target);
+                Debug.Log(distanceToTarget);
 
                 if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
                 {
