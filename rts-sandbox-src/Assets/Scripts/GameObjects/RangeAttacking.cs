@@ -1,5 +1,6 @@
 using Assets.Scripts.GameObjects.Projectiles;
 using Assets.Scripts.Infrastructure.Events;
+using Assets.Scripts.Infrastructure.Helpers;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
@@ -62,7 +63,7 @@ public class RangeAttacking : MonoBehaviour
         {
             if (_target != null)
             {
-                var distanceToTarget = (transform.position - _target.transform.position).magnitude;
+                var distanceToTarget = DistanceHelper.GetDistanceBetweenObjects(gameObject, _target);
 
                 if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
                 {

@@ -15,12 +15,12 @@ public class UnitValues : MonoBehaviour
 
     public float AttackRate = 1f;
 
+    //percent of AttackRate
+    public float AttackDurationPercent = 0.5f;
+
     public DamageType DamageType = DamageType.Normal;
 
     public float AttackBreakDistance = 2f;
-
-    //percent of AttackRate
-    public float AttackDurationPercent = 0.5f;
 
     public float MeleeAttackDistance = 2f;
 
@@ -28,7 +28,7 @@ public class UnitValues : MonoBehaviour
 
     public float RangeAttackDistance = 10f;
 
-    public GameObject RangeAttackProjectile = null;
-
     public float ProjectileSpeed = 12f;
+
+    public GameObject RangeAttackProjectile = null;
 }

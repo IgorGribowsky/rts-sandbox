@@ -259,7 +259,7 @@ MonoBehaviour:
   DamageType: 0
   AttackBreakDistance: 2.2
   AttackDurationPercent: 0.5
-  MeleeAttackDistance: 1.5
+  MeleeAttackDistance: 0.1
   HasRangeAttack: 0
   RangeAttackDistance: 10
   RangeAttackProjectile: {fileID: 0}
@@ -308,6 +308,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274b7ab13f28fd142a71ea9d45b416f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CommandListInfo: []
+  CurrentRunningCommandInfo: 
 --- !u!114 &6497452628036593396
 MonoBehaviour:
   m_ObjectHideFlags: 0
