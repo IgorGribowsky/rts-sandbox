@@ -15,7 +15,7 @@ namespace Assets.Scripts.GameObjects
         private ICommand CurrentRunningCommand;
         private Queue<ICommand> CommandsQueue = new Queue<ICommand>();
 
-        void Start()
+        void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();
 

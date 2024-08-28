@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 406198756278370332}
   m_Layer: 7
   m_Name: Unit
-  m_TagString: HasTag
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -250,20 +250,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4227cffc305532f4dbbc17dbed5dec39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHp: 100
-  MaximumHp: 100
+  CurrentHp: 150
+  MaximumHp: 150
   MovementSpeed: 5
-  Rang: 100
-  Damage: 7
-  AttackRate: 1
+  Rang: 50
+  ProducingTime: 1
+  Damage: 8
+  AttackRate: 1.4
+  AttackDurationPercent: 0.5
   DamageType: 0
   AttackBreakDistance: 2.2
-  AttackDurationPercent: 0.5
   MeleeAttackDistance: 0.1
   HasRangeAttack: 0
   RangeAttackDistance: 10
-  RangeAttackProjectile: {fileID: 0}
   ProjectileSpeed: 12
+  RangeAttackProjectile: {fileID: 0}
+  CanProduceUnits: 0
+  UnitsToProduce: []
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0

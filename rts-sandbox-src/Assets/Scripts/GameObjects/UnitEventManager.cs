@@ -95,4 +95,10 @@ public class UnitEventManager : MonoBehaviour
     {
         FollowActionEnded?.Invoke(new EventArgs());
     }
+
+    public event ProduceCommandReceivedHandler ProduceCommandReceived;
+    public void OnProduceCommandReceived(GameObject unit)
+    {
+        ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unit));
+    }
 }

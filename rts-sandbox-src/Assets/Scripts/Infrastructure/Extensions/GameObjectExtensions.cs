@@ -2,9 +2,9 @@
 
 namespace Assets.Scripts.Infrastructure.Helpers
 {
-    public static class DistanceHelper
+    public static class GameObjectExtensions
     {
-        public static float GetDistanceBetweenObjects(GameObject object1, GameObject object2)
+        public static float GetDistanceTo(this GameObject object1, GameObject object2)
         {
             if (object1 != null && object2 != null)
             {

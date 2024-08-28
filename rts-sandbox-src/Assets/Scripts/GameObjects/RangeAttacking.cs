@@ -63,7 +63,7 @@ public class RangeAttacking : MonoBehaviour
         {
             if (_target != null)
             {
-                var distanceToTarget = DistanceHelper.GetDistanceBetweenObjects(gameObject, _target);
+                var distanceToTarget = gameObject.GetDistanceTo(_target);
 
                 if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
                 {
@@ -98,7 +98,7 @@ public class RangeAttacking : MonoBehaviour
                     {
                         var projectile = Instantiate(_unitValues.RangeAttackProjectile, transform.position, transform.rotation);
                         var projectileBehavior = projectile.GetComponent<ProjectileBehavior>();
-                        projectileBehavior.SetProperties(_target, _unitValues.ProjectileSpeed, _unitValues.Damage, _unitValues.DamageType);
+                        projectileBehavior.SetProperties(_target, gameObject, _unitValues.ProjectileSpeed, _unitValues.Damage, _unitValues.DamageType);
 
                         attackIsProcessing = false;
                         attackAnimation = 0;

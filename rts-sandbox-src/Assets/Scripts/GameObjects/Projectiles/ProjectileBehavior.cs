@@ -13,15 +13,18 @@ namespace Assets.Scripts.GameObjects.Projectiles
 
         public GameObject Target { get; set; }
 
+        public GameObject Owner { get; set; }
+
         private UnitEventManager _targetEventManager;
 
         private Vector3 _targetPosition; 
 
-        public void SetProperties(GameObject target, float speed, float damage, DamageType damageType)
+        public void SetProperties(GameObject target, GameObject owner, float speed, float damage, DamageType damageType)
         {
             Damage = damage;
             DamageType = damageType;
             Target = target;
+            Owner = owner;
             Speed = speed;
             _targetEventManager = target.GetComponent<UnitEventManager>();
         }
@@ -44,7 +47,7 @@ namespace Assets.Scripts.GameObjects.Projectiles
                 {
                     if (Target != null)
                     {
-                        _targetEventManager.OnDamageReceived(gameObject, Damage, DamageType);
+                        _targetEventManager.OnDamageReceived(Owner, Damage, DamageType);
                     }
 
                     Destroy(gameObject);

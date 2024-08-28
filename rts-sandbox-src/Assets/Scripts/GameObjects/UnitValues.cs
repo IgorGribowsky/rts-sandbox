@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Enums;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitValues : MonoBehaviour
@@ -10,6 +11,8 @@ public class UnitValues : MonoBehaviour
     public float MovementSpeed = 5f;
 
     public int Rang = 100;
+
+    public float ProducingTime = 1;
 
     public float Damage = 10f;
 
@@ -31,4 +34,8 @@ public class UnitValues : MonoBehaviour
     public float ProjectileSpeed = 12f;
 
     public GameObject RangeAttackProjectile = null;
+
+    public bool CanProduceUnits = false;
+
+    public List<GameObject> UnitsToProduce = new List<GameObject>();
 }

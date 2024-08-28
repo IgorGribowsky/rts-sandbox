@@ -11,7 +11,7 @@ public class Movement : MonoBehaviour
 
     private bool isProcessing = false;
 
-    void Start()
+    void Awake()
     {
         _unitValues = gameObject.GetComponent<UnitValues>();
         _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();

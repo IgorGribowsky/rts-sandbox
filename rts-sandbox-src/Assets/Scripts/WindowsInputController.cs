@@ -13,6 +13,20 @@ public class WindowsInputController : MonoBehaviour
 
     private int ClickLayerMask;
 
+    KeyCode[] keypadCodes = new KeyCode[]
+        {
+          KeyCode.Alpha1,
+          KeyCode.Alpha2,
+          KeyCode.Alpha3,
+          KeyCode.Alpha4,
+          KeyCode.Alpha5,
+          KeyCode.Alpha6,
+          KeyCode.Alpha7,
+          KeyCode.Alpha8,
+          KeyCode.Alpha9,
+          KeyCode.Alpha0,
+        };
+
     void Start()
     {
         ClickLayerMask = LayerMask.GetMask(
@@ -76,6 +90,11 @@ public class WindowsInputController : MonoBehaviour
             }
         }
 
+        if (KeypadCodeDown(out KeyCode keypadCode, out int num))
+        {
+            _unitController.ProduceUnit(num);
+        }
+
         var moveCameraVector = Vector3.zero;
         if (Input.mousePosition.x < MoveCameraBorderSize)
         {
@@ -95,5 +114,25 @@ public class WindowsInputController : MonoBehaviour
         }
 
         _cameraController.Move(moveCameraVector * Time.deltaTime);
+    }
+
+    bool KeypadCodeDown(out KeyCode keypadCodeDown, out int num)
+    {
+        for (int i = 0; i < keypadCodes.Length; i++)
+        {
+            KeyCode keypadCode = keypadCodes[i];
+            if (Input.GetKeyDown(keypadCode))
+            {
+                // Output the KeyCode that was pressed.
+                keypadCodeDown = keypadCode;
+                num = i;
+                return true;
+            }
+        }
+
+        // Output some default value to if none of the keypad codes were pressed.
+        keypadCodeDown = KeyCode.None;
+        num = -1;
+        return false;
     }
 }

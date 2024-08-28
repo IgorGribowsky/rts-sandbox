@@ -63,8 +63,7 @@ public class MeleeAttacking : MonoBehaviour
         {
             if (_target != null)
             {
-                var distanceToTarget = DistanceHelper.GetDistanceBetweenObjects(gameObject, _target);
-                Debug.Log(distanceToTarget);
+                var distanceToTarget = gameObject.GetDistanceTo(_target);
 
                 if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
                 {

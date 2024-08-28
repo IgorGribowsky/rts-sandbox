@@ -87,6 +87,37 @@ public class UnitController : MonoBehaviour
         }
     }
 
+    public void ProduceUnit(int num)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        var firstUnit = SelectedUnits.FirstOrDefault();
+
+        if (firstUnit == null) 
+        {
+            return;
+        }
+
+        var unitValues = firstUnit.GetComponent<UnitValues>();
+
+        if (!unitValues.CanProduceUnits)
+        {
+            return;
+        }
+
+        var unitToProduce = unitValues.UnitsToProduce.ElementAtOrDefault(num);
+
+        if (unitToProduce == null)
+        {
+            return;
+        }
+
+        firstUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitToProduce);
+    }
+
     public void SelectedUnitDiedHandler(DiedEventArgs args)
     {
         SelectedUnits.Remove(args.Dead);
@@ -114,7 +145,7 @@ public class UnitController : MonoBehaviour
         var selectedUnits = new List<GameObject>();
         var teamId = 0;
 
-        var selectableUntisInArea = GameObject.FindGameObjectsWithTag("HasTag")
+        var selectableUntisInArea = GameObject.FindGameObjectsWithTag("Unit")
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
