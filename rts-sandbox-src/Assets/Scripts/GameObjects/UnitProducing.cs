@@ -7,6 +7,9 @@ public class UnitProducing : MonoBehaviour
 {
     public Queue<GameObject> ProducingQueue = new Queue<GameObject>();
 
+    public float ProductionTime { get { return productionTime; } }
+    public float CurrentProducingTimer { get { return currentProducingTimer; } }
+
     private TeamMember _teamMemeber;
     private UnitEventManager _unitEventManager;
 
@@ -14,6 +17,7 @@ public class UnitProducing : MonoBehaviour
 
     private GameObject currentProducingUnit = null;
 
+    private float productionTime = 0f;
     private float currentProducingTimer = 0f;
 
     void Start()
@@ -31,7 +35,8 @@ public class UnitProducing : MonoBehaviour
         if (currentProducingUnit == null)
         {
             currentProducingUnit = args.Unit;
-            currentProducingTimer = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
+            productionTime = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
+            currentProducingTimer = productionTime;
         }
         else
         {
