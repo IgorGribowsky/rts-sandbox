@@ -1,7 +1,6 @@
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -47,7 +46,6 @@ public class MeleeAttacking : MonoBehaviour
         {
             _target = null;
             _navmeshAgent.avoidancePriority = 50;
-            _navmeshAgent.destination = gameObject.transform.position;
             isProcessing = false;
         }
     }
@@ -106,6 +104,7 @@ public class MeleeAttacking : MonoBehaviour
             else
             {
                 Stop(new EventArgs());
+                _navmeshAgent.destination = gameObject.transform.position;
                 _unitEventManager.OnAttackActionEnded();
             }
         }

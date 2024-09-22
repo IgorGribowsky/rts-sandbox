@@ -48,7 +48,6 @@ public class Following : MonoBehaviour
         {
             target = null;
             _navmeshAgent.avoidancePriority = 50;
-            _navmeshAgent.destination = gameObject.transform.position;
             isProcessing = false;
         }
     }
@@ -72,6 +71,7 @@ public class Following : MonoBehaviour
             else
             {
                 Stop(new EventArgs());
+                _navmeshAgent.destination = gameObject.transform.position;
                 _unitEventManager.OnFollowActionEnded();
             }
         }

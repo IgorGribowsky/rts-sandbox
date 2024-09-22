@@ -47,7 +47,6 @@ public class RangeAttacking : MonoBehaviour
         {
             _target = null;
             _navmeshAgent.avoidancePriority = 50;
-            _navmeshAgent.destination = gameObject.transform.position;
             isProcessing = false;
         }
     }
@@ -108,6 +107,7 @@ public class RangeAttacking : MonoBehaviour
             else
             {
                 Stop(new EventArgs());
+                _navmeshAgent.destination = gameObject.transform.position;
                 _unitEventManager.OnAttackActionEnded();
             }
         }
