@@ -115,7 +115,14 @@ public class UnitController : MonoBehaviour
             return;
         }
 
-        firstUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitToProduce);
+        var unitId = unitToProduce.GetComponent<UnitValues>().Id;
+
+        var similarProducingUnits = SelectedUnits.Where(u => u.GetComponent<UnitValues>().Id == unitValues.Id);
+
+        foreach (var producingUnit in similarProducingUnits)
+        {
+            producingUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitId);
+        }
     }
 
     public void SelectedUnitDiedHandler(DiedEventArgs args)

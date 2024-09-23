@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UnitValues : MonoBehaviour
 {
+    public int Id = 0;
+
     public float CurrentHp = 100;
 
     public float MaximumHp = 100;

@@ -314,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4227cffc305532f4dbbc17dbed5dec39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Id: 4
   CurrentHp: 500
   MaximumHp: 500
   MovementSpeed: 0
@@ -333,6 +334,7 @@ MonoBehaviour:
   UnitsToProduce:
   - {fileID: 7849110260153872687, guid: ed8daf302b0b72a499b993230da995be, type: 3}
   - {fileID: 7849110260153872687, guid: 1dbac9f1602e01f47a8bb926fa987f76, type: 3}
+  - {fileID: 7849110260153872687, guid: 5898d9bf36c51bb43ad91a459a5a2b6a, type: 3}
 --- !u!114 &3255383013342161207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,7 +371,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5

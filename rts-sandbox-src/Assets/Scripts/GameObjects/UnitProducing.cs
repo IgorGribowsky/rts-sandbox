@@ -12,6 +12,7 @@ public class UnitProducing : MonoBehaviour
 
     private TeamMember _teamMemeber;
     private UnitEventManager _unitEventManager;
+    private UnitValues _unitValues;
 
     private bool isProcessing = false;
 
@@ -24,23 +25,31 @@ public class UnitProducing : MonoBehaviour
     {
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMemeber = GetComponent<TeamMember>();
+        _unitValues = GetComponent<UnitValues>();
 
         _unitEventManager.ProduceCommandReceived += ProduceCommandHandler;
     }
 
     public void ProduceCommandHandler(ProduceCommandReceivedEventArgs args)
     {
+        var unitToProduce = _unitValues.UnitsToProduce.FirstOrDefault(u => u.GetComponent<UnitValues>().Id == args.UnitId);
+
+        if (unitToProduce == null)
+        {
+            return;
+        }
+
         isProcessing = true;
 
         if (currentProducingUnit == null)
         {
-            currentProducingUnit = args.Unit;
+            currentProducingUnit = unitToProduce;
             productionTime = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
             currentProducingTimer = productionTime;
         }
         else
         {
-            ProducingQueue.Enqueue(args.Unit);
+            ProducingQueue.Enqueue(unitToProduce);
         }
     }
 
@@ -68,7 +77,6 @@ public class UnitProducing : MonoBehaviour
 
                 unit.GetComponent<TeamMember>().TeamId = _teamMemeber.TeamId;
                 unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
-
 
                 if (ProducingQueue.Any())
                 {

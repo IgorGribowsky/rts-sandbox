@@ -7,11 +7,11 @@ namespace Assets.Scripts.Infrastructure.Events
 
     public class ProduceCommandReceivedEventArgs : EventArgs
     {
-        public ProduceCommandReceivedEventArgs(GameObject unit)
+        public ProduceCommandReceivedEventArgs(int unitId)
         {
-            Unit = unit;
+            UnitId = unitId;
         }
 
-        public GameObject Unit { get; set; }
+        public int UnitId { get; set; }
     }
 }

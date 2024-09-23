@@ -97,8 +97,8 @@ public class UnitEventManager : MonoBehaviour
     }
 
     public event ProduceCommandReceivedHandler ProduceCommandReceived;
-    public void OnProduceCommandReceived(GameObject unit)
+    public void OnProduceCommandReceived(int unitId)
     {
-        ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unit));
+        ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unitId));
     }
 }
