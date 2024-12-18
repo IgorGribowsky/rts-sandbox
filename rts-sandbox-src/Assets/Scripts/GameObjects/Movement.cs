@@ -5,18 +5,14 @@ using UnityEngine.AI;
 
 public class Movement : MonoBehaviour
 {
-    private NavMeshAgent _navmeshAgent;
+    private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
-    private UnitValues _unitValues;
 
     private bool isProcessing = false;
 
     void Awake()
     {
-        _unitValues = gameObject.GetComponent<UnitValues>();
-        _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();
-
-        _navmeshAgent.speed = _unitValues.MovementSpeed;
+        _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
 
         _unitEventManager = GetComponent<UnitEventManager>();
 
@@ -28,27 +24,29 @@ public class Movement : MonoBehaviour
     protected void MoveTo(MoveActionStartedEventArgs args)
     {
         isProcessing = true;
-        _navmeshAgent.avoidancePriority = 90;
-        _navmeshAgent.destination = args.MovePoint;
+        _navmeshMovement.Go(args.MovePoint);
     }
 
     protected void Stop(EventArgs args)
     {
         if (isProcessing)
         {
-            _navmeshAgent.avoidancePriority = 50;
+            _navmeshMovement.Stop();
             isProcessing = false;
         }
     }
 
     void Update()
     {
-        var differenceVector = _navmeshAgent.destination - transform.position;
-        differenceVector.y = 0;
-        if (isProcessing && differenceVector.magnitude <= _navmeshAgent.stoppingDistance)
+        if (isProcessing)
         {
-            Stop(new EventArgs());
-            _unitEventManager.OnMoveActionEnded();
+            var differenceVector = _navmeshMovement.Destination - transform.position;
+            differenceVector.y = 0;
+            if (differenceVector.magnitude <= _navmeshMovement.StoppingDistance)
+            {
+                Stop(new EventArgs());
+                _unitEventManager.OnMoveActionEnded();
+            }
         }
     }
 }

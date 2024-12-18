@@ -7,7 +7,7 @@ using UnityEngine.AI;
 
 public class RangeAttacking : MonoBehaviour
 {
-    private NavMeshAgent _navmeshAgent;
+    private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
     private UnitValues _unitValues;
 
@@ -20,10 +20,8 @@ public class RangeAttacking : MonoBehaviour
 
     void Start()
     {
-        _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();
         _unitValues = gameObject.GetComponent<UnitValues>();
-
-        _navmeshAgent.speed = _unitValues.MovementSpeed;
+        _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
 
         _unitEventManager = GetComponent<UnitEventManager>();
 
@@ -36,7 +34,6 @@ public class RangeAttacking : MonoBehaviour
     protected void Attack(AttackActionStartedEventArgs args)
     {
         _target = args.Target;
-        _navmeshAgent.avoidancePriority = 90;
         _targetEventManager = _target.GetComponent<UnitEventManager>();
         isProcessing = true;
     }
@@ -46,7 +43,6 @@ public class RangeAttacking : MonoBehaviour
         if (isProcessing)
         {
             _target = null;
-            _navmeshAgent.avoidancePriority = 50;
             isProcessing = false;
         }
     }
@@ -66,11 +62,11 @@ public class RangeAttacking : MonoBehaviour
 
                 if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
                 {
-                    _navmeshAgent.destination = _target.transform.position;
+                    _navmeshMovement.Go(_target.transform.position);
                 }
                 else
                 {
-                    _navmeshAgent.destination = transform.position;
+                    _navmeshMovement.Stop();
                 }
 
                 if (distanceToTarget < _unitValues.RangeAttackDistance
@@ -107,7 +103,7 @@ public class RangeAttacking : MonoBehaviour
             else
             {
                 Stop(new EventArgs());
-                _navmeshAgent.destination = gameObject.transform.position;
+                _navmeshMovement.Stop();
                 _unitEventManager.OnAttackActionEnded();
             }
         }

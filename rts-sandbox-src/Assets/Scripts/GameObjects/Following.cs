@@ -6,9 +6,7 @@ using UnityEngine.AI;
 
 public class Following : MonoBehaviour
 {
-    private float movementSpeed;
-
-    private NavMeshAgent _navmeshAgent;
+    private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
 
     private bool isProcessing = false;
@@ -16,17 +14,13 @@ public class Following : MonoBehaviour
 
     void Start()
     {
-        movementSpeed = gameObject.GetComponent<UnitValues>().MovementSpeed;
-        _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();
-
-        _navmeshAgent.speed = movementSpeed;
+        _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
 
         _unitEventManager = GetComponent<UnitEventManager>();
 
         _unitEventManager.FollowActionStarted += Follow;
         _unitEventManager.AttackActionStarted += Stop;
         _unitEventManager.MoveActionStarted += Stop;
-
     }
 
     protected void Follow(FollowActionStartedEventArgs args)
@@ -38,7 +32,6 @@ public class Following : MonoBehaviour
         }
 
         target = args.Target;
-        _navmeshAgent.avoidancePriority = 90;
         isProcessing = true;
     }
 
@@ -47,7 +40,6 @@ public class Following : MonoBehaviour
         if (isProcessing)
         {
             target = null;
-            _navmeshAgent.avoidancePriority = 50;
             isProcessing = false;
         }
     }
@@ -61,17 +53,17 @@ public class Following : MonoBehaviour
                 var distanceToTarget = (transform.position - target.transform.position).magnitude;
                 if (distanceToTarget > Constants.FollowingDistance)
                 {
-                    _navmeshAgent.destination = target.transform.position;
+                    _navmeshMovement.Go(target.transform.position);
                 }
                 else
                 {
-                    _navmeshAgent.destination = transform.position;
+                    _navmeshMovement.Stop();
                 }
             }
             else
             {
                 Stop(new EventArgs());
-                _navmeshAgent.destination = gameObject.transform.position;
+                _navmeshMovement.Stop();
                 _unitEventManager.OnFollowActionEnded();
             }
         }
