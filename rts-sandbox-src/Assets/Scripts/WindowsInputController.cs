@@ -7,6 +7,9 @@ public class WindowsInputController : MonoBehaviour
     public float MoveCameraBorderSize = 20f;
     public GameObject Controller;
 
+    public bool FixScreen = false;
+    public KeyCode FixScreenKey = KeyCode.F8;
+
     private CameraController _cameraController;
     private UnitController _unitController;
     private SelectionBoxController _selectionBoxController;
@@ -95,25 +98,33 @@ public class WindowsInputController : MonoBehaviour
             _unitController.ProduceUnit(num);
         }
 
-        var moveCameraVector = Vector3.zero;
-        if (Input.mousePosition.x < MoveCameraBorderSize)
+        if (Input.GetKeyDown(FixScreenKey))
         {
-            moveCameraVector += new Vector3(-Sensitivity, 0, 0);
-        }
-        else if (Input.mousePosition.x > Screen.width - MoveCameraBorderSize)
-        {
-            moveCameraVector += new Vector3(Sensitivity, 0, 0);
-        }
-        if (Input.mousePosition.y < MoveCameraBorderSize)
-        {
-            moveCameraVector += new Vector3(0, 0, -Sensitivity);
-        }
-        else if (Input.mousePosition.y > Screen.height - MoveCameraBorderSize)
-        {
-            moveCameraVector += new Vector3(0, 0, Sensitivity);
+            FixScreen = !FixScreen;
         }
 
-        _cameraController.Move(moveCameraVector * Time.deltaTime);
+        if (!FixScreen)
+        {
+            var moveCameraVector = Vector3.zero;
+            if (Input.mousePosition.x < MoveCameraBorderSize)
+            {
+                moveCameraVector += new Vector3(-Sensitivity, 0, 0);
+            }
+            else if (Input.mousePosition.x > Screen.width - MoveCameraBorderSize)
+            {
+                moveCameraVector += new Vector3(Sensitivity, 0, 0);
+            }
+            if (Input.mousePosition.y < MoveCameraBorderSize)
+            {
+                moveCameraVector += new Vector3(0, 0, -Sensitivity);
+            }
+            else if (Input.mousePosition.y > Screen.height - MoveCameraBorderSize)
+            {
+                moveCameraVector += new Vector3(0, 0, Sensitivity);
+            }
+
+            _cameraController.Move(moveCameraVector * Time.deltaTime);
+        }
     }
 
     bool KeypadCodeDown(out KeyCode keypadCodeDown, out int num)
