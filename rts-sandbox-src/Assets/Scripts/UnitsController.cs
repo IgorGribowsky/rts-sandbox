@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class UnitController : MonoBehaviour
+public class UnitsController : MonoBehaviour
 {
     public float ClosenessMultiplier = 2.5f;
     public List<GameObject> SelectedUnits = new List<GameObject>();
@@ -19,6 +19,7 @@ public class UnitController : MonoBehaviour
 
     public event DiedHandler SelectedUnitDied;
 
+    //TODO: move to common event handler
     public void OnSelectedUnitDied(GameObject dead)
     {
         SelectedUnitDied?.Invoke(new DiedEventArgs(null, dead));

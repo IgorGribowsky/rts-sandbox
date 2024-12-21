@@ -11,7 +11,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode FixScreenKey = KeyCode.F8;
 
     private CameraController _cameraController;
-    private UnitController _unitController;
+    private UnitsController _unitController;
     private SelectionBoxController _selectionBoxController;
 
     private int ClickLayerMask;
@@ -37,7 +37,7 @@ public class WindowsInputController : MonoBehaviour
             Layer.Unit.ToString()
             );
 
-        _unitController = Controller.GetComponent<UnitController>();
+        _unitController = Controller.GetComponent<UnitsController>();
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
     }
