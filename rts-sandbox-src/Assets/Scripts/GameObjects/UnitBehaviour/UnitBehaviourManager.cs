@@ -1,10 +1,9 @@
-﻿using Assets.Scripts.GameObjects.UnitBahaviour;
-using Assets.Scripts.Infrastructure.Events;
+﻿using Assets.Scripts.Infrastructure.Events;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.GameObjects
+namespace Assets.Scripts.GameObjects.UnitBehaviour
 {
     public class UnitBehaviourManager : MonoBehaviour
     {
@@ -15,6 +14,7 @@ namespace Assets.Scripts.GameObjects
         private FollowingBehaviour _followingBehaviour;
         private MeleeAttackingBehaviour _meleeAttackingBehaviour;
         private RangeAttackingBehaviour _rangeAttackingBehaviour;
+        private AMovementBehaviour _aMovementBehaviour;
 
         public void Awake()
         {
@@ -47,6 +47,13 @@ namespace Assets.Scripts.GameObjects
                 UnitBehaviourCases.Add(_meleeAttackingBehaviour);
                 _unitEventManager.AttackActionStarted += StartMeleeAttackingBehaviour;
             }
+
+            _aMovementBehaviour = GetComponent<AMovementBehaviour>();
+            if (_aMovementBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_aMovementBehaviour);
+                _unitEventManager.AMoveActionStarted += StartAMovementBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -75,6 +82,13 @@ namespace Assets.Scripts.GameObjects
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
             _meleeAttackingBehaviour.StartAction(args);
             _meleeAttackingBehaviour.IsActive = true;
+        }
+
+        private void StartAMovementBehaviour(MoveActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _aMovementBehaviour.StartAction(args);
+            _aMovementBehaviour.IsActive = true;
         }
     }
 }

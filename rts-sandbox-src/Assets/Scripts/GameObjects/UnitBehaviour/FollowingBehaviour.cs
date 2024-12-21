@@ -1,4 +1,4 @@
-using Assets.Scripts.GameObjects.UnitBahaviour;
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using System;
@@ -19,6 +19,8 @@ public class FollowingBehaviour : UnitBehaviourBase
 
     public override void StartAction(EventArgs args)
     {
+        EnableTriggerEndEvent();
+
         var actionArgs = args as FollowActionStartedEventArgs;
 
         target = actionArgs.Target;
@@ -30,7 +32,11 @@ public class FollowingBehaviour : UnitBehaviourBase
         {
             IsActive = false;
             _navmeshMovement.Stop();
-            _unitEventManager.OnFollowActionEnded();
+
+            if (TriggerEndEventFlag)
+            {
+                _unitEventManager.OnFollowActionEnded();
+            }
             return;
         }
 

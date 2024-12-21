@@ -56,6 +56,24 @@ public class UnitEventManager : MonoBehaviour
         MoveActionEnded?.Invoke(new EventArgs());
     }
 
+    public event MoveCommandReceivedHandler AMoveCommandReceived;
+    public void OnAMoveCommandReceived(Vector3 movePoint, bool addToCommandsQueue = false)
+    {
+        AMoveCommandReceived?.Invoke(new MoveCommandReceivedEventArgs(movePoint, addToCommandsQueue));
+    }
+
+    public event MoveActionStartedHandler AMoveActionStarted;
+    public void OnAMoveActionStarted(Vector3 movePoint)
+    {
+        AMoveActionStarted?.Invoke(new MoveActionStartedEventArgs(movePoint));
+    }
+
+    public event MoveActionEndedHandler AMoveActionEnded;
+    public void OnAMoveActionEnded()
+    {
+        AMoveActionEnded?.Invoke(new EventArgs());
+    }
+
     public event AttackCommandReceivedHandler AttackCommandReceived;
     public void OnAttackCommandReceived(GameObject target, bool addToCommandsQueue = false)
     {

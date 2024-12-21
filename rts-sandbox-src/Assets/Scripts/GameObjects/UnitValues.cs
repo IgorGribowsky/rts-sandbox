@@ -18,6 +18,8 @@ public class UnitValues : MonoBehaviour
 
     public float Damage = 10f;
 
+    public float AutoAttackDistance = 8f;
+
     public float AttackRate = 1f;
 
     //percent of AttackRate

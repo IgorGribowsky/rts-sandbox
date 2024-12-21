@@ -1,16 +1,15 @@
-using Assets.Scripts.GameObjects.UnitBahaviour;
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
 using UnityEngine;
 
-public class MeleeAttackingBehaviour : UnitBehaviourBase
+public class MeleeAttackingBehaviour : AttackingBehaviourBase
 {
     private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
     private UnitValues _unitValues;
 
-    private GameObject _target = null;
     private UnitEventManager _targetEventManager = null;
     private float attackCD = 0;
     private float attackAnimation = 0;
@@ -25,10 +24,12 @@ public class MeleeAttackingBehaviour : UnitBehaviourBase
 
     public override void StartAction(EventArgs args)
     {
+        EnableTriggerEndEvent();
+
         var actionArgs = args as AttackActionStartedEventArgs;
 
-        _target = actionArgs.Target;
-        _targetEventManager = _target.GetComponent<UnitEventManager>();
+        Target = actionArgs.Target;
+        _targetEventManager = Target.GetComponent<UnitEventManager>();
     }
 
     protected override void PreUpdate()
@@ -38,21 +39,25 @@ public class MeleeAttackingBehaviour : UnitBehaviourBase
             attackCD -= Time.deltaTime;
         }
     }
+
     protected override void UpdateAction()
     {
-        if (_target == null)
+        if (Target == null)
         {
             IsActive = false;
             _navmeshMovement.Stop();
-            _unitEventManager.OnAttackActionEnded();
+            if (TriggerEndEventFlag)
+            {
+                _unitEventManager.OnAttackActionEnded();
+            }
             return;
         }
 
-        var distanceToTarget = gameObject.GetDistanceTo(_target);
+        var distanceToTarget = gameObject.GetDistanceTo(Target);
 
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
-            _navmeshMovement.Go(_target.transform.position);
+            _navmeshMovement.Go(Target.transform.position);
         }
         else
         {

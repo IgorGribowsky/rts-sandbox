@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts.GameObjects.UnitBahaviour
+namespace Assets.Scripts.GameObjects.UnitBehaviour
 {
     public abstract class UnitBehaviourBase : MonoBehaviour
     {
@@ -28,5 +28,17 @@ namespace Assets.Scripts.GameObjects.UnitBahaviour
         protected virtual void PreUpdate()  { }
 
         protected virtual void PostUpdate() { }
+
+        protected bool TriggerEndEventFlag = true;
+
+        public void DisableTriggerEndEvent()
+        {
+            TriggerEndEventFlag = false;
+        }
+
+        public void EnableTriggerEndEvent()
+        {
+            TriggerEndEventFlag = true;
+        }
     }
 }

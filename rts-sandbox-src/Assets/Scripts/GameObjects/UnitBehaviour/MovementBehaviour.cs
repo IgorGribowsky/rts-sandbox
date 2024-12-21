@@ -1,4 +1,4 @@
-using Assets.Scripts.GameObjects.UnitBahaviour;
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Events;
 using System;
 
@@ -15,6 +15,8 @@ public class MovementBehaviour : UnitBehaviourBase
 
     public override void StartAction(EventArgs args)
     {
+        EnableTriggerEndEvent();
+
         var actionArgs = args as MoveActionStartedEventArgs;
 
         _navmeshMovement.Go(actionArgs.MovePoint);
@@ -28,7 +30,10 @@ public class MovementBehaviour : UnitBehaviourBase
         {
             IsActive = false;
             _navmeshMovement.Stop();
-            _unitEventManager.OnMoveActionEnded();
+            if (TriggerEndEventFlag)
+            {
+                _unitEventManager.OnMoveActionEnded();
+            }
         }
     }
 }

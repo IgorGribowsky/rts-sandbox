@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: -6879038389709202324}
   - component: {fileID: -1946789511484751996}
   - component: {fileID: -8353055866858728281}
+  - component: {fileID: 4867899262287332417}
   - component: {fileID: 6873323525821280569}
   m_Layer: 7
   m_Name: Unit
@@ -182,6 +183,7 @@ MonoBehaviour:
   Rang: 50
   ProducingTime: 1
   Damage: 8
+  AutoAttackDistance: 8
   AttackRate: 1.4
   AttackDurationPercent: 0.5
   DamageType: 0
@@ -412,6 +414,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ab40a66ffb95ca46a74a021fb9ed1f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4867899262287332417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6873323525821280569

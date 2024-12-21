@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Helpers
 {
@@ -24,6 +26,28 @@ namespace Assets.Scripts.Infrastructure.Helpers
             {
                 return float.MaxValue;
             }
+        }
+
+        public static GameObject GetNearestUnitInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
+        {
+            GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+            GameObject closestUnit = null;
+            float closestDistanceSqr = radius * radius; // Используем квадрат расстояния для оптимизации
+
+            foreach (GameObject unit in units)
+            {
+                // Если фильтр задан и объект не проходит проверку, пропускаем его
+                if (filter != null && !filter(unit)) continue;
+
+                float distanceSqr = (unit.transform.position - gameObject.transform.position).sqrMagnitude;
+                if (distanceSqr < closestDistanceSqr)
+                {
+                    closestUnit = unit;
+                    closestDistanceSqr = distanceSqr;
+                }
+            }
+
+            return closestUnit;
         }
     }
 }

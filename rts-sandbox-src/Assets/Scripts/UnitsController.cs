@@ -56,6 +56,23 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    public void OnAClick(Vector3 point, bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        point.y = 0.5f;
+
+        foreach (var unit in SelectedUnits)
+        {
+            var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
+            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
+            unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(pointToMove, addToCommandsQueue);
+        }
+    }
+
     public Vector3 GetTheMostRangedUnitPosition()
     {
         var unit = SelectedUnits.OrderByDescending(u => u.GetComponent<UnitValues>().Rang).FirstOrDefault();

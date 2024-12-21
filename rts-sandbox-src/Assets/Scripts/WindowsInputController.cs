@@ -8,13 +8,19 @@ public class WindowsInputController : MonoBehaviour
     public GameObject Controller;
 
     public bool FixScreen = false;
+
+    public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
+
+    public bool AClickPressed { get => aClickPressed; }
 
     private CameraController _cameraController;
     private UnitsController _unitController;
     private SelectionBoxController _selectionBoxController;
 
-    private int ClickLayerMask;
+    private bool selectionStarted = false;
+    private bool aClickPressed = false;
+    private int clickLayerMask;
 
     KeyCode[] keypadCodes = new KeyCode[]
         {
@@ -32,7 +38,7 @@ public class WindowsInputController : MonoBehaviour
 
     void Start()
     {
-        ClickLayerMask = LayerMask.GetMask(
+        clickLayerMask = LayerMask.GetMask(
             Layer.MovementSurface.ToString(),
             Layer.Unit.ToString()
             );
@@ -44,64 +50,6 @@ public class WindowsInputController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            var center = _unitController.GetTheMostRangedUnitPosition();
-            _cameraController.Set(center);
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
-            {
-                _unitController.StartSelection(hit.point);
-                _selectionBoxController.StartDrawSelection(hit.point);
-            }
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            _selectionBoxController.DrawSelection(Input.mousePosition);
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
-            {
-                _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
-                _selectionBoxController.EndDrawSelection();
-            }
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, ClickLayerMask))
-            {
-                var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-                var gameObject = hit.transform.gameObject;
-                if (gameObject.layer == (int)Layer.MovementSurface)
-                {
-                    _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
-                }
-                else if (gameObject.layer == (int)Layer.Unit)
-                {
-                    _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
-                }
-            }
-        }
-
-        if (KeypadCodeDown(out KeyCode keypadCode, out int num))
-        {
-            _unitController.ProduceUnit(num);
-        }
-
-        if (Input.GetKeyDown(FixScreenKey))
-        {
-            FixScreen = !FixScreen;
-        }
 
         if (!FixScreen)
         {
@@ -124,6 +72,100 @@ public class WindowsInputController : MonoBehaviour
             }
 
             _cameraController.Move(moveCameraVector * Time.deltaTime);
+        }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            var center = _unitController.GetTheMostRangedUnitPosition();
+            _cameraController.Set(center);
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+            {
+                if (aClickPressed)
+                {
+                    aClickPressed = false;
+                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+                    var gameObject = hit.transform.gameObject;
+                    if (gameObject.layer == (int)Layer.MovementSurface)
+                    {
+                        _unitController.OnAClick(hit.point, isShiftButtonPressed);
+                    }
+                    else if (gameObject.layer == (int)Layer.Unit)
+                    {
+                        _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
+                    }
+                }
+                else
+                {
+                    selectionStarted = true;
+                    _unitController.StartSelection(hit.point);
+                    _selectionBoxController.StartDrawSelection(hit.point);
+                }
+            }
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            _selectionBoxController.DrawSelection(Input.mousePosition);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (selectionStarted)
+            {
+                var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                {
+                    _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
+                    _selectionBoxController.EndDrawSelection();
+                }
+                selectionStarted = false;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (aClickPressed)
+            {
+                aClickPressed = false;
+            }
+            else
+            {
+                var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                {
+                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+                    var gameObject = hit.transform.gameObject;
+                    if (gameObject.layer == (int)Layer.MovementSurface)
+                    {
+                        _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
+                    }
+                    else if (gameObject.layer == (int)Layer.Unit)
+                    {
+                        _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
+                    }
+                }
+            }
+        }
+
+        if (KeypadCodeDown(out KeyCode keypadCode, out int num))
+        {
+            _unitController.ProduceUnit(num);
+        }
+
+        if (Input.GetKeyDown(FixScreenKey))
+        {
+            FixScreen = !FixScreen;
+        }
+
+        if (Input.GetKeyDown(AClickKey))
+        {
+            aClickPressed = true;
         }
     }
 

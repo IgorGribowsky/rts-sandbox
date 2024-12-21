@@ -22,10 +22,12 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.MoveCommandReceived += StartMoveCommand;
             _unitEventManager.AttackCommandReceived += StartAttackCommand;
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
+            _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
             _unitEventManager.FollowActionEnded += RunNextCommand;
+            _unitEventManager.AMoveActionEnded += RunNextCommand;
 
         }
 
@@ -48,6 +50,13 @@ namespace Assets.Scripts.GameObjects
             var followCommand = new FollowCommand(_unitEventManager, args);
 
             StartCommand(followCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartAMoveCommand(MoveCommandReceivedEventArgs args)
+        {
+            var moveCommand = new AMoveCommand(_unitEventManager, args);
+
+            StartCommand(moveCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
@@ -168,6 +177,29 @@ namespace Assets.Scripts.GameObjects
             public void Start()
             {
                 _unitEventManager.OnFollowActionStarted(args.Target);
+            }
+        }
+
+        private class AMoveCommand : ICommand
+        {
+            public MoveCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public AMoveCommand(UnitEventManager unitEventManager, MoveCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return args.MovePoint != null;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnAMoveActionStarted(args.MovePoint);
             }
         }
 
