@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: -1106711602923391255}
   - component: {fileID: 1727071549760718108}
   - component: {fileID: 2220636496326991835}
+  - component: {fileID: -8713228520699853420}
   - component: {fileID: 6873323525821280569}
   m_Layer: 7
   m_Name: Range Unit
@@ -338,6 +339,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8713228520699853420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6873323525821280569

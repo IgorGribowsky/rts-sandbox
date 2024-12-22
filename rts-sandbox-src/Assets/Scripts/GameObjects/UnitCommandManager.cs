@@ -23,6 +23,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.AttackCommandReceived += StartAttackCommand;
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
             _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
+            _unitEventManager.HoldCommandReceived += StartHoldCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
@@ -62,6 +63,13 @@ namespace Assets.Scripts.GameObjects
             var moveCommand = new AMoveCommand(_unitEventManager, args);
 
             StartCommand(moveCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartHoldCommand(HoldCommandReceivedEventArgs args)
+        {
+            var holdCommand = new HoldCommand(_unitEventManager, args);
+
+            StartCommand(holdCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
@@ -214,6 +222,28 @@ namespace Assets.Scripts.GameObjects
             }
         }
 
+        private class HoldCommand : ICommand
+        {
+            public HoldCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public HoldCommand(UnitEventManager unitEventManager, HoldCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return true;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnHoldActionStarted();
+            }
+        }
         #endregion
     }
 }

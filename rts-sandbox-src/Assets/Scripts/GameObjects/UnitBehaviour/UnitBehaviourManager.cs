@@ -15,6 +15,7 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private RangeAttackingBehaviour _rangeAttackingBehaviour;
         private AMovementBehaviour _aMovementBehaviour;
         private AutoAttackIdleBehaviour _autoAttackIdleBehaviour;
+        private HoldingBehaviour _holdingBehaviour;
 
         public void Awake()
         {
@@ -61,6 +62,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_autoAttackIdleBehaviour);
                 _unitEventManager.AutoAttackIdleStarted += StartAutoAttackIdle;
             }
+
+            _holdingBehaviour = GetComponent<HoldingBehaviour>();
+            if (_holdingBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_holdingBehaviour);
+                _unitEventManager.HoldActionStarted += StartHoldingBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -103,6 +111,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
             _aMovementBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
             _aMovementBehaviour.IsActive = true;
+        }
+
+        private void StartHoldingBehaviour(HoldActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _holdingBehaviour.StartAction(args);
+            _holdingBehaviour.IsActive = true;
         }
     }
 }

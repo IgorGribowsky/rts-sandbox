@@ -125,4 +125,16 @@ public class UnitEventManager : MonoBehaviour
     {
         ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unitId));
     }
+
+    public event HoldCommandReceivedHandler HoldCommandReceived;
+    public void OnHoldCommandReceived(bool addToCommandsQueue = false)
+    {
+        HoldCommandReceived?.Invoke(new HoldCommandReceivedEventArgs(addToCommandsQueue));
+    }
+
+    public event HoldActionStartedHandler HoldActionStarted;
+    public void OnHoldActionStarted()
+    {
+        HoldActionStarted?.Invoke(new HoldActionStartedEventArgs());
+    }
 }

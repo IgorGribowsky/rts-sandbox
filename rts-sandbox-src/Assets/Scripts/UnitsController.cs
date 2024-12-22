@@ -1,5 +1,6 @@
 using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
@@ -37,6 +38,14 @@ public class UnitsController : MonoBehaviour
 
     private void Update()
     {
+    }
+
+    public void OnHoldKeyDown(bool addToCommandsQueue = false)
+    {
+        foreach (var unit in SelectedUnits)
+        {
+            unit.GetComponent<UnitEventManager>().OnHoldCommandReceived(addToCommandsQueue);
+        }
     }
 
     public void OnGroundRightClick(Vector3 point, bool addToCommandsQueue = false)

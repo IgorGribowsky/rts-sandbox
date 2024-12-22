@@ -11,6 +11,7 @@ public class WindowsInputController : MonoBehaviour
 
     public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
+    public KeyCode HoldKey = KeyCode.H;
 
     public bool AClickPressed { get => aClickPressed; }
 
@@ -166,6 +167,13 @@ public class WindowsInputController : MonoBehaviour
         if (Input.GetKeyDown(AClickKey))
         {
             aClickPressed = true;
+        }
+
+        if (Input.GetKeyDown(HoldKey))
+        {
+            var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+
+            _unitController.OnHoldKeyDown(isShiftButtonPressed);
         }
     }
 
