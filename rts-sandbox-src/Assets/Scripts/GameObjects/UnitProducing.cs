@@ -76,7 +76,7 @@ public class UnitProducing : MonoBehaviour
                 var unit = Instantiate(currentProducingUnit, positionToSpawn, currentProducingUnit.transform.rotation);
 
                 unit.GetComponent<TeamMember>().TeamId = _teamMemeber.TeamId;
-                unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
+                unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
 
                 if (ProducingQueue.Any())
                 {

@@ -34,7 +34,10 @@ namespace Assets.Scripts.GameObjects
 
         private void Start()
         {
-            SetIdleState();
+            if (CurrentRunningCommand == null)
+            {
+                SetIdleState();
+            }
         }
 
         protected void StartMoveCommand(MoveCommandReceivedEventArgs args)
