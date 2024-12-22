@@ -1869,6 +1869,7 @@ MonoBehaviour:
   MoveCameraBorderSize: 20
   Controller: {fileID: 1332743797}
   FixScreen: 0
+  AClickKey: 97
   FixScreenKey: 289
 --- !u!4 &1424565962
 Transform:

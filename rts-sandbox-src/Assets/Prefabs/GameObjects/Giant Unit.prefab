@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 8528306610205741671}
   - component: {fileID: 4654563010407232930}
   - component: {fileID: 933093067559752482}
+  - component: {fileID: -7151313057212292012}
   - component: {fileID: 6873323525821280569}
   m_Layer: 7
   m_Name: Giant Unit
@@ -426,6 +427,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-7151313057212292012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6873323525821280569

@@ -74,6 +74,12 @@ public class UnitEventManager : MonoBehaviour
         AMoveActionEnded?.Invoke(new EventArgs());
     }
 
+    public event AutoAttackIdleStartedHandler AutoAttackIdleStarted;
+    public void OnAutoAttackIdleStarted(Vector3 movePoint)
+    {
+        AutoAttackIdleStarted?.Invoke(new AutoAttackIdleStartedEventArgs(movePoint));
+    }
+
     public event AttackCommandReceivedHandler AttackCommandReceived;
     public void OnAttackCommandReceived(GameObject target, bool addToCommandsQueue = false)
     {

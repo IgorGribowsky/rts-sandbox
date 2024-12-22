@@ -31,6 +31,11 @@ namespace Assets.Scripts.GameObjects
 
         }
 
+        private void Start()
+        {
+            SetIdleState();
+        }
+
         protected void StartMoveCommand(MoveCommandReceivedEventArgs args)
         {
             var moveCommand = new MoveCommand(_unitEventManager, args);
@@ -77,10 +82,16 @@ namespace Assets.Scripts.GameObjects
             }
             else
             {
-                CurrentRunningCommand = null;
-                CurrentRunningCommandInfo = "";
+                SetIdleState();
             }
 
+        }
+
+        private void SetIdleState()
+        {
+            CurrentRunningCommand = null;
+            CurrentRunningCommandInfo = "Idle";
+            _unitEventManager.OnAutoAttackIdleStarted(gameObject.transform.position);
         }
 
         private void StartCommand(ICommand command , bool addToCommandsQueue)
