@@ -1,6 +1,4 @@
-﻿using OpenCover.Framework.Model;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.GameObjects.UnitBehaviour
 {
