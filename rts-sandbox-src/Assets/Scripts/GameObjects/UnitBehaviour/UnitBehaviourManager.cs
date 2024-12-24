@@ -109,8 +109,8 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private void StartAutoAttackIdle(AutoAttackIdleStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _aMovementBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
-            _aMovementBehaviour.IsActive = true;
+            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
+            _autoAttackIdleBehaviour.IsActive = true;
         }
 
         private void StartHoldingBehaviour(HoldActionStartedEventArgs args)

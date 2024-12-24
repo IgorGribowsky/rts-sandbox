@@ -14,7 +14,6 @@ public class AMovementBehaviour : UnitBehaviourBase
     protected TeamController _teamController;
     protected UnitBehaviourManager _unitBehaviourManager;
     protected AttackingBehaviourBase _attackBehaviour;
-
     protected bool _triggeredOnEnemy = false;
     protected GameObject _currentTarget = null;
     protected Vector3 _movePoint;
@@ -58,7 +57,8 @@ public class AMovementBehaviour : UnitBehaviourBase
 
     protected virtual void IfNoTargetUpdate()
     {
-        var differenceVector = _navmeshMovement.Destination - transform.position;
+        var differenceVector = _movePoint - transform.position;
+        var destinationDifVector = _navmeshMovement.Destination - _movePoint;
         differenceVector.y = 0;
         if (differenceVector.magnitude <= _navmeshMovement.StoppingDistance)
         {
@@ -68,6 +68,10 @@ public class AMovementBehaviour : UnitBehaviourBase
             {
                 _unitEventManager.OnAMoveActionEnded();
             }
+        }
+        else if (destinationDifVector.magnitude >= _navmeshMovement.StoppingDistance)
+        {
+            _navmeshMovement.Go(_movePoint);
         }
     }
 
