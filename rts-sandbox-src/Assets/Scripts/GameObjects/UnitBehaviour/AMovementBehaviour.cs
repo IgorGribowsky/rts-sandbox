@@ -2,7 +2,6 @@ using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AMovementBehaviour : UnitBehaviourBase

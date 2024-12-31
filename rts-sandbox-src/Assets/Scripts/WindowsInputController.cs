@@ -94,11 +94,11 @@ public class WindowsInputController : MonoBehaviour
                     var gameObject = hit.transform.gameObject;
                     if (gameObject.layer == (int)Layer.MovementSurface)
                     {
-                        _unitController.OnAClick(hit.point, isShiftButtonPressed);
+                        _unitController.OnGroundAClick(hit.point, isShiftButtonPressed);
                     }
                     else if (gameObject.layer == (int)Layer.Unit)
                     {
-                        _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
+                        _unitController.OnUnitAClick(gameObject, isShiftButtonPressed);
                     }
                 }
                 else

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class UnitsController : MonoBehaviour
 
     private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
     private TeamController _teamController;
+    private GameController _gameController;
 
     private int playerTeamId;
 
@@ -30,9 +32,9 @@ public class UnitsController : MonoBehaviour
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
 
-        _teamController = GameObject.FindGameObjectWithTag("GameController")
-            .GetComponent<TeamController>();
-
+        var gameController = GameObject.FindGameObjectWithTag("GameController");
+        _teamController = gameController.GetComponent<TeamController>();
+        _gameController = gameController.GetComponent<GameController>();
         SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
@@ -65,7 +67,7 @@ public class UnitsController : MonoBehaviour
         }
     }
 
-    public void OnAClick(Vector3 point, bool addToCommandsQueue = false)
+    public void OnGroundAClick(Vector3 point, bool addToCommandsQueue = false)
     {
         if (SelectedUnitsTeamId != playerTeamId)
         {
@@ -79,6 +81,25 @@ public class UnitsController : MonoBehaviour
             var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
             var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
             unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(pointToMove, addToCommandsQueue);
+        }
+    }
+
+    public void OnUnitAClick(GameObject target, bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        if (!_gameController.FriendlyFire)
+        {
+            OnUnitRightClick(target, addToCommandsQueue);
+            return;
+        }
+
+        foreach (var unit in SelectedUnits)
+        {
+            unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
         }
     }
 
