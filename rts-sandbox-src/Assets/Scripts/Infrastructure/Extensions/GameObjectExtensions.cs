@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -48,6 +50,14 @@ namespace Assets.Scripts.Infrastructure.Helpers
             }
 
             return closestUnit;
+        }
+
+
+        public static IEnumerable<GameObject> GetAllUnitsInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
+        {
+            GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+
+            return units.Where(u => gameObject.GetDistanceTo(u) <= radius && filter(u));
         }
     }
 }

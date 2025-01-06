@@ -1,4 +1,5 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
@@ -17,6 +18,9 @@ public class AMovementBehaviour : UnitBehaviourBase
     protected GameObject _currentTarget = null;
     protected Vector3 _movePoint;
 
+    protected bool _damageReceivedFlag = false;
+    protected float _damageReceivedAgressionTimer = 0f;
+
     public void Awake()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
@@ -32,6 +36,20 @@ public class AMovementBehaviour : UnitBehaviourBase
         {
             _attackBehaviour = gameObject.GetComponent<MeleeAttackingBehaviour>();
         }
+
+        _unitEventManager.CalledToAttack += OnCalledToAttackHandler;
+    }
+
+    public void OnCalledToAttackHandler(CalledToAttackEventArgs args)
+    {
+        if (IsActive && !_triggeredOnEnemy)
+        {
+            _triggeredOnEnemy = true;
+            _damageReceivedFlag = true;
+            _damageReceivedAgressionTimer = Constants.DamageReceivedAgressionTime;
+            _currentTarget = args.Target;
+            IfTargetFoundThen(args.Target);
+        }
     }
 
     public override void StartAction(EventArgs args)
@@ -44,13 +62,30 @@ public class AMovementBehaviour : UnitBehaviourBase
         _triggeredOnEnemy = false;
         _currentTarget = null;
     }
+
     protected override void UpdateAction()
     {
-        FindNearestTargetAndAct();
+        if (!_damageReceivedFlag)
+        {
+            FindNearestTargetAndAct();
+        }
 
         if (!_triggeredOnEnemy)
         {
             IfNoTargetUpdate();
+        }
+    }
+
+    protected override void PostUpdate()
+    {
+        base.PostUpdate();
+        if (_damageReceivedFlag)
+        {
+            _damageReceivedAgressionTimer -= Time.deltaTime;
+            if (_damageReceivedAgressionTimer <= 0)
+            {
+                _damageReceivedFlag = false;
+            }
         }
     }
 

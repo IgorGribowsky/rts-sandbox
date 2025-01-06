@@ -119,7 +119,7 @@ public class UnitsController : MonoBehaviour
 
         var targetTeamId = target.GetComponent<TeamMember>().TeamId;
         var allyTeamIds = _teamController.GetAllyTeams(playerTeamId);
-        if (playerTeamId == targetTeamId || allyTeamIds.Contains(targetTeamId))
+        if (allyTeamIds.Contains(targetTeamId))
         {
             foreach (var unit in SelectedUnits)
             {

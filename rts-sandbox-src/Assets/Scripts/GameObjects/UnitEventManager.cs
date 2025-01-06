@@ -137,4 +137,10 @@ public class UnitEventManager : MonoBehaviour
     {
         HoldActionStarted?.Invoke(new HoldActionStartedEventArgs());
     }
+
+    public event CalledToAttackHandler CalledToAttack;
+    public void OnCalledToAttack(GameObject caller, GameObject target)
+    {
+        CalledToAttack?.Invoke(new CalledToAttackEventArgs(caller, target));
+    }
 }

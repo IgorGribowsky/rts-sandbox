@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: -7151313057212292012}
   - component: {fileID: 912157603705236216}
   - component: {fileID: 6873323525821280569}
+  - component: {fileID: 2144446756044836221}
   m_Layer: 7
   m_Name: Giant Unit
   m_TagString: Unit
@@ -468,3 +469,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectionCirclePrefab: {fileID: 5399826479641655892, guid: c049b7d0ae1aa874293df8fa5cbd8bd3, type: 3}
   IsSelected: 0
+--- !u!114 &2144446756044836221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c530658d92b91a74bbf5be39f02573d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
