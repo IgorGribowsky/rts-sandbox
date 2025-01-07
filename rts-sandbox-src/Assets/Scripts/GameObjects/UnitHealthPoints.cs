@@ -6,7 +6,7 @@ public class UnitHealthPoints : MonoBehaviour
 {
     private UnitValues _unitValues;
     private UnitEventManager _unitEventManager;
-    private UnitController _playerUnitController;
+    private UnitsController _playerUnitController;
 
     public void Update()
     {
@@ -18,7 +18,7 @@ public class UnitHealthPoints : MonoBehaviour
         _unitEventManager = GetComponent<UnitEventManager>();
 
         _unitEventManager.DamageReceived += DamageReceivedHandler;
-        _playerUnitController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitController>();
+        _playerUnitController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitsController>();
     }
 
     protected void DamageReceivedHandler(DamageReceivedEventArgs args)

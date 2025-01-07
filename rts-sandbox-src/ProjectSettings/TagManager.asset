@@ -8,6 +8,9 @@ TagManager:
   - HasTag
   - HPBar
   - PlayerController
+  - Unit
+  - BarCanvas
+  - ActiveBar
   layers:
   - Default
   - TransparentFX

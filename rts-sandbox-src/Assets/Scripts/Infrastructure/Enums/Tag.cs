@@ -2,7 +2,8 @@
 {
     public enum Tag
     {
-        HPBar,
         PlayerController,
+        BarCanvas,
+        ActiveBar,
     }
 }
