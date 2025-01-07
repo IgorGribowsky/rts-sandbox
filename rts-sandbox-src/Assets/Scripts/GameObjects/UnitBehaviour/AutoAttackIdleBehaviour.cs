@@ -2,14 +2,27 @@ using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using UnityEngine;
 
-public class AutoAttackIdleBehaviour : AMovementBehaviour
+public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
 {
-    protected bool _damageReceivedFlag = false;
-    protected float _damageReceivedAgressionTimer = 0f;
-    protected bool _returningBackFlag = false;
+    private bool _damageReceivedFlag = false;
+    private float _damageReceivedAgressionTimer = 0f;
+    private bool _returningBackFlag = false;
+
     protected override void AdditionalAwake()
     {
         _unitEventManager.CalledToAttack += OnCalledToAttackHandler;
+    }
+
+    private void OnCalledToAttackHandler(CalledToAttackEventArgs args)
+    {
+        if (IsActive && !_triggeredOnEnemy && !_returningBackFlag)
+        {
+            _triggeredOnEnemy = true;
+            _damageReceivedFlag = true;
+            _damageReceivedAgressionTimer = Constants.DamageReceivedAgressionTime;
+            _currentTarget = args.Target;
+            IfTargetFoundThen(args.Target);
+        }
     }
 
     protected override void UpdateAction()
@@ -29,23 +42,12 @@ public class AutoAttackIdleBehaviour : AMovementBehaviour
         }
     }
 
-    private void OnCalledToAttackHandler(CalledToAttackEventArgs args)
-    {
-        if (IsActive && !_triggeredOnEnemy && !_returningBackFlag)
-        {
-            _triggeredOnEnemy = true;
-            _damageReceivedFlag = true;
-            _damageReceivedAgressionTimer = Constants.DamageReceivedAgressionTime;
-            _currentTarget = args.Target;
-            IfTargetFoundThen(args.Target);
-        }
-    }
-
     protected override void IfNoTargetUpdate()
     {
         var differenceVector = _movePoint - transform.position;
         var destinationDifVector = _navmeshMovement.Destination - _movePoint;
         differenceVector.y = 0;
+
         if (differenceVector.magnitude <= _navmeshMovement.StoppingDistance)
         {
             _returningBackFlag = false;
@@ -57,7 +59,7 @@ public class AutoAttackIdleBehaviour : AMovementBehaviour
         }
     }
 
-    protected virtual void IfTargetExistsUpdate()
+    protected override void IfTargetExistsUpdate()
     {
         var distanceToPath = (gameObject.transform.position - _movePoint).magnitude;
 
@@ -70,6 +72,7 @@ public class AutoAttackIdleBehaviour : AMovementBehaviour
             _navmeshMovement.Go(_movePoint);
         }
     }
+
     protected override void PostUpdate()
     {
         base.PostUpdate();
