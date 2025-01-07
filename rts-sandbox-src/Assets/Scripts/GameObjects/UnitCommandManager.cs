@@ -23,12 +23,21 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.AttackCommandReceived += StartAttackCommand;
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
             _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
+            _unitEventManager.HoldCommandReceived += StartHoldCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
             _unitEventManager.FollowActionEnded += RunNextCommand;
             _unitEventManager.AMoveActionEnded += RunNextCommand;
 
+        }
+
+        private void Start()
+        {
+            if (CurrentRunningCommand == null)
+            {
+                SetIdleState();
+            }
         }
 
         protected void StartMoveCommand(MoveCommandReceivedEventArgs args)
@@ -59,6 +68,13 @@ namespace Assets.Scripts.GameObjects
             StartCommand(moveCommand, args.AddToCommandsQueue);
         }
 
+        protected void StartHoldCommand(HoldCommandReceivedEventArgs args)
+        {
+            var holdCommand = new HoldCommand(_unitEventManager, args);
+
+            StartCommand(holdCommand, args.AddToCommandsQueue);
+        }
+
         protected void RunNextCommand(EventArgs args)
         {
             if (CommandsQueue.Count > 0)
@@ -77,10 +93,16 @@ namespace Assets.Scripts.GameObjects
             }
             else
             {
-                CurrentRunningCommand = null;
-                CurrentRunningCommandInfo = "";
+                SetIdleState();
             }
 
+        }
+
+        private void SetIdleState()
+        {
+            CurrentRunningCommand = null;
+            CurrentRunningCommandInfo = "Idle";
+            _unitEventManager.OnAutoAttackIdleStarted(gameObject.transform.position);
         }
 
         private void StartCommand(ICommand command , bool addToCommandsQueue)
@@ -203,6 +225,28 @@ namespace Assets.Scripts.GameObjects
             }
         }
 
+        private class HoldCommand : ICommand
+        {
+            public HoldCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public HoldCommand(UnitEventManager unitEventManager, HoldCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return true;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnHoldActionStarted();
+            }
+        }
         #endregion
     }
 }

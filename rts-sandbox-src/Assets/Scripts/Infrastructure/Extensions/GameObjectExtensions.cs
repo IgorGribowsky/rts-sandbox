@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -32,22 +34,30 @@ namespace Assets.Scripts.Infrastructure.Helpers
         {
             GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
             GameObject closestUnit = null;
-            float closestDistanceSqr = radius * radius; // Используем квадрат расстояния для оптимизации
+            float closestDistance = radius;
 
             foreach (GameObject unit in units)
             {
                 // Если фильтр задан и объект не проходит проверку, пропускаем его
                 if (filter != null && !filter(unit)) continue;
 
-                float distanceSqr = (unit.transform.position - gameObject.transform.position).sqrMagnitude;
-                if (distanceSqr < closestDistanceSqr)
+                float distance = gameObject.GetDistanceTo(unit);
+                if (distance < closestDistance)
                 {
                     closestUnit = unit;
-                    closestDistanceSqr = distanceSqr;
+                    closestDistance = distance;
                 }
             }
 
             return closestUnit;
+        }
+
+
+        public static IEnumerable<GameObject> GetAllUnitsInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
+        {
+            GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+
+            return units.Where(u => gameObject.GetDistanceTo(u) <= radius && filter(u));
         }
     }
 }

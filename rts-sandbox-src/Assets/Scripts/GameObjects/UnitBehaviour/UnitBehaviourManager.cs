@@ -14,6 +14,8 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private MeleeAttackingBehaviour _meleeAttackingBehaviour;
         private RangeAttackingBehaviour _rangeAttackingBehaviour;
         private AMovementBehaviour _aMovementBehaviour;
+        private AutoAttackIdleBehaviour _autoAttackIdleBehaviour;
+        private HoldingBehaviour _holdingBehaviour;
 
         public void Awake()
         {
@@ -53,6 +55,20 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_aMovementBehaviour);
                 _unitEventManager.AMoveActionStarted += StartAMovementBehaviour;
             }
+
+            _autoAttackIdleBehaviour = GetComponent<AutoAttackIdleBehaviour>();
+            if (_autoAttackIdleBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_autoAttackIdleBehaviour);
+                _unitEventManager.AutoAttackIdleStarted += StartAutoAttackIdle;
+            }
+
+            _holdingBehaviour = GetComponent<HoldingBehaviour>();
+            if (_holdingBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_holdingBehaviour);
+                _unitEventManager.HoldActionStarted += StartHoldingBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -88,6 +104,20 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
             _aMovementBehaviour.StartAction(args);
             _aMovementBehaviour.IsActive = true;
+        }
+
+        private void StartAutoAttackIdle(AutoAttackIdleStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
+            _autoAttackIdleBehaviour.IsActive = true;
+        }
+
+        private void StartHoldingBehaviour(HoldActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _holdingBehaviour.StartAction(args);
+            _holdingBehaviour.IsActive = true;
         }
     }
 }

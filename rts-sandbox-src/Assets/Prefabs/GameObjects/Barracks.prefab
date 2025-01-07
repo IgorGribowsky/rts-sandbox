@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 8426545505943846829}
   - component: {fileID: 4974350568571274532}
   - component: {fileID: 6893535302923272858}
+  - component: {fileID: 7508157542393942931}
   - component: {fileID: 2872808776988141734}
   - component: {fileID: 3255383013342161207}
   - component: {fileID: 265988409696462404}
@@ -302,6 +303,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamId: 1
+--- !u!114 &7508157542393942931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084684201828076527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c530658d92b91a74bbf5be39f02573d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2872808776988141734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,6 +334,7 @@ MonoBehaviour:
   Rang: 100
   ProducingTime: 40
   Damage: 0
+  AutoAttackDistance: 8
   AttackRate: 1
   AttackDurationPercent: 0.5
   DamageType: 0

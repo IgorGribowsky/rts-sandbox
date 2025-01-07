@@ -74,6 +74,12 @@ public class UnitEventManager : MonoBehaviour
         AMoveActionEnded?.Invoke(new EventArgs());
     }
 
+    public event AutoAttackIdleStartedHandler AutoAttackIdleStarted;
+    public void OnAutoAttackIdleStarted(Vector3 movePoint)
+    {
+        AutoAttackIdleStarted?.Invoke(new AutoAttackIdleStartedEventArgs(movePoint));
+    }
+
     public event AttackCommandReceivedHandler AttackCommandReceived;
     public void OnAttackCommandReceived(GameObject target, bool addToCommandsQueue = false)
     {
@@ -118,5 +124,23 @@ public class UnitEventManager : MonoBehaviour
     public void OnProduceCommandReceived(int unitId)
     {
         ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unitId));
+    }
+
+    public event HoldCommandReceivedHandler HoldCommandReceived;
+    public void OnHoldCommandReceived(bool addToCommandsQueue = false)
+    {
+        HoldCommandReceived?.Invoke(new HoldCommandReceivedEventArgs(addToCommandsQueue));
+    }
+
+    public event HoldActionStartedHandler HoldActionStarted;
+    public void OnHoldActionStarted()
+    {
+        HoldActionStarted?.Invoke(new HoldActionStartedEventArgs());
+    }
+
+    public event CalledToAttackHandler CalledToAttack;
+    public void OnCalledToAttack(GameObject caller, GameObject target)
+    {
+        CalledToAttack?.Invoke(new CalledToAttackEventArgs(caller, target));
     }
 }

@@ -14,7 +14,6 @@ public class TeamController : MonoBehaviour
         return Alliances
             .Where(a => a.TeamIds.Contains(targetTeamId))
             .SelectMany(a => a.TeamIds)
-            .Where(id => id != targetTeamId)
             .Distinct()
             .ToList();
     }
@@ -24,7 +23,7 @@ public class TeamController : MonoBehaviour
         var allyTeams = GetAllyTeams(targetTeamId);
 
         return Teams
-            .Where(t => !allyTeams.Contains(t.Id) && t.Id != targetTeamId)
+            .Where(t => !allyTeams.Contains(t.Id))
             .Select(t => t.Id)
             .ToList();
     }
