@@ -9,5 +9,7 @@
         public const float DamageReceivedAgressionDistance = 30f;
 
         public const float DamageReceivedCallToAttackDistance = 12f;
+
+        public const float PersecutionDistance = 50f;
     }
 }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Extensions;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,8 +26,11 @@ public class NavMeshMovement : MonoBehaviour
 
     public void Go(Vector3 destination)
     {
-        _navmeshAgent.avoidancePriority = 90;
-        _navmeshAgent.destination = destination;
+        if (!_navmeshAgent.destination.IsEqual(destination))
+        {
+            _navmeshAgent.avoidancePriority = 90;
+            _navmeshAgent.destination = destination;
+        }
     }
 
     public void Stop()

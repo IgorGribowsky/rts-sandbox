@@ -18,8 +18,6 @@ public class AMovementBehaviour : UnitBehaviourBase
     protected GameObject _currentTarget = null;
     protected Vector3 _movePoint;
 
-    protected bool _damageReceivedFlag = false;
-    protected float _damageReceivedAgressionTimer = 0f;
 
     public void Awake()
     {
@@ -37,55 +35,36 @@ public class AMovementBehaviour : UnitBehaviourBase
             _attackBehaviour = gameObject.GetComponent<MeleeAttackingBehaviour>();
         }
 
-        _unitEventManager.CalledToAttack += OnCalledToAttackHandler;
-    }
-
-    public void OnCalledToAttackHandler(CalledToAttackEventArgs args)
-    {
-        if (IsActive && !_triggeredOnEnemy)
-        {
-            _triggeredOnEnemy = true;
-            _damageReceivedFlag = true;
-            _damageReceivedAgressionTimer = Constants.DamageReceivedAgressionTime;
-            _currentTarget = args.Target;
-            IfTargetFoundThen(args.Target);
-        }
+        AdditionalAwake();
     }
 
     public override void StartAction(EventArgs args)
     {
         var actionArgs = args as MoveActionStartedEventArgs;
 
-        _movePoint = actionArgs.MovePoint;
+         _movePoint = actionArgs.MovePoint;
         _navmeshMovement.Go(_movePoint);
 
         _triggeredOnEnemy = false;
         _currentTarget = null;
     }
 
+    protected virtual void AdditionalAwake()
+    {
+    
+    }
+
     protected override void UpdateAction()
     {
-        if (!_damageReceivedFlag)
-        {
-            FindNearestTargetAndAct();
-        }
+        FindNearestTargetAndAct();
 
         if (!_triggeredOnEnemy)
         {
             IfNoTargetUpdate();
         }
-    }
-
-    protected override void PostUpdate()
-    {
-        base.PostUpdate();
-        if (_damageReceivedFlag)
+        else
         {
-            _damageReceivedAgressionTimer -= Time.deltaTime;
-            if (_damageReceivedAgressionTimer <= 0)
-            {
-                _damageReceivedFlag = false;
-            }
+            IfTargetExistsUpdate();
         }
     }
 
@@ -107,6 +86,11 @@ public class AMovementBehaviour : UnitBehaviourBase
         {
             _navmeshMovement.Go(_movePoint);
         }
+    }
+
+    protected virtual void IfTargetExistsUpdate()
+    {
+
     }
 
     protected virtual void FindNearestTargetAndAct()
