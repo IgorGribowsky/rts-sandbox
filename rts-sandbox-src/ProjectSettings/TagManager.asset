@@ -11,6 +11,8 @@ TagManager:
   - Unit
   - BarCanvas
   - ActiveBar
+  - GridSegment
+  - Obstacle
   layers:
   - Default
   - TransparentFX

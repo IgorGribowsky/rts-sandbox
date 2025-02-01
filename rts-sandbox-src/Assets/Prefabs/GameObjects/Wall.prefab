@@ -115,18 +115,16 @@ GameObject:
   - component: {fileID: 9008166071833172399}
   - component: {fileID: 5049873774829392540}
   - component: {fileID: 5863459934438334111}
-  - component: {fileID: 189994891486612969}
   - component: {fileID: 8426545505943846829}
   - component: {fileID: 4974350568571274532}
   - component: {fileID: 6893535302923272858}
   - component: {fileID: 7508157542393942931}
   - component: {fileID: 2872808776988141734}
   - component: {fileID: -8631206707906823155}
-  - component: {fileID: 3255383013342161207}
   - component: {fileID: 265988409696462404}
   - component: {fileID: 7256198629977255813}
   m_Layer: 7
-  m_Name: Barracks
+  m_Name: Wall
   m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,7 +140,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 3, y: 2, z: 3}
+  m_LocalScale: {x: 1.8, y: 2, z: 1.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7179331422999373396}
@@ -249,22 +247,6 @@ MonoBehaviour:
   Bar: {fileID: 0}
   BarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
   Priority: 10
---- !u!114 &189994891486612969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9084684201828076527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc1b4fedc45fc014bb6bc2dea8229e26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Unit: {fileID: 0}
-  Bar: {fileID: 0}
-  BarTemplate: {fileID: 5133334966052544803, guid: 8bd2116edcc282140b5444ce93627637, type: 3}
-  Priority: 5
 --- !u!114 &8426545505943846829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c1ed2dbc949a5749983cd2c78fbaac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: 06d060c5327502c498acc5f8e15a22b8, type: 3}
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: f80fb8f424bde724f919b9c15f410318, type: 3}
   IsSelected: 0
 --- !u!114 &4974350568571274532
 MonoBehaviour:
@@ -329,11 +311,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 4
-  CurrentHp: 500
-  MaximumHp: 500
+  CurrentHp: 1000
+  MaximumHp: 1000
   MovementSpeed: 0
   Rang: 100
-  ProducingTime: 40
+  ProducingTime: 1
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 1
@@ -345,12 +327,9 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
-  CanProduceUnits: 1
+  CanProduceUnits: 0
   IsBuilding: 1
-  UnitsToProduce:
-  - {fileID: 7849110260153872687, guid: ed8daf302b0b72a499b993230da995be, type: 3}
-  - {fileID: 7849110260153872687, guid: 1dbac9f1602e01f47a8bb926fa987f76, type: 3}
-  - {fileID: 7849110260153872687, guid: 5898d9bf36c51bb43ad91a459a5a2b6a, type: 3}
+  UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
 --- !u!114 &-8631206707906823155
@@ -365,20 +344,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56e7391706587234abc4447c6f197de7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridSize: 4
-  ObstacleSize: 4
---- !u!114 &3255383013342161207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9084684201828076527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecf0abe57fafdda4cb71b331b813ccd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  GridSize: 2
+  ObstacleSize: 2
 --- !u!114 &265988409696462404
 MonoBehaviour:
   m_ObjectHideFlags: 0

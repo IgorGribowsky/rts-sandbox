@@ -20,14 +20,14 @@ public class CallingToAttackWhenAttacked : MonoBehaviour
 
     public void OnDamageReceivedHandler(DamageReceivedEventArgs args)
     {
-        if (gameObject.GetDistanceTo(args.Attacker) > Constants.DamageReceivedAgressionDistance)
+        if (gameObject.GetDistanceTo(args.Attacker) > GameConstants.DamageReceivedAgressionDistance)
         {
             return;
         }
 
         var allyTeamIds = _teamController.GetAllyTeams(_teamMember.TeamId);
 
-        var unitsToCall = gameObject.GetAllUnitsInRadius(Constants.DamageReceivedCallToAttackDistance, unit =>
+        var unitsToCall = gameObject.GetAllUnitsInRadius(GameConstants.DamageReceivedCallToAttackDistance, unit =>
         {
             var teamMember = unit.GetComponent<TeamMember>();
             return teamMember != null && allyTeamIds.Contains(teamMember.TeamId);

@@ -16,6 +16,7 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private AMovementBehaviour _aMovementBehaviour;
         private AutoAttackIdleBehaviour _autoAttackIdleBehaviour;
         private HoldingBehaviour _holdingBehaviour;
+        private BuildingBehaviour _buildingBehaviour;
 
         public void Awake()
         {
@@ -69,6 +70,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_holdingBehaviour);
                 _unitEventManager.HoldActionStarted += StartHoldingBehaviour;
             }
+
+            _buildingBehaviour = GetComponent<BuildingBehaviour>();
+            if (_buildingBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_buildingBehaviour);
+                _unitEventManager.BuildActionStarted += StartBuildingBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -118,6 +126,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
             _holdingBehaviour.StartAction(args);
             _holdingBehaviour.IsActive = true;
+        }
+
+        private void StartBuildingBehaviour(BuildActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _buildingBehaviour.StartAction(args);
+            _buildingBehaviour.IsActive = true;
         }
     }
 }

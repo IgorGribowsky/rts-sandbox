@@ -5,5 +5,7 @@
         PlayerController,
         BarCanvas,
         ActiveBar,
+        GridSegment,
+        Unit,
     }
 }
