@@ -1,13 +1,16 @@
 using Assets.Scripts.Infrastructure.Constants;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Building : MonoBehaviour
 {
     public bool BuildingIsInProgress { get; set; }
 
     private UnitValues _unitValues;
+    private BuildingValues _buildingValues;
     private UnitEventManager _unitEventManager;
-    
+    private NavMeshObstacle _navmeshObstacle;
+
     private float timeToBuild;
     private float hpToBuild;
     private float hpDelta;
@@ -16,12 +19,16 @@ public class Building : MonoBehaviour
     public void Awake()
     {
         _unitValues = GetComponent<UnitValues>();
+        _buildingValues = GetComponent<BuildingValues>();
         _unitEventManager = GetComponent<UnitEventManager>();
+        _navmeshObstacle = GetComponent<NavMeshObstacle>();
     }
 
     public void Start()
     {
-
+        var navmeshXSize = _buildingValues.ObstacleSize / transform.lossyScale.x;
+        var navmeshZSize = _buildingValues.ObstacleSize / transform.lossyScale.z;
+        _navmeshObstacle.size = new Vector3(navmeshXSize, 1f, navmeshZSize);
     }
 
     public void Build()
