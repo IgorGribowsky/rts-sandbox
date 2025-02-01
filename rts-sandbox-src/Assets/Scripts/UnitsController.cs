@@ -4,6 +4,7 @@ using Assets.Scripts.Infrastructure.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.ObjectChangeEventStream;
 
 public class UnitsController : MonoBehaviour
 {
@@ -241,6 +242,12 @@ public class UnitsController : MonoBehaviour
 
         foreach (var producingUnit in similarProducingUnits)
         {
+            var buildingScript = producingUnit.GetComponent<Building>();
+            if (buildingScript.BuildingIsInProgress)
+            {
+                continue;
+            }
+
             producingUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitId);
         }
     }

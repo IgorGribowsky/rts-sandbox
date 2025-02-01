@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
+    public bool BuildingIsInProgress { get; set; }
+
     private UnitValues _unitValues;
     private UnitEventManager _unitEventManager;
     
@@ -10,7 +12,6 @@ public class Building : MonoBehaviour
     private float hpToBuild;
     private float hpDelta;
     private float currentTimer;
-    private bool buildingIsInProgress;
 
     public void Awake()
     {
@@ -35,12 +36,12 @@ public class Building : MonoBehaviour
 
         currentTimer = 0f;
 
-        buildingIsInProgress = true;
+        BuildingIsInProgress = true;
     }
 
     public void Update()
     {
-        if (buildingIsInProgress)
+        if (BuildingIsInProgress)
         {
             if (currentTimer < timeToBuild)
             {
@@ -50,7 +51,7 @@ public class Building : MonoBehaviour
             else
             {
                 _unitValues.CurrentHp = Mathf.Round(_unitValues.CurrentHp);
-                buildingIsInProgress = false;
+                BuildingIsInProgress = false;
             }
 
             _unitEventManager.OnHealthPointsChanged(_unitValues.CurrentHp);
