@@ -24,11 +24,13 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
             _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
             _unitEventManager.HoldCommandReceived += StartHoldCommand;
+            _unitEventManager.BuildCommandReceived += StartBuildCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
             _unitEventManager.FollowActionEnded += RunNextCommand;
             _unitEventManager.AMoveActionEnded += RunNextCommand;
+            _unitEventManager.BuildActionEnded += RunNextCommand;
 
         }
 
@@ -73,6 +75,13 @@ namespace Assets.Scripts.GameObjects
             var holdCommand = new HoldCommand(_unitEventManager, args);
 
             StartCommand(holdCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartBuildCommand(BuildCommandReceivedEventArgs args)
+        {
+            var buildCommand = new BuildCommand(_unitEventManager, args);
+
+            StartCommand(buildCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
@@ -222,6 +231,29 @@ namespace Assets.Scripts.GameObjects
             public void Start()
             {
                 _unitEventManager.OnAMoveActionStarted(args.MovePoint);
+            }
+        }
+
+        private class BuildCommand : ICommand
+        {
+            public BuildCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public BuildCommand(UnitEventManager unitEventManager, BuildCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return args.Point != null && args.Building != null;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnBuildActionStarted(args.Point, args.Building);
             }
         }
 

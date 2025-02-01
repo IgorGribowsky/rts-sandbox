@@ -5,5 +5,8 @@
         PlayerController,
         BarCanvas,
         ActiveBar,
+        GridSegment,
+        Unit,
+        Obstacle,
     }
 }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Extensions;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class TestScenarios : MonoBehaviour
         _teamController = GameObject.FindGameObjectWithTag("GameController")
             .GetComponent<TeamController>();
 
-        _playerTeamId = GameObject.FindGameObjectWithTag("PlayerController")
+        _playerTeamId = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerTeamMember>().TeamId;
     }
 

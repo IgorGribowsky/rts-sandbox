@@ -2,7 +2,6 @@ using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class UnitEventManager : MonoBehaviour
 {
@@ -10,8 +9,6 @@ public class UnitEventManager : MonoBehaviour
 
     public void OnDamageReceived(GameObject attacker, float damageAmount, DamageType damageType)
     {
-        Debug.Log($"{gameObject} received {damageAmount} damage of {damageType} type from {attacker}");
-
         DamageReceived?.Invoke(new DamageReceivedEventArgs(attacker, damageAmount, damageType));
     }
 
@@ -19,15 +16,6 @@ public class UnitEventManager : MonoBehaviour
 
     public void OnUnitDied(GameObject killer, GameObject dead)
     {
-        if (killer == null)
-        {
-            Debug.Log($"{gameObject} died");
-        }
-        else
-        {
-            Debug.Log($"{gameObject} killed by {killer}");
-        }
-
         UnitDied?.Invoke(new DiedEventArgs(killer, dead));
     }
 
@@ -89,8 +77,6 @@ public class UnitEventManager : MonoBehaviour
     public event AttackActionStartedHandler AttackActionStarted;
     public void OnAttackActionStarted(GameObject target)
     {
-        Debug.Log($"{gameObject} is attacking {target}");
-
         AttackActionStarted?.Invoke(new AttackActionStartedEventArgs(target));
     }
 
@@ -109,8 +95,6 @@ public class UnitEventManager : MonoBehaviour
     public event FollowActionStartedHandler FollowActionStarted;
     public void OnFollowActionStarted(GameObject target)
     {
-        Debug.Log($"{gameObject} is following {target}");
-
         FollowActionStarted?.Invoke(new FollowActionStartedEventArgs(target));
     }
 
@@ -118,6 +102,24 @@ public class UnitEventManager : MonoBehaviour
     public void OnFollowActionEnded()
     {
         FollowActionEnded?.Invoke(new EventArgs());
+    }
+
+    public event BuildCommandReceivedHandler BuildCommandReceived;
+    public void OnBuildCommandReceived(Vector3 point, GameObject building, bool addToCommandsQueue = false)
+    {
+        BuildCommandReceived?.Invoke(new BuildCommandReceivedEventArgs(point, building, addToCommandsQueue));
+    }
+
+    public event BuildActionStartedHandler BuildActionStarted;
+    public void OnBuildActionStarted(Vector3 point, GameObject building)
+    {
+        BuildActionStarted?.Invoke(new BuildActionStartedEventArgs(point, building));
+    }
+
+    public event BuildActionEndedHandler BuildActionEnded;
+    public void OnBuildActionEnded()
+    {
+        BuildActionEnded?.Invoke(new EventArgs());
     }
 
     public event ProduceCommandReceivedHandler ProduceCommandReceived;

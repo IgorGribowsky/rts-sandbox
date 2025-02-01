@@ -1,9 +1,8 @@
 using Assets.Scripts.Infrastructure.Events;
+using Assets.Scripts.Infrastructure.Extensions;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -17,6 +16,8 @@ public class UnitsController : MonoBehaviour
     private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
     private TeamController _teamController;
     private GameController _gameController;
+    private BuildingController _buildingController;
+    private BuildingGridController _buildingGridController;
 
     private int playerTeamId;
 
@@ -35,11 +36,70 @@ public class UnitsController : MonoBehaviour
         var gameController = GameObject.FindGameObjectWithTag("GameController");
         _teamController = gameController.GetComponent<TeamController>();
         _gameController = gameController.GetComponent<GameController>();
+        _buildingController = GetComponent<BuildingController>();
+        _buildingGridController = GetComponent<BuildingGridController>();
         SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
     private void Update()
     {
+    }
+
+    public void Build(Vector3 point, bool addToCommandsQueue = false)
+    {
+        if (CheckBuilderSelected(out var firstUnitBuilder))
+        {
+            var buildingSize = _buildingController.Building.GetComponent<BuildingValues>().GridSize;
+            Vector3 resultPoint = point.GetGridPoint(buildingSize);
+
+            if (addToCommandsQueue)
+            {
+                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+            }
+            else
+            {
+                var unitId = firstUnitBuilder.GetComponent<UnitValues>().Id;
+                var allBuilders = SelectedUnits.Where(x => x.GetComponent<UnitValues>().Id == unitId);
+                GameObject unitToBuild = null;
+                foreach (var builder in allBuilders)
+                {
+                    var isNotActive = !builder.GetComponent<BuildingBehaviour>()?.IsActive;
+                    var isReady = isNotActive ?? false;
+                    if (isReady)
+                    {
+                        unitToBuild = builder;
+                        break;
+                    }
+                }
+
+                if (unitToBuild == null)
+                {
+                    unitToBuild = firstUnitBuilder;
+                }
+
+                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild))
+                {
+                    Debug.Log("Can't build here!");
+                    return;
+                }
+
+                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+                _buildingController.DisableBuildingMod();
+            }
+        }
+    }
+
+
+    public bool CheckBuilderSelected()
+    {
+        return SelectedUnits.FirstOrDefault()?.GetComponent<UnitValues>()?.IsBuilder ?? false;
+    }
+
+    public bool CheckBuilderSelected(out GameObject builder)
+    {
+        builder = SelectedUnits.FirstOrDefault();
+        var response = builder?.GetComponent<UnitValues>()?.IsBuilder ?? false;
+        return response;
     }
 
     public void OnHoldKeyDown(bool addToCommandsQueue = false)
@@ -52,10 +112,10 @@ public class UnitsController : MonoBehaviour
 
     public void OnGroundRightClick(Vector3 point, bool addToCommandsQueue = false)
     {
-        //if (SelectedUnitsTeamId != playerTeamId)
-        //{
-        //    return;
-        //}
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
 
         point.y = 0.5f;
 
@@ -99,6 +159,11 @@ public class UnitsController : MonoBehaviour
 
         foreach (var unit in SelectedUnits)
         {
+            if (target == unit)
+            {
+                continue;
+            }
+
             unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
         }
     }
@@ -123,6 +188,12 @@ public class UnitsController : MonoBehaviour
         {
             foreach (var unit in SelectedUnits)
             {
+                if (target == unit)
+                {
+                    OnGroundRightClick(target.transform.position, addToCommandsQueue);
+                    continue;
+                }
+
                 unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target, addToCommandsQueue);
             }
         }
@@ -169,6 +240,12 @@ public class UnitsController : MonoBehaviour
 
         foreach (var producingUnit in similarProducingUnits)
         {
+            var buildingScript = producingUnit.GetComponent<Building>();
+            if (buildingScript.BuildingIsInProgress)
+            {
+                continue;
+            }
+
             producingUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitId);
         }
     }
@@ -185,6 +262,8 @@ public class UnitsController : MonoBehaviour
 
     public void EndSelection(Vector3 point, bool addToPrevoiusSelected)
     {
+        var firstUnit = SelectedUnits.FirstOrDefault();
+
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(false));
         var minx = Mathf.Min(StartSelectionPoint.x, point.x);
         var maxx = Mathf.Max(StartSelectionPoint.x, point.x);
@@ -239,6 +318,14 @@ public class UnitsController : MonoBehaviour
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
         CreateMovememtMask();
+
+        if (_buildingController.BuildingMenuMod)
+        {
+            if (firstUnit != SelectedUnits.FirstOrDefault())
+            {
+                _buildingController.DisableBuildingMenuMod();
+            }
+        }
     }
 
     private void CreateMovememtMask()

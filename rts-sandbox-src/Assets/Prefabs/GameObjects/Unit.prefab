@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 4867899262287332417}
   - component: {fileID: -8828656826048325992}
   - component: {fileID: -7551129065762226784}
+  - component: {fileID: 3464892157770458886}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 8363517768491279335}
   m_Layer: 7
@@ -197,7 +198,14 @@ MonoBehaviour:
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
   CanProduceUnits: 0
+  IsBuilding: 0
   UnitsToProduce: []
+  IsBuilder: 1
+  BuildingsToProduce:
+  - KeyCode: 98
+    Building: {fileID: 9084684201828076527, guid: c19deef7248a12a499233126e8a5cc7a, type: 3}
+  - KeyCode: 116
+    Building: {fileID: 9084684201828076527, guid: 0707842918ec84247b497bc518daad4d, type: 3}
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,6 +461,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3464892157770458886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a840fb1e7da0117408e4543f6b87d2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6873323525821280569

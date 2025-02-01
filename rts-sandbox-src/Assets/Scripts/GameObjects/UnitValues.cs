@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Enums;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,5 +42,19 @@ public class UnitValues : MonoBehaviour
 
     public bool CanProduceUnits = false;
 
+    public bool IsBuilding = false;
+
     public List<GameObject> UnitsToProduce = new List<GameObject>();
+
+    public bool IsBuilder = false;
+
+    public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
+}
+
+[Serializable]
+public class BuildingToProduce
+{
+    public KeyCode KeyCode;
+
+    public GameObject Building;
 }

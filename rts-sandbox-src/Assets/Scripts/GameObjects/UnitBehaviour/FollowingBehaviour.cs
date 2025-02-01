@@ -41,7 +41,7 @@ public class FollowingBehaviour : UnitBehaviourBase
         }
 
         var distanceToTarget = (transform.position - target.transform.position).magnitude;
-        if (distanceToTarget > Constants.FollowingDistance)
+        if (distanceToTarget > GameConstants.FollowingDistance)
         {
             _navmeshMovement.Go(target.transform.position);
         }
