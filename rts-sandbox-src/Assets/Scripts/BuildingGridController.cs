@@ -128,7 +128,7 @@ public class BuildingGridController : MonoBehaviour
 
         foreach (var collider in colliders)
         {
-            if (!collider.gameObject.isStatic)
+            if (!collider.CompareTag(Tag.Unit.ToString()))
             {
                 continue;
             }
@@ -208,7 +208,7 @@ public class BuildingGridController : MonoBehaviour
             {
                 var cellPosition = new Vector3(x + GameConstants.GridCellSize / 2, startGridPoint.y, z + GameConstants.GridCellSize / 2);
 
-                if (IsColliding(cellPosition, hit => hit.gameObject.isStatic && !hit.CompareTag(Tag.Unit.ToString())))
+                if (IsColliding(cellPosition, hit => hit.CompareTag(Tag.Obstacle.ToString())))
                 {
                     var gridSegment = Instantiate(GridSegment, cellPosition, Quaternion.identity);
                     var gridSegmentScript = gridSegment.GetComponent<GridSegment>();

@@ -7,5 +7,6 @@
         ActiveBar,
         GridSegment,
         Unit,
+        Obstacle,
     }
 }
