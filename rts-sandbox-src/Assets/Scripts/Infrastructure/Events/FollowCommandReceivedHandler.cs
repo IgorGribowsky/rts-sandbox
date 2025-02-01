@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Infrastructure.Events.Common;
-using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Events
