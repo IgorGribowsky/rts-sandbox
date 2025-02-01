@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: 6893535302923272858}
   - component: {fileID: 7508157542393942931}
   - component: {fileID: 2872808776988141734}
+  - component: {fileID: 6829857401807089985}
   - component: {fileID: -8631206707906823155}
   - component: {fileID: 265988409696462404}
   - component: {fileID: 7256198629977255813}
@@ -332,6 +333,18 @@ MonoBehaviour:
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
+--- !u!114 &6829857401807089985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084684201828076527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73bfd0b0cc0f4e545af4985808ea5037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-8631206707906823155
 MonoBehaviour:
   m_ObjectHideFlags: 0

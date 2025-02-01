@@ -10,5 +10,7 @@
 
         public const float GridCellSize = 1f;
         public const float GridCellNarrowing = 0.1f;
+
+        public const float BuildingHPStartPercent = 0.1f;
     }
 }

@@ -105,6 +105,8 @@ public class BuildingController : MonoBehaviour
 
         unit.GetComponent<TeamMember>().TeamId = teamId;
 
+        unit.GetComponent<Building>().Build();
+
         OnBuildingStarted(point, builder, unit);
     }
 }
