@@ -311,7 +311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4227cffc305532f4dbbc17dbed5dec39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 4
+  Id: 7
   CurrentHp: 1000
   MaximumHp: 1000
   MovementSpeed: 0
@@ -319,7 +319,7 @@ MonoBehaviour:
   ProducingTime: 1
   Damage: 0
   AutoAttackDistance: 8
-  AttackRate: 1
+  AttackRate: 0
   AttackDurationPercent: 0.5
   DamageType: 0
   AttackBreakDistance: 2

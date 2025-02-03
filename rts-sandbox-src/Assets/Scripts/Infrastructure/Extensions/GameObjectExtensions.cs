@@ -15,11 +15,23 @@ namespace Assets.Scripts.Infrastructure.Helpers
                 Bounds bounds1 = object1.GetComponent<Renderer>().bounds;
                 Bounds bounds2 = object2.GetComponent<Renderer>().bounds;
 
+                Vector3 adjustedCenter1 = bounds1.center;
+                Vector3 adjustedCenter2 = bounds2.center;
+                Vector3 adjustedExtents1 = bounds1.extents;
+                Vector3 adjustedExtents2 = bounds2.extents;
+                adjustedCenter1.y = 0;
+                adjustedCenter2.y = 0;
+                adjustedExtents1.y = 0;
+                adjustedExtents2.y = 0;
+
+                float extendsMagnitude1 = adjustedExtents1.magnitude / Mathf.Sqrt(2);
+                float extendsMagnitude2 = adjustedExtents2.magnitude / Mathf.Sqrt(2);
+
                 // Вычисляем расстояние между центрами объектов
-                float centerDistance = Vector3.Distance(bounds1.center, bounds2.center);
+                float centerDistance = Vector3.Distance(adjustedCenter1, adjustedCenter2);
 
                 // Вычисляем расстояние с учетом размеров объектов
-                float distance = centerDistance - (bounds1.extents.magnitude + bounds2.extents.magnitude);
+                float distance = centerDistance - (extendsMagnitude1 + extendsMagnitude2);
 
                 return distance;
             }

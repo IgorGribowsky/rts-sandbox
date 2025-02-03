@@ -51,7 +51,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
                 _unitEventManager.OnAttackActionEnded();
             }
             return;
-        }
+        } 
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
 
@@ -74,7 +74,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;
         }
-
         if (attackIsProcessing)
         {
             if (distanceToTarget < _unitValues.MeleeAttackDistance + _unitValues.AttackBreakDistance)

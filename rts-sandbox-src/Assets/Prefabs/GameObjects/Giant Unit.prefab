@@ -191,7 +191,7 @@ MonoBehaviour:
   AttackDurationPercent: 0.5
   DamageType: 0
   AttackBreakDistance: 3.4
-  MeleeAttackDistance: 0
+  MeleeAttackDistance: 0.1
   HasRangeAttack: 0
   RangeAttackDistance: 10
   ProjectileSpeed: 12
