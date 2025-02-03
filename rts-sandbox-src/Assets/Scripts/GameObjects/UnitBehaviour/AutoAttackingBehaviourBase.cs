@@ -39,7 +39,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
     public override void StartAction(EventArgs args)
     {
         var actionArgs = args as MoveActionStartedEventArgs;
-        if (actionArgs != null)
+        if (actionArgs != null && _navmeshMovement != null)
         {
             _movePoint = actionArgs.MovePoint;
             _navmeshMovement.Go(_movePoint);
@@ -96,6 +96,9 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
 
     protected virtual void IfTargetNotFoundThen()
     {
-        _navmeshMovement.Go(_movePoint);
+        if (_navmeshMovement != null)
+        {
+            _navmeshMovement.Go(_movePoint);
+        }
     }
 }

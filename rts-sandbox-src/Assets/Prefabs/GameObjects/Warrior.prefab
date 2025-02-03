@@ -120,19 +120,19 @@ GameObject:
   - component: {fileID: 6497452628036593396}
   - component: {fileID: 5886164444532057391}
   - component: {fileID: 4606719018469156263}
-  - component: {fileID: -1402505468938611163}
+  - component: {fileID: 4984237045111512419}
   - component: {fileID: 2033459207637562773}
-  - component: {fileID: -2101537987341820748}
-  - component: {fileID: -8586992162838238738}
-  - component: {fileID: 8528306610205741671}
-  - component: {fileID: 4654563010407232930}
-  - component: {fileID: 933093067559752482}
-  - component: {fileID: -7151313057212292012}
-  - component: {fileID: 912157603705236216}
+  - component: {fileID: 3486580126305913895}
+  - component: {fileID: -6879038389709202324}
+  - component: {fileID: -1946789511484751996}
+  - component: {fileID: -8353055866858728281}
+  - component: {fileID: 4867899262287332417}
+  - component: {fileID: 8833634646208351774}
+  - component: {fileID: -7551129065762226784}
   - component: {fileID: 6873323525821280569}
-  - component: {fileID: 2144446756044836221}
+  - component: {fileID: 8363517768491279335}
   m_Layer: 7
-  m_Name: Giant Unit
+  m_Name: Warrior
   m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148,7 +148,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 410201097351399592}
@@ -179,18 +179,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4227cffc305532f4dbbc17dbed5dec39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 3
-  CurrentHp: 400
-  MaximumHp: 400
+  Id: 1
+  CurrentHp: 140
+  MaximumHp: 140
   MovementSpeed: 5
-  Rang: 100
+  Rang: 50
   ProducingTime: 1
-  Damage: 26
+  Damage: 9
   AutoAttackDistance: 8
   AttackRate: 1.4
   AttackDurationPercent: 0.5
   DamageType: 0
-  AttackBreakDistance: 3.4
+  AttackBreakDistance: 2.2
   MeleeAttackDistance: 0
   HasRangeAttack: 0
   RangeAttackDistance: 10
@@ -340,7 +340,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-1402505468938611163
+--- !u!114 &4984237045111512419
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -360,7 +360,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7849110260153872687}
   m_Enabled: 1
-  m_AgentTypeID: -334000983
+  m_AgentTypeID: -1372625422
   m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 100
@@ -374,7 +374,7 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &-2101537987341820748
+--- !u!114 &3486580126305913895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -386,7 +386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-8586992162838238738
+--- !u!114 &-6879038389709202324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e307b420d49b3c840b7056fe3204a290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8528306610205741671
+--- !u!114 &-1946789511484751996
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e202f4a0614a1a24c822b15986cd8319, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4654563010407232930
+--- !u!114 &-8353055866858728281
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -422,7 +422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ab40a66ffb95ca46a74a021fb9ed1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &933093067559752482
+--- !u!114 &4867899262287332417
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -434,7 +434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-7151313057212292012
+--- !u!114 &8833634646208351774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &912157603705236216
+--- !u!114 &-7551129065762226784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,7 +472,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectionCirclePrefab: {fileID: 5399826479641655892, guid: c049b7d0ae1aa874293df8fa5cbd8bd3, type: 3}
   IsSelected: 0
---- !u!114 &2144446756044836221
+--- !u!114 &8363517768491279335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

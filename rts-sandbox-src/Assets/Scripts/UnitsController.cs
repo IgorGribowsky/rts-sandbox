@@ -240,12 +240,6 @@ public class UnitsController : MonoBehaviour
 
         foreach (var producingUnit in similarProducingUnits)
         {
-            var buildingScript = producingUnit.GetComponent<Building>();
-            if (buildingScript.BuildingIsInProgress)
-            {
-                continue;
-            }
-
             producingUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitId);
         }
     }
