@@ -49,7 +49,7 @@ namespace Assets.Scripts.Infrastructure.Helpers
             Vector3 buildingCenter = new Vector3(point.x, 0, point.z);
 
             // Вычисляем границы будущего здания (квадратного)
-            Bounds buildingBounds = new Bounds(buildingCenter, new Vector3(size / 2, 0, size / 2));
+            Bounds buildingBounds = new Bounds(buildingCenter, new Vector3(size, 0, size));
 
             // Проекция центра юнита на плоскость XZ
             Vector3 unitCenter = new Vector3(unitBounds.center.x, 0, unitBounds.center.z);
@@ -60,11 +60,39 @@ namespace Assets.Scripts.Infrastructure.Helpers
             // Определяем ближайшую точку на границе предполагаемого здания
             Vector3 buildingEdgePoint = buildingBounds.ClosestPoint(unitCenter);
 
+
+            Vector3[] corners = new Vector3[4];
+            corners[0] = buildingBounds.min; // Нижний левый угол (x, z)
+            corners[1] = new Vector3(buildingBounds.min.x, 0f, buildingBounds.max.z); // Нижний правый угол (x, z)
+            corners[2] = new Vector3(buildingBounds.max.x, 0f, buildingBounds.min.z); // Верхний левый угол (x, z)
+            corners[3] = buildingBounds.max; // Верхний правый угол (x, z)
+
+            // Проверка, находится ли точка на одном из углов
+            bool isAtCorner = corners.Any(corner => Mathf.Abs(corner.x - buildingEdgePoint.x) < Mathf.Epsilon && Mathf.Abs(corner.z - buildingEdgePoint.z) < Mathf.Epsilon);
+            if (!isAtCorner)
+            {
+                // Проверка, находится ли точка на верхней или нижней грани (по координатам x и z)
+                bool isOnTopOrBottom = Mathf.Abs(buildingEdgePoint.z - buildingBounds.min.z) < Mathf.Epsilon || Mathf.Abs(buildingEdgePoint.z - buildingBounds.max.z) < Mathf.Epsilon;
+                if (isOnTopOrBottom)
+                {
+                    direction.x = 0;
+                    Debug.Log("Точка находится на верхней или нижней грани.");
+                }
+
+                // Проверка, находится ли точка на левой или правой грани (по координатам x и z)
+                bool isOnLeftOrRight = Mathf.Abs(buildingEdgePoint.x - buildingBounds.min.x) < Mathf.Epsilon || Mathf.Abs(buildingEdgePoint.x - buildingBounds.max.x) < Mathf.Epsilon;
+                if (isOnLeftOrRight)
+                {
+                    direction.z = 0;
+                    Debug.Log("Точка находится на левой или правой грани.");
+                }
+            }
+
             // Сместить ближайшую точку на расстояние радиуса юнита
             float unitRadius = Mathf.Max(unitBounds.extents.x, unitBounds.extents.z);
             Vector3 adjustedPoint = buildingEdgePoint - direction * unitRadius;
 
-            // Возвращаем точку, куда юнит должен подойти
+            //Возвращаем точку, куда юнит должен подойти
             return adjustedPoint;
         }
 
