@@ -334,7 +334,7 @@ MonoBehaviour:
   MaximumHp: 500
   MovementSpeed: 0
   Rang: 100
-  ProducingTime: 40
+  ProducingTime: 30
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 1

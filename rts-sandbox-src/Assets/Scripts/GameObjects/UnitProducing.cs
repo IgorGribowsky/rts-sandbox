@@ -81,7 +81,8 @@ public class UnitProducing : MonoBehaviour
                 if (ProducingQueue.Any())
                 {
                     currentProducingUnit = ProducingQueue.Dequeue();
-                    currentProducingTimer = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
+                    productionTime = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
+                    currentProducingTimer = productionTime;
                 }
                 else
                 {

@@ -83,7 +83,7 @@ MonoBehaviour:
   MaximumHp: 100
   MovementSpeed: 5
   Rang: 75
-  ProducingTime: 1
+  ProducingTime: 12
   Damage: 7
   AutoAttackDistance: 12
   AttackRate: 1
@@ -96,7 +96,10 @@ MonoBehaviour:
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 8957964713747606781, guid: f91ff0591897655499ec98952904e511, type: 3}
   CanProduceUnits: 0
+  IsBuilding: 0
   UnitsToProduce: []
+  IsBuilder: 0
+  BuildingsToProduce: []
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
