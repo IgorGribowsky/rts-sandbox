@@ -11,9 +11,10 @@ public class BuildingBehaviour : UnitBehaviourBase
     private UnitEventManager _unitEventManager;
     private TeamMember _teamMember;
     private BuildingController _buildingController;
+    private BuildingGridController _buildingGridController;
 
     private BuildActionStartedEventArgs actionArgs;
-    private float _buildingSize = 0f;
+    private int _buildingSize = 0;
 
     public void Awake()
     {
@@ -22,6 +23,8 @@ public class BuildingBehaviour : UnitBehaviourBase
         _teamMember = GetComponent<TeamMember>();
         _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<BuildingController>();
+        _buildingGridController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<BuildingGridController>();
     }
 
     public override void StartAction(EventArgs args)
@@ -31,6 +34,20 @@ public class BuildingBehaviour : UnitBehaviourBase
         actionArgs = args as BuildActionStartedEventArgs;
 
         _buildingSize = actionArgs.Building.GetComponent<BuildingValues>().ObstacleSize;
+
+        if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject))
+        {
+            Debug.Log("Can't build here!");
+
+            IsActive = false;
+
+            if (TriggerEndEventFlag)
+            {
+                _unitEventManager.OnBuildActionEnded();
+            }
+
+            return;
+        }
 
         var point = gameObject.GetClosestPointToInteract(actionArgs.Point, _buildingSize);
 
@@ -51,7 +68,7 @@ public class BuildingBehaviour : UnitBehaviourBase
             IsActive = false;
             if (TriggerEndEventFlag)
             {
-                _unitEventManager.OnMoveActionEnded();
+                _unitEventManager.OnBuildActionEnded();
             }
         }
         else

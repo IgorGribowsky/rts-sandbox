@@ -90,65 +90,65 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _movementBehaviour.StartAction(args);
             _movementBehaviour.IsActive = true;
+            _movementBehaviour.StartAction(args);
         }
 
         private void StartFollowingBehaviour(FollowActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _followingBehaviour.StartAction(args);
             _followingBehaviour.IsActive = true;
+            _followingBehaviour.StartAction(args);
         }
 
         private void StartRangeAttackingBehaviour(AttackActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _rangeAttackingBehaviour.StartAction(args);
             _rangeAttackingBehaviour.IsActive = true;
+            _rangeAttackingBehaviour.StartAction(args);
         }
 
         private void StartMeleeAttackingBehaviour(AttackActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _meleeAttackingBehaviour.StartAction(args);
             _meleeAttackingBehaviour.IsActive = true;
+            _meleeAttackingBehaviour.StartAction(args);
         }
 
         private void StartAMovementBehaviour(MoveActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _aMovementBehaviour.StartAction(args);
             _aMovementBehaviour.IsActive = true;
+            _aMovementBehaviour.StartAction(args);
         }
 
         private void StartAutoAttackIdle(AutoAttackIdleStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
             _autoAttackIdleBehaviour.IsActive = true;
+            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
         }
 
         private void StartAutoAttackBuilding(AutoAttackIdleStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _autoAttackBuildingBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
             _autoAttackBuildingBehaviour.IsActive = true;
+            _autoAttackBuildingBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
         }
 
 
         private void StartHoldingBehaviour(HoldActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _holdingBehaviour.StartAction(args);
             _holdingBehaviour.IsActive = true;
+            _holdingBehaviour.StartAction(args);
         }
 
         private void StartBuildingBehaviour(BuildActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _buildingBehaviour.StartAction(args);
             _buildingBehaviour.IsActive = true;
+            _buildingBehaviour.StartAction(args);
         }
     }
 }

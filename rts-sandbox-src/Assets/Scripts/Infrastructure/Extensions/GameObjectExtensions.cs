@@ -76,7 +76,6 @@ namespace Assets.Scripts.Infrastructure.Helpers
                 if (isOnTopOrBottom)
                 {
                     direction.x = 0;
-                    Debug.Log("Точка находится на верхней или нижней грани.");
                 }
 
                 // Проверка, находится ли точка на левой или правой грани (по координатам x и z)
@@ -84,7 +83,6 @@ namespace Assets.Scripts.Infrastructure.Helpers
                 if (isOnLeftOrRight)
                 {
                     direction.z = 0;
-                    Debug.Log("Точка находится на левой или правой грани.");
                 }
             }
 
