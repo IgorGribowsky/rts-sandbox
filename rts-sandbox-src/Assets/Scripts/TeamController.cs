@@ -37,6 +37,8 @@ public class Team
     public string Name;
 
     public Color Color;
+
+    public bool IsNeutral = false;
 }
 
 [Serializable]

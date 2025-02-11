@@ -7,6 +7,8 @@ public class UnitValues : MonoBehaviour
 {
     public int Id = 0;
 
+    public bool IsInvulnerable = false;
+
     public float CurrentHp = 100;
 
     public float MaximumHp = 100;
@@ -40,9 +42,9 @@ public class UnitValues : MonoBehaviour
 
     public GameObject RangeAttackProjectile = null;
 
-    public bool CanProduceUnits = false;
-
     public bool IsBuilding = false;
+
+    public bool CanProduceUnits = false;
 
     public List<GameObject> UnitsToProduce = new List<GameObject>();
 

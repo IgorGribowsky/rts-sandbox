@@ -1,5 +1,6 @@
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
+using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -49,12 +50,25 @@ public class UnitsController : MonoBehaviour
     {
         if (CheckBuilderSelected(out var firstUnitBuilder))
         {
-            var buildingSize = _buildingController.Building.GetComponent<BuildingValues>().GridSize;
-            Vector3 resultPoint = point.GetGridPoint(buildingSize);
+            var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+            var buildingSize = buildingValues.GridSize;
+
+            if (buildingValues.IsHeldMine && !_buildingGridController.CheckIfMineUnderCursor())
+            {
+                Debug.Log("Can't build here!");
+                return;
+            }
+
+            Vector3 resultPoint = buildingValues.IsHeldMine 
+                ? _buildingGridController.UnitUnderCursor.transform.position 
+                : point.GetGridPoint(buildingSize);
+
+            var mineToHeld = buildingValues.IsHeldMine ? _buildingGridController.UnitUnderCursor : null;
+            mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
 
             if (addToCommandsQueue)
             {
-                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
             }
             else
             {
@@ -77,13 +91,13 @@ public class UnitsController : MonoBehaviour
                     unitToBuild = firstUnitBuilder;
                 }
 
-                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild))
+                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild) && !buildingValues.IsHeldMine)
                 {
                     Debug.Log("Can't build here!");
                     return;
                 }
 
-                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
                 _buildingController.DisableBuildingMod();
             }
         }
@@ -164,6 +178,14 @@ public class UnitsController : MonoBehaviour
                 continue;
             }
 
+            var damageType = unit.GetComponent<UnitValues>().DamageType;
+
+            if (!target.CanBeAttacked(damageType))
+            {
+                Debug.Log("Unit can't be attacked!");
+                continue;
+            }
+
             unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
         }
     }
@@ -182,8 +204,14 @@ public class UnitsController : MonoBehaviour
             return;
         }
 
+        if (!SelectedUnits.Any())
+        {
+            return;
+        }
+
         var targetTeamId = target.GetComponent<TeamMember>().TeamId;
         var allyTeamIds = _teamController.GetAllyTeams(playerTeamId);
+
         if (allyTeamIds.Contains(targetTeamId))
         {
             foreach (var unit in SelectedUnits)
@@ -201,6 +229,14 @@ public class UnitsController : MonoBehaviour
         {
             foreach (var unit in SelectedUnits)
             {
+                var damageType = unit.GetComponent<UnitValues>().DamageType;
+
+                if (!target.CanBeAttacked(damageType))
+                {
+                    Debug.Log("Unit can't be attacked!");
+                    continue;
+                }
+
                 unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
             }
         }

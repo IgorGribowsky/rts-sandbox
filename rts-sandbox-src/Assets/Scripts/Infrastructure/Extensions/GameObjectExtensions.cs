@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Assets.Scripts.Infrastructure.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Helpers
@@ -12,20 +14,8 @@ namespace Assets.Scripts.Infrastructure.Helpers
             if (object1 != null && object2 != null)
             {
                 // Получаем границы объектов
-                Bounds bounds1 = object1.GetComponent<Renderer>().bounds;
-                Bounds bounds2 = object2.GetComponent<Renderer>().bounds;
-
-                Vector3 adjustedCenter1 = bounds1.center;
-                Vector3 adjustedCenter2 = bounds2.center;
-                Vector3 adjustedExtents1 = bounds1.extents;
-                Vector3 adjustedExtents2 = bounds2.extents;
-                adjustedCenter1.y = 0;
-                adjustedCenter2.y = 0;
-                adjustedExtents1.y = 0;
-                adjustedExtents2.y = 0;
-
-                float extendsMagnitude1 = adjustedExtents1.magnitude / Mathf.Sqrt(2);
-                float extendsMagnitude2 = adjustedExtents2.magnitude / Mathf.Sqrt(2);
+                var (extendsMagnitude1, adjustedCenter1) = object1.GetSizeAndCenter();
+                var (extendsMagnitude2, adjustedCenter2) = object2.GetSizeAndCenter();
 
                 // Вычисляем расстояние между центрами объектов
                 float centerDistance = Vector3.Distance(adjustedCenter1, adjustedCenter2);
@@ -38,6 +28,30 @@ namespace Assets.Scripts.Infrastructure.Helpers
             else
             {
                 return float.MaxValue;
+            }
+        }
+
+        public static (float, Vector3) GetSizeAndCenter(this GameObject gameObject)
+        {
+            var buildingValues = gameObject.GetComponent<BuildingValues>();
+
+            if (buildingValues != null)
+            {
+                Vector3 adjustedCenter = gameObject.transform.position;
+                adjustedCenter.y = 0;
+
+                return (buildingValues.ObstacleSize / 2f, adjustedCenter);
+            }
+            else
+            {
+                Bounds bounds = gameObject.GetComponent<Renderer>().bounds;
+                Vector3 adjustedCenter = bounds.center;
+                Vector3 adjustedExtents = bounds.extents;
+                adjustedCenter.y = 0;
+                adjustedExtents.y = 0;
+                float extendsMagnitude = adjustedExtents.magnitude / Mathf.Sqrt(2);
+
+                return (extendsMagnitude, adjustedCenter);
             }
         }
 
@@ -122,6 +136,13 @@ namespace Assets.Scripts.Infrastructure.Helpers
             GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
 
             return units.Where(u => gameObject.GetDistanceTo(u) <= radius && filter(u));
+        }
+
+        public static bool CanBeAttacked(this GameObject unit, DamageType damageType)
+        {
+            var unitValues = unit.GetComponent<UnitValues>();
+
+            return !unitValues.IsInvulnerable;
         }
     }
 }

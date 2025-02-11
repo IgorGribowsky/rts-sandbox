@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 5
+  IsInvulnerable: 0
   CurrentHp: 80
   MaximumHp: 80
   MovementSpeed: 5
@@ -196,8 +197,8 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
-  CanProduceUnits: 0
   IsBuilding: 0
+  CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 1
   BuildingsToProduce:
@@ -209,6 +210,8 @@ MonoBehaviour:
     Building: {fileID: 2803515875022785667, guid: 5efe5c06dee17d04f9ec4cbb3691818f, type: 3}
   - KeyCode: 99
     Building: {fileID: 9084684201828076527, guid: 094e9e4a772a39f429fadfdf14013711, type: 3}
+  - KeyCode: 103
+    Building: {fileID: 8439110323046605351, guid: 17b4e09052fb2f44da6d03daa5bace6a, type: 3}
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0

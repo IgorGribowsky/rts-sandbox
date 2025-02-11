@@ -1,4 +1,5 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
@@ -66,7 +67,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
             var target = gameObject.GetNearestUnitInRadius(_unitValues.AutoAttackDistance, unit =>
             {
                 var teamMember = unit.GetComponent<TeamMember>();
-                return teamMember != null && enemyTeamIds.Contains(teamMember.TeamId);
+                return teamMember != null && enemyTeamIds.Contains(teamMember.TeamId) && unit.CanBeAttacked(_unitValues.DamageType);
             });
 
             if (target == null)

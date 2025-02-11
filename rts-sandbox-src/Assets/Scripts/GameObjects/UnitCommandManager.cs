@@ -253,7 +253,7 @@ namespace Assets.Scripts.GameObjects
 
             public void Start()
             {
-                _unitEventManager.OnBuildActionStarted(args.Point, args.Building);
+                _unitEventManager.OnBuildActionStarted(args.Point, args.Building, args.IsMineHeld, args.MineToHeld);
             }
         }
 

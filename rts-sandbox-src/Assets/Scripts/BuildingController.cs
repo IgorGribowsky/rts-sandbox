@@ -82,16 +82,19 @@ public class BuildingController : MonoBehaviour
         OnBuildingModChanged(_buildingMod);
     }
 
-    public void Build(Vector3 point, GameObject building, int teamId, GameObject builder = null)
+    public void Build(BuildActionStartedEventArgs eventArgs, int teamId, GameObject builder = null)
     {
-        var buildingSize = building.GetComponent<BuildingValues>().GridSize;
+        var building = eventArgs.Building;
+        var point = eventArgs.Point;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(point, buildingSize, builder))
+        var buildingValues = building.GetComponent<BuildingValues>();
+        var buildingSize = buildingValues.GridSize;
+
+        if (!_buildingGridController.CheckIfCanBuildAt(point, buildingSize, builder) && !buildingValues.IsHeldMine)
         {
             Debug.Log("Can't build here!");
             return;
         }
-
         var unit = Instantiate(building, point, building.transform.rotation);
 
         var renderer = unit.GetComponent<Renderer>();
@@ -106,5 +109,11 @@ public class BuildingController : MonoBehaviour
         unit.GetComponent<Building>().Build();
 
         OnBuildingStarted(point, builder, unit);
+
+        if (eventArgs.MineToHeld != null)
+        {
+            OnBuildingRemoved(eventArgs.MineToHeld);
+            Destroy(eventArgs.MineToHeld);
+        }
     }
 }

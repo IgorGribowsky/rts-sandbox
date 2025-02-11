@@ -33,9 +33,10 @@ public class BuildingBehaviour : UnitBehaviourBase
 
         actionArgs = args as BuildActionStartedEventArgs;
 
-        _buildingSize = actionArgs.Building.GetComponent<BuildingValues>().ObstacleSize;
+        var buildingValues = actionArgs.Building.GetComponent<BuildingValues>();
+        _buildingSize = buildingValues.ObstacleSize;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject))
+        if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject) && !buildingValues.IsHeldMine)
         {
             Debug.Log("Can't build here!");
 
@@ -63,7 +64,7 @@ public class BuildingBehaviour : UnitBehaviourBase
         {
             _navmeshMovement.Stop();
 
-            _buildingController.Build(actionArgs.Point, actionArgs.Building, _teamMember.TeamId, gameObject);
+            _buildingController.Build(actionArgs, _teamMember.TeamId, gameObject);
 
             IsActive = false;
             if (TriggerEndEventFlag)

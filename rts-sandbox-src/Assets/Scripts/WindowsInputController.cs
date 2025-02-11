@@ -15,7 +15,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode HoldKey = KeyCode.H;
     public KeyCode OpenBuildingMenuKey = KeyCode.B;
     public KeyCode CancelKey = KeyCode.Escape;
-
+    public KeyCode ReturnCameraKey = KeyCode.Space;
 
     public bool AClickPressed { get => aClickPressed; }
 
@@ -90,6 +90,12 @@ public class WindowsInputController : MonoBehaviour
             _cameraController.Move(moveCameraVector * Time.deltaTime);
         }
 
+        if (Input.GetKey(ReturnCameraKey))
+        {
+            var center = _unitController.GetTheMostRangedUnitPosition();
+            _cameraController.Set(center);
+        }
+
         if (aClickPressed)
         {
             if (Input.GetMouseButtonDown(1))
@@ -159,12 +165,6 @@ public class WindowsInputController : MonoBehaviour
                 _buildingController.EnableBuildingMod(alphabetKeyDown);
                 return;
             }
-        }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            var center = _unitController.GetTheMostRangedUnitPosition();
-            _cameraController.Set(center);
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -288,7 +288,7 @@ public class WindowsInputController : MonoBehaviour
     private void UpdateMousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("MovementSurface")))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask(Layer.MovementSurface.ToString())))
         {
             Vector3 worldPos = hit.point;
             Vector3 snappedPos = new Vector3(
@@ -297,13 +297,23 @@ public class WindowsInputController : MonoBehaviour
                 Mathf.Round(worldPos.z / snapStep) * snapStep
             );
 
-            _buildingGridController.MousePosition = worldPos;
-
             if (snappedPos != lastSnappedPosition)
             {
+                if (Physics.Raycast(ray, out RaycastHit unitHit, Mathf.Infinity, LayerMask.GetMask(Layer.Unit.ToString())))
+                {
+                    _buildingGridController.UnitUnderCursor = unitHit.transform.gameObject;
+                }
+                else
+                {
+                    _buildingGridController.UnitUnderCursor = null;
+                }
+
+                _buildingGridController.MousePosition = worldPos;
+
                 lastSnappedPosition = snappedPos;
 
                 _buildingGridController.OnCursorMoved();
+
             }
         }
     }
