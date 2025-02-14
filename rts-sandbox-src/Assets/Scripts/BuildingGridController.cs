@@ -194,7 +194,8 @@ public class BuildingGridController : MonoBehaviour
                 gridSegment.transform.localPosition = yCorrectedPosition;
 
                 var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
-                gridSegmentScript.Restricted = isHeldMine;
+                var isMineUnderCursor = CheckIfMineUnderCursor();
+                gridSegmentScript.Restricted = isHeldMine && !isMineUnderCursor;
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
             }
         }

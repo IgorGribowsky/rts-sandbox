@@ -18,7 +18,8 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private AutoAttackBuildingBehaviour _autoAttackBuildingBehaviour;
         private HoldingBehaviour _holdingBehaviour;
         private BuildingBehaviour _buildingBehaviour;
-
+        private MiningBehaviour _miningBehaviour;
+        
         public void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();
@@ -85,6 +86,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_buildingBehaviour);
                 _unitEventManager.BuildActionStarted += StartBuildingBehaviour;
             }
+
+            _miningBehaviour = GetComponent<MiningBehaviour>();
+            if (_miningBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_miningBehaviour);
+                _unitEventManager.MineActionStarted += StartMiningBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -149,6 +157,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
             _buildingBehaviour.IsActive = true;
             _buildingBehaviour.StartAction(args);
+        }
+
+        private void StartMiningBehaviour(MineActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _miningBehaviour.IsActive = true;
+            _miningBehaviour.StartAction(args);
         }
     }
 }

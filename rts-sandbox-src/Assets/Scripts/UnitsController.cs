@@ -222,6 +222,15 @@ public class UnitsController : MonoBehaviour
                     continue;
                 }
 
+                if (targetTeamId == playerTeamId 
+                    && unit.GetComponent<UnitValues>().IsMiner
+                    && target.GetComponent<UnitValues>().IsBuilding
+                    && target.GetComponent<BuildingValues>().IsHeldMine)
+                {
+                    unit.GetComponent<UnitEventManager>().OnMineCommandReceived(target, addToCommandsQueue);
+                    continue;
+                }
+
                 unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target, addToCommandsQueue);
             }
         }

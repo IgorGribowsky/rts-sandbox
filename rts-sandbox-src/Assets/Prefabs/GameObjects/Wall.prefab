@@ -312,6 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 7
+  IsInvulnerable: 1
   CurrentHp: 1000
   MaximumHp: 1000
   MovementSpeed: 0
@@ -328,8 +329,8 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
-  CanProduceUnits: 0
   IsBuilding: 1
+  CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
@@ -359,6 +360,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 2
   ObstacleSize: 2
+  IsMine: 0
+  IsHeldMine: 0
+  ResourceName: 0
+  IsHarvestableResource: 0
+  ResourcesAmount: 0
 --- !u!114 &265988409696462404
 MonoBehaviour:
   m_ObjectHideFlags: 0

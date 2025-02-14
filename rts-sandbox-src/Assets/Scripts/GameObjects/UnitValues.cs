@@ -42,15 +42,22 @@ public class UnitValues : MonoBehaviour
 
     public GameObject RangeAttackProjectile = null;
 
+
     public bool IsBuilding = false;
 
+    //Move to BuildingValues
     public bool CanProduceUnits = false;
 
     public List<GameObject> UnitsToProduce = new List<GameObject>();
+    //Move to BuildingValues
+
 
     public bool IsBuilder = false;
 
     public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
+
+
+    public bool IsMiner = false;
 }
 
 [Serializable]

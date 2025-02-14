@@ -145,4 +145,22 @@ public class UnitEventManager : MonoBehaviour
     {
         CalledToAttack?.Invoke(new CalledToAttackEventArgs(caller, target));
     }
+
+    public event MineCommandReceivedHandler MineCommandReceived;
+    public void OnMineCommandReceived(GameObject mine, bool addToCommandsQueue = false)
+    {
+        MineCommandReceived?.Invoke(new MineCommandReceivedEventArgs(mine, addToCommandsQueue));
+    }
+
+    public event MineActionStartedHandler MineActionStarted;
+    public void OnMineActionStarted(GameObject mine)
+    {
+        MineActionStarted?.Invoke(new MineActionStartedEventArgs(mine));
+    }
+
+    public event MineActionEndedHandler MineActionEnded;
+    public void OnMineActionEnded()
+    {
+        MineActionEnded?.Invoke(new EventArgs());
+    }
 }
