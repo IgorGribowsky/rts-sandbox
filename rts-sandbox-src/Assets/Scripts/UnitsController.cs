@@ -19,6 +19,7 @@ public class UnitsController : MonoBehaviour
     private GameController _gameController;
     private BuildingController _buildingController;
     private BuildingGridController _buildingGridController;
+    private PlayerResources _playerResources;
 
     private int playerTeamId;
 
@@ -39,6 +40,7 @@ public class UnitsController : MonoBehaviour
         _gameController = gameController.GetComponent<GameController>();
         _buildingController = GetComponent<BuildingController>();
         _buildingGridController = GetComponent<BuildingGridController>();
+        _playerResources = GetComponent<PlayerResources>();
         SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
@@ -94,6 +96,14 @@ public class UnitsController : MonoBehaviour
                 if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild) && !buildingValues.IsHeldMine)
                 {
                     Debug.Log("Can't build here!");
+                    return;
+                }
+
+                var unitValues = _buildingController.Building.GetComponent<UnitValues>();
+                var resourceCost = unitValues.ResourceCost.ToArray();
+                if (!_playerResources.CheckIfCanSpendResources(resourceCost))
+                {
+                    Debug.Log("Not enough resources!");
                     return;
                 }
 

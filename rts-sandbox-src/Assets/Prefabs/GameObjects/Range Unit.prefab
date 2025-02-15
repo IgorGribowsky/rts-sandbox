@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 2
+  IsInvulnerable: 0
   CurrentHp: 100
   MaximumHp: 100
   MovementSpeed: 5
@@ -95,11 +96,15 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 8957964713747606781, guid: f91ff0591897655499ec98952904e511, type: 3}
-  CanProduceUnits: 0
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 120
   IsBuilding: 0
+  CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0

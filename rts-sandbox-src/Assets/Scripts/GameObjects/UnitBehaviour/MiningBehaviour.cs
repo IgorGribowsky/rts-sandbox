@@ -86,7 +86,7 @@ public class MiningBehaviour : UnitBehaviourBase
                         _unitEventManager.OnMineActionEnded();
                     }
 
-                    Debug.Log("The mine is full!");
+                    Debug.Log("Unable to add miner!");
                 }
             }
             else

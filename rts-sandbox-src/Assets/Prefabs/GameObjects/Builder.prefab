@@ -198,6 +198,9 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 60
   IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []

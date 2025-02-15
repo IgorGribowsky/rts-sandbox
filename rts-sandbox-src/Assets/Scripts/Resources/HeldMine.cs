@@ -16,6 +16,7 @@ public class HeldMine : MonoBehaviour
     public int MinersMaxCount = 5;
 
     private BuildingValues _buildingValues;
+    private Building _buildingScript;
     private UnitEventManager _unitEventManager;
     private BuildingController _buildingController;
     private PlayerResources _playerResources;
@@ -30,6 +31,7 @@ public class HeldMine : MonoBehaviour
     void Awake()
     {
         _buildingValues = GetComponent<BuildingValues>();
+        _buildingScript = GetComponent<Building>();
         _unitEventManager = GetComponent<UnitEventManager>();
         _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<BuildingController>();
@@ -70,6 +72,11 @@ public class HeldMine : MonoBehaviour
 
     public bool ChechIfCanAddMiner()
     {
+        if (_buildingScript.BuildingIsInProgress)
+        {
+            return false;
+        }
+
         if (_miners.Count >= MinersMaxCount)
         {
             return false;

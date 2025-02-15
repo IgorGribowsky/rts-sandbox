@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ public class UnitProducing : MonoBehaviour
     private TeamMember _teamMemeber;
     private UnitEventManager _unitEventManager;
     private UnitValues _unitValues;
+    private PlayerResources _playerResources;
 
     private bool isProcessing = false;
 
@@ -26,6 +28,8 @@ public class UnitProducing : MonoBehaviour
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMemeber = GetComponent<TeamMember>();
         _unitValues = GetComponent<UnitValues>();
+        _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerResources>();
 
         _unitEventManager.ProduceCommandReceived += ProduceCommandHandler;
     }
@@ -39,12 +43,24 @@ public class UnitProducing : MonoBehaviour
             return;
         }
 
+        var unitValues = unitToProduce.GetComponent<UnitValues>();
+        var resourceCost = unitValues.ResourceCost.ToArray();
+        if (_playerResources.CheckIfCanSpendResources(resourceCost))
+        {
+            _playerResources.SpendResources(resourceCost);
+        }
+        else
+        {
+            Debug.Log("Not enough resources!");
+            return;
+        }
+
         isProcessing = true;
 
         if (currentProducingUnit == null)
         {
             currentProducingUnit = unitToProduce;
-            productionTime = currentProducingUnit.GetComponent<UnitValues>().ProducingTime;
+            productionTime = unitValues.ProducingTime;
             currentProducingTimer = productionTime;
         }
         else

@@ -26,7 +26,36 @@ public class PlayerResources : MonoBehaviour
     public void RemoveResource(ResourceName resourceName, int amount)
     {
         ResourcesAmount.FirstOrDefault(x => x.ResourceName == resourceName).Amount -= amount;
+    }
 
+    public bool CheckIfCanSpendResources(params ResourceAmount[] resourceAmounts)
+    {
+        foreach (var resource in resourceAmounts)
+        {
+            var playerResource = ResourcesAmount.First(x => x.ResourceName == resource.ResourceName);
+
+            if (playerResource == null)
+            {
+                return false;
+            }
+
+            if (playerResource.Amount < resource.Amount)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void SpendResources(params ResourceAmount[] resourceAmounts)
+    {
+        foreach (var resource in resourceAmounts)
+        {
+            var playerResource = ResourcesAmount.First(x => x.ResourceName == resource.ResourceName);
+
+            playerResource.Amount -= resource.Amount;
+        }
     }
 }
 

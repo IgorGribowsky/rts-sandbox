@@ -6,6 +6,7 @@ public class BuildingController : MonoBehaviour
 {
     private UnitsController _unitController;
     private BuildingGridController _buildingGridController;
+    private PlayerResources _playerResources;
 
     private bool _buildingMenuMod = false;
     public bool BuildingMenuMod { get { return _buildingMenuMod; } }
@@ -40,6 +41,7 @@ public class BuildingController : MonoBehaviour
     {
         _unitController = gameObject.GetComponent<UnitsController>();
         _buildingGridController = gameObject.GetComponent<BuildingGridController>();
+        _playerResources = gameObject.GetComponent<PlayerResources>();
     }
 
     public void EnableBuildingMenuMod()
@@ -95,6 +97,19 @@ public class BuildingController : MonoBehaviour
             Debug.Log("Can't build here!");
             return;
         }
+
+        var unitValues = building.GetComponent<UnitValues>();
+        var resourceCost = unitValues.ResourceCost.ToArray();
+        if (_playerResources.CheckIfCanSpendResources(resourceCost))
+        {
+            _playerResources.SpendResources(resourceCost);
+        }
+        else
+        {
+            Debug.Log("Not enough resources!");
+            return;
+        }
+
         var unit = Instantiate(building, point, building.transform.rotation);
 
         var renderer = unit.GetComponent<Renderer>();

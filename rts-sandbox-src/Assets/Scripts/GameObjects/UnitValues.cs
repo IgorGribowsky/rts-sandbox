@@ -42,6 +42,7 @@ public class UnitValues : MonoBehaviour
 
     public GameObject RangeAttackProjectile = null;
 
+    public List<ResourceAmount> ResourceCost = new List<ResourceAmount>();
 
     public bool IsBuilding = false;
 

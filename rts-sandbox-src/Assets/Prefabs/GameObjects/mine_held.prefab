@@ -474,11 +474,15 @@ MonoBehaviour:
   RangeAttackDistance: 0
   ProjectileSpeed: 0
   RangeAttackProjectile: {fileID: 0}
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 240
   IsBuilding: 1
   CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &-378846183523191741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -557,3 +561,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParentMine: {fileID: 229893291801480186, guid: 167af7cfb168b1b4faa64dc74a0a6595, type: 3}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
