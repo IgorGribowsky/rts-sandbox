@@ -3,6 +3,7 @@
     public enum ResourceType
     {
         MiningResource = 0,
-        HarvestingRsource = 1,
+        HarvestingResource = 1,
+        SupplyResource = 2,
     }
 }

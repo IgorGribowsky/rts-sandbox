@@ -94,5 +94,7 @@ public class Building : MonoBehaviour
         {
             _unitCommandManagerr.enabled = true;
         }
+
+        _unitEventManager.OnBuildingCompleted(gameObject);
     }
 }

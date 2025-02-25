@@ -106,7 +106,11 @@ public class UnitsController : MonoBehaviour
                     Debug.Log("Not enough resources!");
                     return;
                 }
-
+                else if (!_playerResources.CheckIfHaveSupply(resourceCost))
+                {
+                    Debug.Log("Not enough supply!");
+                    return;
+                }
                 unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
                 _buildingController.DisableBuildingMod();
             }

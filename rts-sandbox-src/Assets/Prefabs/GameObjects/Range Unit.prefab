@@ -30,6 +30,7 @@ GameObject:
   - component: {fileID: -8713228520699853420}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: -8509892739303012159}
+  - component: {fileID: 3167370730915436853}
   m_Layer: 7
   m_Name: Range Unit
   m_TagString: Unit
@@ -99,6 +100,8 @@ MonoBehaviour:
   ResourceCost:
   - ResourceName: 1
     Amount: 120
+  - ResourceName: 3
+    Amount: 2
   IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []
@@ -386,6 +389,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c530658d92b91a74bbf5be39f02573d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3167370730915436853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a601245bbad59784f8977df8a387ffcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7858216903690928350

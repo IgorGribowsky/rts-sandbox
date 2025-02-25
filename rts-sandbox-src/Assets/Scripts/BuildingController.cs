@@ -100,24 +100,26 @@ public class BuildingController : MonoBehaviour
 
         var unitValues = building.GetComponent<UnitValues>();
         var resourceCost = unitValues.ResourceCost.ToArray();
-        if (_playerResources.CheckIfCanSpendResources(resourceCost))
-        {
-            _playerResources.SpendResources(resourceCost);
-        }
-        else
+        if (!_playerResources.CheckIfCanSpendResources(resourceCost))
         {
             Debug.Log("Not enough resources!");
             return;
         }
+        else if (!_playerResources.CheckIfHaveSupply(resourceCost))
+        {
+            Debug.Log("Not enough supply!");
+            return;
+        }
+        else
+        {
+            _playerResources.SpendResources(resourceCost);
+
+        }
 
         var unit = Instantiate(building, point, building.transform.rotation);
 
-        var renderer = unit.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            float offsetY = renderer.bounds.extents.y;
-            unit.transform.position = new Vector3(point.x, point.y + offsetY, point.z);
-        }
+        float offsetY = unit.transform.localScale.y / 2f;
+        unit.transform.position = new Vector3(point.x, point.y + offsetY, point.z);
 
         unit.GetComponent<TeamMember>().TeamId = teamId;
 

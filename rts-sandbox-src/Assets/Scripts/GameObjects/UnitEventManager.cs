@@ -116,6 +116,12 @@ public class UnitEventManager : MonoBehaviour
         BuildActionStarted?.Invoke(new BuildActionStartedEventArgs(point, building, isMineHeld, mineToHeld));
     }
 
+    public event BuildingCompletedHandler BuildingCompleted;
+    public void OnBuildingCompleted(GameObject building)
+    {
+        BuildingCompleted?.Invoke(new BuildingCompletedEventArgs(building));
+    }
+
     public event BuildActionEndedHandler BuildActionEnded;
     public void OnBuildActionEnded()
     {

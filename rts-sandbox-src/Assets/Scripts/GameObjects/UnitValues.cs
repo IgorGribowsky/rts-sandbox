@@ -44,6 +44,8 @@ public class UnitValues : MonoBehaviour
 
     public List<ResourceAmount> ResourceCost = new List<ResourceAmount>();
 
+    public List<ResourceAmount> SupplyResourceProduces = new List<ResourceAmount>();
+
     public bool IsBuilding = false;
 
     //Move to BuildingValues
