@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 8363517768491279335}
   - component: {fileID: -1703522600205134248}
+  - component: {fileID: -4633198122765547343}
   - component: {fileID: -3668986346869788980}
   m_Layer: 7
   m_Name: Builder
@@ -204,6 +205,7 @@ MonoBehaviour:
     Amount: 60
   - ResourceName: 3
     Amount: 1
+  SupplyResourceProduces: []
   IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []
@@ -222,6 +224,11 @@ MonoBehaviour:
   - KeyCode: 102
     Building: {fileID: 2251361840339160895, guid: 913702baea16a9b41b3b40e6f8d1e471, type: 3}
   IsMiner: 1
+  IsHarvestor: 1
+  ResourcesCanBeHarvested: 02000000
+  HarvestingRate: 1
+  HarvestingValuePerTick: 1
+  HarvestingMaxValue: 10
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,6 +524,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97af30b99370f364bbe9d651d295017a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4633198122765547343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46b4971a19bd18949836003e013f3139, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentResourceValues: 0
 --- !u!114 &-3668986346869788980
 MonoBehaviour:
   m_ObjectHideFlags: 0

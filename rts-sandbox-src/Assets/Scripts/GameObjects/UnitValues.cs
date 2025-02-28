@@ -54,13 +54,22 @@ public class UnitValues : MonoBehaviour
     public List<GameObject> UnitsToProduce = new List<GameObject>();
     //Move to BuildingValues
 
-
     public bool IsBuilder = false;
 
     public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
 
 
     public bool IsMiner = false;
+
+    public bool IsHarvestor = false;
+
+    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+
+    public float HarvestingRate = 1f;
+
+    public int HarvestingValuePerTick = 1;
+
+    public int HarvestingMaxValue = 10;
 }
 
 [Serializable]

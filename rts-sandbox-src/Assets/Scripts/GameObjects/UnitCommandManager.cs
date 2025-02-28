@@ -2,6 +2,7 @@
 using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Assets.Scripts.GameObjects
 {
@@ -9,6 +10,8 @@ namespace Assets.Scripts.GameObjects
     {
         public List<string> CommandListInfo;
         public string CurrentRunningCommandInfo;
+
+        public bool HasCommandInQueue { get => CommandsQueue.Any(); }
 
         private UnitEventManager _unitEventManager;
 
@@ -26,6 +29,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.HoldCommandReceived += StartHoldCommand;
             _unitEventManager.BuildCommandReceived += StartBuildCommand;
             _unitEventManager.MineCommandReceived += StartMineCommand;
+            _unitEventManager.HarvestingCommandReceived += StartHarvestingCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
@@ -33,6 +37,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.AMoveActionEnded += RunNextCommand;
             _unitEventManager.BuildActionEnded += RunNextCommand;
             _unitEventManager.MineActionEnded += RunNextCommand;
+            _unitEventManager.HarvestingActionEnded += RunNextCommand;
         }
 
         private void Start()
@@ -90,6 +95,13 @@ namespace Assets.Scripts.GameObjects
             var mineCommand = new MineCommand(_unitEventManager, args);
 
             StartCommand(mineCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartHarvestingCommand(HarvestingCommandReceivedEventArgs args)
+        {
+            var harvestingCommand = new HarvestingCommand(_unitEventManager, args);
+
+            StartCommand(harvestingCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
@@ -310,6 +322,30 @@ namespace Assets.Scripts.GameObjects
                 _unitEventManager.OnMineActionStarted(args.Mine);
             }
         }
+
+        private class HarvestingCommand : ICommand
+        {
+            public HarvestingCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public HarvestingCommand(UnitEventManager unitEventManager, HarvestingCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return true;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnHarvestingActionStarted(args.Resource, args.Storage, args.ToStorage);
+            }
+        }
+
         #endregion
     }
 }

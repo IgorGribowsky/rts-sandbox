@@ -7,13 +7,9 @@ public class BuildingValues : MonoBehaviour
 
     public int ObstacleSize = 4;
 
-    public bool IsMine = false;
+    public bool IsResource = false;
 
-    public bool IsHeldMine = false;
-    
-    public ResourceName ResourceName;
+    public bool IsHeldMine { get => this.IsResource && gameObject.GetComponent<ResourceValues>().IsHeldMine; }
 
-    public bool IsHarvestableResource = false;
-
-    public int ResourcesAmount;
+    public bool IsMine { get => this.IsResource && gameObject.GetComponent<ResourceValues>().IsMine; }
 }

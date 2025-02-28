@@ -66,7 +66,6 @@ public class MiningBehaviour : UnitBehaviourBase
 
             if (distanceToTarget <= GameConstants.MiningAcceptDistance)
             {
-
                 var canAdd = _heldMineScript.ChechIfCanAddMiner();
 
                 if (canAdd)

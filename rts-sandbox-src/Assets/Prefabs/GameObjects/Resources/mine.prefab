@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5024716392307784925}
   - component: {fileID: 3727256491246135707}
   - component: {fileID: 1943176013712263333}
+  - component: {fileID: 8727171021922263600}
   - component: {fileID: 9017448175799645464}
   - component: {fileID: 1912181233715511723}
   - component: {fileID: 6506658105930528207}
@@ -140,11 +141,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 8
   ObstacleSize: 4
+  IsResource: 1
+--- !u!114 &8727171021922263600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229893291801480186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba5f18b49e9417e4fbbddc86c16a104f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   IsMine: 1
   IsHeldMine: 0
+  IsHarvestedResource: 0
   ResourceName: 1
-  IsHarvestableResource: 0
-  ResourcesAmount: 0
+  ResourcesAmount: 10000
 --- !u!208 &9017448175799645464
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -205,11 +219,14 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
+  ResourceCost: []
+  SupplyResourceProduces: []
   IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &8883816922251020138
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -31,6 +31,24 @@ namespace Assets.Scripts.Infrastructure.Helpers
             }
         }
 
+        public static float GetDistanceTo(this GameObject object1, Vector3 point)
+        {
+            if (object1 != null)
+            {
+                var (extendsMagnitude1, adjustedCenter1) = object1.GetSizeAndCenter();
+
+                float centerDistance = Vector3.Distance(adjustedCenter1, point);
+
+                float distance = centerDistance - extendsMagnitude1;
+
+                return distance;
+            }
+            else
+            {
+                return float.MaxValue;
+            }
+        }
+
         public static (float, Vector3) GetSizeAndCenter(this GameObject gameObject)
         {
             var buildingValues = gameObject.GetComponent<BuildingValues>();
@@ -111,6 +129,28 @@ namespace Assets.Scripts.Infrastructure.Helpers
         public static GameObject GetNearestUnitInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
         {
             GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+            GameObject closestUnit = null;
+            float closestDistance = radius;
+
+            foreach (GameObject unit in units)
+            {
+                // Если фильтр задан и объект не проходит проверку, пропускаем его
+                if (filter != null && !filter(unit)) continue;
+
+                float distance = gameObject.GetDistanceTo(unit);
+                if (distance < closestDistance)
+                {
+                    closestUnit = unit;
+                    closestDistance = distance;
+                }
+            }
+
+            return closestUnit;
+        }
+
+        public static GameObject GetNearestResourceInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
+        {
+            GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.HarvestedResource.ToString());
             GameObject closestUnit = null;
             float closestDistance = radius;
 

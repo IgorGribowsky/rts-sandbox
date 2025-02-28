@@ -1,6 +1,7 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class UnitEventManager : MonoBehaviour
@@ -168,5 +169,23 @@ public class UnitEventManager : MonoBehaviour
     public void OnMineActionEnded()
     {
         MineActionEnded?.Invoke(new EventArgs());
+    }
+
+    public event HarvestingCommandReceivedHandler HarvestingCommandReceived;
+    public void OnHarvestingCommandReceived(GameObject resource, GameObject storage, bool toStorage, bool addToCommandsQueue = false)
+    {
+        HarvestingCommandReceived?.Invoke(new HarvestingCommandReceivedEventArgs(resource, storage, toStorage, addToCommandsQueue));
+    }
+
+    public event HarvestingActionStartedHandler HarvestingActionStarted;
+    public void OnHarvestingActionStarted(GameObject resource, GameObject storage, bool toStorage)
+    {
+        HarvestingActionStarted?.Invoke(new HarvestingActionStartedEventArgs(resource, storage, toStorage));
+    }
+
+    public event HarvestingActionEndedHandler HarvestingActionEnded;
+    public void OnHarvestingActionEnded()
+    {
+        HarvestingActionEnded?.Invoke(new EventArgs());
     }
 }

@@ -20,6 +20,7 @@ public class HeldMine : MonoBehaviour
     private UnitEventManager _unitEventManager;
     private BuildingController _buildingController;
     private PlayerResources _playerResources;
+    private ResourceValues _resouceValues;
 
     private List<GameObject> _miners = new List<GameObject>();
     private int?[] _mineCells;
@@ -31,6 +32,7 @@ public class HeldMine : MonoBehaviour
     void Awake()
     {
         _buildingValues = GetComponent<BuildingValues>();
+        _resouceValues = GetComponent<ResourceValues>();
         _buildingScript = GetComponent<Building>();
         _unitEventManager = GetComponent<UnitEventManager>();
         _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
@@ -50,7 +52,7 @@ public class HeldMine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_buildingValues.ResourcesAmount <= 0)
+        if (_resouceValues.ResourcesAmount <= 0)
         {
             Destroy(gameObject);
         }
@@ -64,8 +66,8 @@ public class HeldMine : MonoBehaviour
 
         if (miningProgress > MiningRate)
         {
-            _playerResources.AddResource(_buildingValues.ResourceName, MiningValue);
-            _buildingValues.ResourcesAmount -= MiningValue;
+            _playerResources.AddResource(_resouceValues.ResourceName, MiningValue);
+            _resouceValues.ResourcesAmount -= MiningValue;
             miningProgress = 0f;
         }
     }
@@ -120,9 +122,9 @@ public class HeldMine : MonoBehaviour
         var point = gameObject.transform.position;
         var mine = Instantiate(ParentMine, point, gameObject.transform.rotation);
         _buildingController.OnBuildingStarted(point, null, mine);
-        var mineBuildingValues = mine.GetComponent<BuildingValues>();
+        var mineBuildingValues = mine.GetComponent<ResourceValues>();
 
-        mineBuildingValues.ResourcesAmount = _buildingValues.ResourcesAmount;
+        mineBuildingValues.ResourcesAmount = _resouceValues.ResourcesAmount;
     }
 
 

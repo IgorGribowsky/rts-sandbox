@@ -65,7 +65,14 @@ public class BuildingGridController : MonoBehaviour
 
     protected void AddToGrid(BuildingStartedEventArgs buildingStartedEventArgs)
     {
-        GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point);
+        var buildingValues = buildingStartedEventArgs.Building.GetComponent<BuildingValues>();
+
+        if (buildingValues == null)
+        {
+            return;
+        }
+
+        GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues);
     }
 
     protected void RemoveFromGrid(BuildingRemovedEventArgs buildingRemovedEventArgs)
@@ -90,9 +97,11 @@ public class BuildingGridController : MonoBehaviour
 
         var isMine = false;
 
-        if (buildingValues != null && currentBuildingValues != null)
+        if (buildingValues != null && currentBuildingValues != null && buildingValues.IsResource && currentBuildingValues.IsResource)
         {
-            isMine = buildingValues.IsMine && currentBuildingValues.IsHeldMine && buildingValues.ResourceName == currentBuildingValues.ResourceName;
+            var resourceValues = UnitUnderCursor.GetComponent<ResourceValues>();
+            var currentResourceValues = _buildingController.Building.GetComponent<ResourceValues>();
+            isMine = resourceValues.IsMine && currentResourceValues.IsHeldMine && resourceValues.ResourceName == currentResourceValues.ResourceName;
         }
 
         return isMine;
@@ -108,17 +117,20 @@ public class BuildingGridController : MonoBehaviour
     {
         if (modStateChangedEventArgs.State)
         {
-            var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
-            var isHeldMine = buildingValues.IsHeldMine;
-
-            UpdateCursorPosition();
-            var gridSize = buildingValues.GridSize;
-            GenerateGridForCursor(cursorGrid, gridSize, isHeldMine);
+            HandleModEnabled();
         }
         else
         {
             DestroyGridForCursor();
         }
+    }
+
+    private void HandleModEnabled()
+    {
+        var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+
+        UpdateCursorPosition();
+        GenerateGridForCursor(cursorGrid, buildingValues.GridSize, buildingValues.IsHeldMine);
     }
 
     private void UpdateCursorPosition()
@@ -161,6 +173,8 @@ public class BuildingGridController : MonoBehaviour
         GenerateForBuildings(bottomLeft, topRight);
 
         GenerateForStaticObjects(bottomLeft, topRight);
+
+        GenerateForHarvestedResources(bottomLeft, topRight);
     }
 
     private void GenerateForBuildings(Vector3 bottomLeft, Vector3 topRight)
@@ -171,7 +185,34 @@ public class BuildingGridController : MonoBehaviour
         {
             if (collider.CompareTag(Tag.Unit.ToString()))
             {
-                GenerateGridForBuilding(collider.gameObject, collider.transform.position);
+                var buildingValues = collider.gameObject.GetComponent<BuildingValues>();
+
+                if (buildingValues == null)
+                {
+                    continue;
+                }
+
+                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
+            }
+        }
+    }
+
+    private void GenerateForHarvestedResources(Vector3 bottomLeft, Vector3 topRight)
+    {
+        Collider[] colliders = Physics.OverlapBox((bottomLeft + topRight) / 2, (topRight - bottomLeft) / 2, Quaternion.identity);
+
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag(Tag.HarvestedResource.ToString()))
+            {
+                var buildingValues = collider.gameObject.GetComponent<BuildingValues>();
+
+                if (buildingValues == null)
+                {
+                    continue;
+                }
+
+                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
             }
         }
     }
@@ -201,15 +242,8 @@ public class BuildingGridController : MonoBehaviour
         }
     }
 
-    private void GenerateGridForBuilding(GameObject building, Vector3 buildingPosition)
+    private void GenerateGridForBuilding(GameObject building, Vector3 buildingPosition, BuildingValues buildingValues)
     {
-        var buildingValues = building.GetComponent<BuildingValues>();
-
-        if (buildingValues == null)
-        {
-            return;
-        }
-
         var buildingSize = buildingValues.GridSize;
         var shift = buildingSize / 2.0f;
 

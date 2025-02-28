@@ -13,7 +13,8 @@ public class Building : MonoBehaviour
     private NavMeshObstacle _navmeshObstacle;
 
     private UnitProducing _unitProducing;
-    private UnitCommandManager _unitCommandManagerr;
+    private UnitCommandManager _unitCommandManager;
+    private HarvestedResourcesStorage _harvestedResourcesStorage;
 
     private float timeToBuild;
     private float hpToBuild;
@@ -27,7 +28,8 @@ public class Building : MonoBehaviour
         _unitEventManager = GetComponent<UnitEventManager>();
         _navmeshObstacle = GetComponent<NavMeshObstacle>();
         _unitProducing = GetComponent<UnitProducing>();
-        _unitCommandManagerr = GetComponent<UnitCommandManager>();
+        _unitCommandManager = GetComponent<UnitCommandManager>();
+        _harvestedResourcesStorage = GetComponent<HarvestedResourcesStorage>();
     }
 
     public void Start()
@@ -44,9 +46,14 @@ public class Building : MonoBehaviour
             _unitProducing.enabled = false;
         }
 
-        if (_unitCommandManagerr != null)
+        if (_unitCommandManager != null)
         {
-            _unitCommandManagerr.enabled = false;
+            _unitCommandManager.enabled = false;
+        }
+
+        if (_harvestedResourcesStorage != null)
+        {
+            _harvestedResourcesStorage.enabled = false;
         }
 
         timeToBuild = _unitValues.ProducingTime;
@@ -90,9 +97,14 @@ public class Building : MonoBehaviour
             _unitProducing.enabled = true;
         }
 
-        if (_unitCommandManagerr != null)
+        if (_unitCommandManager != null)
         {
-            _unitCommandManagerr.enabled = true;
+            _unitCommandManager.enabled = true;
+        }
+
+        if (_harvestedResourcesStorage != null)
+        {
+            _harvestedResourcesStorage.enabled = true;
         }
 
         _unitEventManager.OnBuildingCompleted(gameObject);

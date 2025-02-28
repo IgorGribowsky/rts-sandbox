@@ -1,9 +1,12 @@
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -48,8 +51,36 @@ public class UnitsController : MonoBehaviour
     {
     }
 
+    public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        foreach (var unit in SelectedUnits)
+        {
+            if (unit.GetComponent<UnitValues>().IsHarvestor
+                && resource.tag == Tag.HarvestedResource.ToString()
+                && unit.GetComponent<UnitValues>().ResourcesCanBeHarvested.Contains(resource.GetComponent<ResourceValues>().ResourceName))
+            {
+                unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(resource, null, false, addToCommandsQueue);
+                continue;
+            }
+            else
+            {
+                unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(point, addToCommandsQueue);
+            }
+        }
+    }
+
     public void Build(Vector3 point, bool addToCommandsQueue = false)
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
         if (CheckBuilderSelected(out var firstUnitBuilder))
         {
             var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
@@ -120,11 +151,22 @@ public class UnitsController : MonoBehaviour
 
     public bool CheckBuilderSelected()
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return false;
+        }
+
         return SelectedUnits.FirstOrDefault()?.GetComponent<UnitValues>()?.IsBuilder ?? false;
     }
 
     public bool CheckBuilderSelected(out GameObject builder)
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            builder = null;
+            return false;
+        }
+
         builder = SelectedUnits.FirstOrDefault();
         var response = builder?.GetComponent<UnitValues>()?.IsBuilder ?? false;
         return response;
@@ -242,6 +284,18 @@ public class UnitsController : MonoBehaviour
                     && target.GetComponent<BuildingValues>().IsHeldMine)
                 {
                     unit.GetComponent<UnitEventManager>().OnMineCommandReceived(target, addToCommandsQueue);
+                    continue;
+                }
+
+                if (targetTeamId == playerTeamId
+                    && unit.GetComponent<UnitValues>().IsHarvestor
+                    && unit.GetComponent<HarvestingBehaviour>().CurrentResourceValues > 0
+                    && unit.GetComponent<HarvestingBehaviour>().CurrentResource != null
+                    && target.GetComponent<HarvestedResourcesStorage>() != null
+                    && target.GetComponent<HarvestedResourcesStorage>().isActiveAndEnabled
+                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(unit.GetComponent<HarvestingBehaviour>().CurrentResource.Value))
+                {
+                    unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(null, target, true, addToCommandsQueue);
                     continue;
                 }
 

@@ -51,7 +51,8 @@ public class WindowsInputController : MonoBehaviour
     {
         clickLayerMask = LayerMask.GetMask(
             Layer.MovementSurface.ToString(),
-            Layer.Unit.ToString()
+            Layer.Unit.ToString(),
+            Layer.HarvestedResource.ToString()
             );
 
         buildLayerMask = LayerMask.GetMask(Layer.MovementSurface.ToString());
@@ -204,14 +205,18 @@ public class WindowsInputController : MonoBehaviour
             if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
             {
                 var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-                var gameObject = hit.transform.gameObject;
-                if (gameObject.layer == (int)Layer.MovementSurface)
+                var targetGameObject = hit.transform.gameObject;
+                if (targetGameObject.layer == (int)Layer.MovementSurface)
                 {
                     _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
                 }
-                else if (gameObject.layer == (int)Layer.Unit)
+                else if (targetGameObject.layer == (int)Layer.Unit)
                 {
-                    _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
+                    _unitController.OnUnitRightClick(targetGameObject, isShiftButtonPressed);
+                }
+                else if (targetGameObject.layer == (int)Layer.HarvestedResource)
+                {
+                    _unitController.RightClickOnResource(targetGameObject, hit.point, isShiftButtonPressed);
                 }
             }
         }

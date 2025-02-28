@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 3255383013342161207}
   - component: {fileID: 265988409696462404}
   - component: {fileID: 7256198629977255813}
+  - component: {fileID: 1629638902755510983}
   m_Layer: 7
   m_Name: Castle
   m_TagString: Unit
@@ -350,6 +351,7 @@ MonoBehaviour:
   ResourceCost:
   - ResourceName: 1
     Amount: 320
+  SupplyResourceProduces: []
   IsBuilding: 1
   CanProduceUnits: 1
   UnitsToProduce:
@@ -357,6 +359,11 @@ MonoBehaviour:
   IsBuilder: 0
   BuildingsToProduce: []
   IsMiner: 0
+  IsHarvestor: 0
+  ResourcesCanBeHarvested: 
+  HarvestingRate: 1
+  HarvestingValuePerTick: 1
+  HarvestingMaxValue: 10
 --- !u!114 &-4266340262056302114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,11 +390,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 6
   ObstacleSize: 4
-  IsMine: 0
-  IsHeldMine: 0
-  ResourceName: 0
-  IsHarvestableResource: 0
-  ResourcesAmount: 0
+  IsResource: 0
 --- !u!114 &3255383013342161207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,6 +403,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf0abe57fafdda4cb71b331b813ccd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentProducingUnit: {fileID: 0}
+  ProducingQueueInfo: []
 --- !u!114 &265988409696462404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,3 +433,16 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &1629638902755510983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084684201828076527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f81421d298e48c14f8703ebaed7d2122, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StoredResources: 02000000

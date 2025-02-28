@@ -284,6 +284,7 @@ GameObject:
   - component: {fileID: 8786969056402233230}
   - component: {fileID: 5219400807635361100}
   - component: {fileID: 8274431465506541152}
+  - component: {fileID: 5603141132111939247}
   - component: {fileID: 5422673125938746403}
   - component: {fileID: 6114489890022166886}
   - component: {fileID: 219992207975602714}
@@ -409,10 +410,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 8
   ObstacleSize: 4
+  IsResource: 1
+--- !u!114 &5603141132111939247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8439110323046605351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba5f18b49e9417e4fbbddc86c16a104f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   IsMine: 0
   IsHeldMine: 1
+  IsHarvestedResource: 0
   ResourceName: 1
-  IsHarvestableResource: 0
   ResourcesAmount: 10000
 --- !u!208 &5422673125938746403
 NavMeshObstacle:
@@ -477,6 +491,7 @@ MonoBehaviour:
   ResourceCost:
   - ResourceName: 1
     Amount: 240
+  SupplyResourceProduces: []
   IsBuilding: 1
   CanProduceUnits: 0
   UnitsToProduce: []

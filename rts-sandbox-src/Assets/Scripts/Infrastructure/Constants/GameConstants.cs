@@ -15,5 +15,9 @@
 
         public const float ExtraRadiusForMining = 0.6f;
         public const float MiningAcceptDistance = 1f;
+
+        public const float ResourceFindDistance = 12f;
+        public const float StorageFindDistance = 12f;
+        public const float HarvestingDistance = 0.3f;
     }
 }
