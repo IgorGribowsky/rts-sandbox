@@ -1,4 +1,3 @@
-using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
 public class BuildingValues : MonoBehaviour

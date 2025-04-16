@@ -57,10 +57,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
 
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
-            var sizeVector = Target.GetComponent<Collider>().bounds.extents;
-            sizeVector.y = 0;
-            var size = sizeVector.magnitude / Mathf.Sqrt(2);
-            _navmeshMovement.Go(gameObject.GetClosestPointToInteract(Target.transform.position, size));
+            _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
         }
         else
         {

@@ -25,8 +25,8 @@ public class HarvestingBehaviour : UnitBehaviourBase
     private HarvestedResource _harvestedResourceScript;
 
     private bool _toStorage = false;
+    private bool _isHarvesting = false;
 
-    private Vector3 _point;
     private GameObject _target;
 
     private bool _resourceChanged;
@@ -40,6 +40,8 @@ public class HarvestingBehaviour : UnitBehaviourBase
         _unitValues = GetComponent<UnitValues>();
         _teamMember = GetComponent<TeamMember>();
         _unitCommandManager = GetComponent<UnitCommandManager>();
+
+        _navmeshMovement.NavMeshMovementArrive += HandleArrival;
     }
 
     public override void StartAction(EventArgs args)
@@ -125,20 +127,38 @@ public class HarvestingBehaviour : UnitBehaviourBase
 
     private void MoveToTarget()
     {
-        _point = gameObject.GetClosestPointToInteract(_target.transform.position, _target.GetComponent<BuildingValues>().ObstacleSize);
-        _navmeshMovement.Go(_point);
+        _navmeshMovement.GoToObject(_target, GameConstants.HarvestingDistance);
     }
 
     protected override void UpdateAction()
     {
-        if (gameObject.GetDistanceTo(_point) < GameConstants.HarvestingDistance)
+        if (_isHarvesting)
         {
-            HandleArrival();
+            if (CurrentResourceValues >= _unitValues.HarvestingMaxValue)
+            {
+                _isHarvesting = false;
+                _toStorage = true;
+                FindAndGoToTarget();
+            }
+            else if (_resource == null)
+            {
+                FindAndGoToTarget();
+            }
+            else
+            {
+                HarvestResource();
+
+            }
         }
     }
 
-    private void HandleArrival()
+    private void HandleArrival(EventArgs args)
     {
+        if (!IsActive)
+        {
+            return;
+        }
+
         if (_toStorage)
         {
             StoreResources();
@@ -152,20 +172,10 @@ public class HarvestingBehaviour : UnitBehaviourBase
             {
                 FindAndGoToTarget();
             }
-
-        }
-        else if (CurrentResourceValues >= _unitValues.HarvestingMaxValue)
-        {
-            _toStorage = true;
-            FindAndGoToTarget();
-        }
-        else if (_resource == null)
-        {
-            FindAndGoToTarget();
         }
         else
         {
-            HarvestResource();
+            _isHarvesting = true;
         }
     }
 

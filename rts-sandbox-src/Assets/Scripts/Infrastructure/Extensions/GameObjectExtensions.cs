@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Helpers
@@ -71,6 +70,25 @@ namespace Assets.Scripts.Infrastructure.Helpers
 
                 return (extendsMagnitude, adjustedCenter);
             }
+        }
+
+        public static float GetSize(this GameObject destinationObj)
+        {
+            var size = 0f;
+            var buildingValues = destinationObj.GetComponent<BuildingValues>();
+            var isUnit = destinationObj.tag == Tag.Unit.ToString();
+            if (buildingValues != null)
+            {
+                size = buildingValues.ObstacleSize;
+            }
+            else if (isUnit)
+            {
+                var sizeVector = destinationObj.GetComponent<Collider>().bounds.extents;
+                sizeVector.y = 0;
+                size = sizeVector.magnitude / Mathf.Sqrt(2);
+            }
+
+            return size;
         }
 
         public static Vector3 GetClosestPointToInteract(this GameObject unit, Vector3 point, float size)
