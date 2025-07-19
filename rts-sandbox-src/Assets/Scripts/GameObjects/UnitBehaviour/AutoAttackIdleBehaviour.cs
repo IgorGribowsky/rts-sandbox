@@ -17,9 +17,16 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
     {
         if (IsActive && !_triggeredOnEnemy && !_returningBackFlag)
         {
+            var allyTeams = _teamController.GetAllyTeams(_teamMember.TeamId);
+
+            if (allyTeams.Contains(args.Target.GetComponent<TeamMember>().TeamId))
+            {
+                return;
+            }
+
             _triggeredOnEnemy = true;
             _damageReceivedFlag = true;
-            _damageReceivedAgressionTimer = Constants.DamageReceivedAgressionTime;
+            _damageReceivedAgressionTimer = GameConstants.DamageReceivedAgressionTime;
             _currentTarget = args.Target;
             IfTargetFoundThen(args.Target);
         }
@@ -63,7 +70,7 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
     {
         var distanceToPath = (gameObject.transform.position - _movePoint).magnitude;
 
-        if (distanceToPath > Constants.PersecutionDistance)
+        if (distanceToPath > GameConstants.PersecutionDistance)
         {
             _triggeredOnEnemy = false;
             _currentTarget = null;

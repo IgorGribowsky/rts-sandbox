@@ -1,5 +1,4 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
-using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;

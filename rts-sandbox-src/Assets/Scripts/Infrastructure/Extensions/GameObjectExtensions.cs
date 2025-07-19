@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Helpers
@@ -28,6 +27,33 @@ namespace Assets.Scripts.Infrastructure.Helpers
             {
                 return float.MaxValue;
             }
+        }
+
+        public static Vector3 GetClosestPointToInteract(this GameObject unit, Vector3 point, float size)
+        {
+            Bounds unitBounds = unit.GetComponent<Renderer>().bounds;
+
+            // Центр здания задан точкой point
+            Vector3 buildingCenter = new Vector3(point.x, 0, point.z);
+
+            // Вычисляем границы будущего здания (квадратного)
+            Bounds buildingBounds = new Bounds(buildingCenter, new Vector3(size / 2, 0, size / 2));
+
+            // Проекция центра юнита на плоскость XZ
+            Vector3 unitCenter = new Vector3(unitBounds.center.x, 0, unitBounds.center.z);
+
+            // Направление от юнита к предполагаемому зданию
+            Vector3 direction = (buildingCenter - unitCenter).normalized;
+
+            // Определяем ближайшую точку на границе предполагаемого здания
+            Vector3 buildingEdgePoint = buildingBounds.ClosestPoint(unitCenter);
+
+            // Сместить ближайшую точку на расстояние радиуса юнита
+            float unitRadius = Mathf.Max(unitBounds.extents.x, unitBounds.extents.z);
+            Vector3 adjustedPoint = buildingEdgePoint - direction * unitRadius;
+
+            // Возвращаем точку, куда юнит должен подойти
+            return adjustedPoint;
         }
 
         public static GameObject GetNearestUnitInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)

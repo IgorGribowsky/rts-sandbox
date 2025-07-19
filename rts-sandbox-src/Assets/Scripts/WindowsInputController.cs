@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
@@ -12,16 +13,25 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
     public KeyCode HoldKey = KeyCode.H;
+    public KeyCode OpenBuildingMenuKey = KeyCode.B;
+    public KeyCode CancelKey = KeyCode.Escape;
+
 
     public bool AClickPressed { get => aClickPressed; }
 
     private CameraController _cameraController;
     private UnitsController _unitController;
     private SelectionBoxController _selectionBoxController;
+    private BuildingController _buildingController;
+    private BuildingGridController _buildingGridController;
+
+    private const float snapStep = 0.25f * GameConstants.GridCellSize;
 
     private bool selectionStarted = false;
     private bool aClickPressed = false;
     private int clickLayerMask;
+    private int buildLayerMask;
+    private Vector3 lastSnappedPosition;
 
     KeyCode[] keypadCodes = new KeyCode[]
         {
@@ -44,13 +54,18 @@ public class WindowsInputController : MonoBehaviour
             Layer.Unit.ToString()
             );
 
+        buildLayerMask = LayerMask.GetMask(Layer.MovementSurface.ToString());
+
         _unitController = Controller.GetComponent<UnitsController>();
+        _buildingController = Controller.GetComponent<BuildingController>();
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
+        _buildingGridController = Controller.GetComponent<BuildingGridController>();
     }
 
     void Update()
     {
+        UpdateMousePosition();
 
         if (!FixScreen)
         {
@@ -75,6 +90,77 @@ public class WindowsInputController : MonoBehaviour
             _cameraController.Move(moveCameraVector * Time.deltaTime);
         }
 
+        if (aClickPressed)
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                aClickPressed = false;
+            }
+
+            if (Input.GetKeyDown(CancelKey))
+            {
+                _buildingController.DisableBuildingMod();
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                {
+                    aClickPressed = false;
+
+                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+                    var gameObject = hit.transform.gameObject;
+                    if (gameObject.layer == (int)Layer.MovementSurface)
+                    {
+                        _unitController.OnGroundAClick(hit.point, isShiftButtonPressed);
+                    }
+                    else if (gameObject.layer == (int)Layer.Unit)
+                    {
+                        _unitController.OnUnitAClick(gameObject, isShiftButtonPressed);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        if (_buildingController.BuildingMod)
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                _buildingController.DisableBuildingMod();
+            }
+
+            if (Input.GetKeyDown(CancelKey))
+            {
+                _buildingController.DisableBuildingMod();
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out var hit, 100f, buildLayerMask))
+                {
+                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+                    _unitController.Build(hit.point, isShiftButtonPressed);
+                }
+            }
+
+            return;
+        }
+
+        if (_buildingController.BuildingMenuMod)
+        {
+            if (AlphabetKeyDown(out KeyCode alphabetKeyDown))
+            {
+                _buildingController.EnableBuildingMod(alphabetKeyDown);
+                return;
+            }
+        }
+
         if (Input.GetKey(KeyCode.Space))
         {
             var center = _unitController.GetTheMostRangedUnitPosition();
@@ -87,26 +173,9 @@ public class WindowsInputController : MonoBehaviour
 
             if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
             {
-                if (aClickPressed)
-                {
-                    aClickPressed = false;
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-                    var gameObject = hit.transform.gameObject;
-                    if (gameObject.layer == (int)Layer.MovementSurface)
-                    {
-                        _unitController.OnGroundAClick(hit.point, isShiftButtonPressed);
-                    }
-                    else if (gameObject.layer == (int)Layer.Unit)
-                    {
-                        _unitController.OnUnitAClick(gameObject, isShiftButtonPressed);
-                    }
-                }
-                else
-                {
-                    selectionStarted = true;
-                    _unitController.StartSelection(hit.point);
-                    _selectionBoxController.StartDrawSelection(hit.point);
-                }
+                selectionStarted = true;
+                _unitController.StartSelection(hit.point);
+                _selectionBoxController.StartDrawSelection(hit.point);
             }
         }
 
@@ -131,25 +200,18 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            if (aClickPressed)
+            var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
             {
-                aClickPressed = false;
-            }
-            else
-            {
-                var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
+                var gameObject = hit.transform.gameObject;
+                if (gameObject.layer == (int)Layer.MovementSurface)
                 {
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-                    var gameObject = hit.transform.gameObject;
-                    if (gameObject.layer == (int)Layer.MovementSurface)
-                    {
-                        _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
-                    }
-                    else if (gameObject.layer == (int)Layer.Unit)
-                    {
-                        _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
-                    }
+                    _unitController.OnGroundRightClick(hit.point, isShiftButtonPressed);
+                }
+                else if (gameObject.layer == (int)Layer.Unit)
+                {
+                    _unitController.OnUnitRightClick(gameObject, isShiftButtonPressed);
                 }
             }
         }
@@ -162,6 +224,11 @@ public class WindowsInputController : MonoBehaviour
         if (Input.GetKeyDown(FixScreenKey))
         {
             FixScreen = !FixScreen;
+        }
+
+        if (Input.GetKeyDown(OpenBuildingMenuKey))
+        {
+            _buildingController.EnableBuildingMenuMod();
         }
 
         if (Input.GetKeyDown(AClickKey))
@@ -195,5 +262,49 @@ public class WindowsInputController : MonoBehaviour
         keypadCodeDown = KeyCode.None;
         num = -1;
         return false;
+    }
+
+    bool AlphabetKeyDown(out KeyCode key)
+    {
+        if (!Input.anyKeyDown) // Проверяем, нажата ли любая клавиша
+        {
+            key = KeyCode.None;
+            return false;
+        }
+
+        foreach (KeyCode potentialKey in System.Enum.GetValues(typeof(KeyCode)))
+        {
+            if (potentialKey >= KeyCode.A && potentialKey <= KeyCode.Z && Input.GetKeyDown(potentialKey))
+            {
+                key = potentialKey;
+                return true;
+            }
+        }
+
+        key = KeyCode.None;
+        return false;
+    }
+
+    private void UpdateMousePosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("MovementSurface")))
+        {
+            Vector3 worldPos = hit.point;
+            Vector3 snappedPos = new Vector3(
+                Mathf.Round(worldPos.x / snapStep) * snapStep,
+                Mathf.Round(worldPos.y / snapStep) * snapStep,
+                Mathf.Round(worldPos.z / snapStep) * snapStep
+            );
+
+            _buildingGridController.MousePosition = worldPos;
+
+            if (snappedPos != lastSnappedPosition)
+            {
+                lastSnappedPosition = snappedPos;
+
+                _buildingGridController.OnCursorMoved();
+            }
+        }
     }
 }

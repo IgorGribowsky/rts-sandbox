@@ -121,6 +121,8 @@ GameObject:
   - component: {fileID: 6893535302923272858}
   - component: {fileID: 7508157542393942931}
   - component: {fileID: 2872808776988141734}
+  - component: {fileID: -4266340262056302114}
+  - component: {fileID: -8631206707906823155}
   - component: {fileID: 3255383013342161207}
   - component: {fileID: 265988409696462404}
   - component: {fileID: 7256198629977255813}
@@ -129,7 +131,7 @@ GameObject:
   m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7361111607302188990
 Transform:
@@ -141,7 +143,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 3, y: 2, z: 3}
+  m_LocalScale: {x: 3.1, y: 2, z: 3.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7179331422999373396}
@@ -345,10 +347,39 @@ MonoBehaviour:
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
   CanProduceUnits: 1
+  IsBuilding: 1
   UnitsToProduce:
   - {fileID: 7849110260153872687, guid: ed8daf302b0b72a499b993230da995be, type: 3}
   - {fileID: 7849110260153872687, guid: 1dbac9f1602e01f47a8bb926fa987f76, type: 3}
   - {fileID: 7849110260153872687, guid: 5898d9bf36c51bb43ad91a459a5a2b6a, type: 3}
+  IsBuilder: 0
+  BuildingsToProduce: []
+--- !u!114 &-4266340262056302114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084684201828076527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73bfd0b0cc0f4e545af4985808ea5037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8631206707906823155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084684201828076527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56e7391706587234abc4447c6f197de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GridSize: 5
+  ObstacleSize: 3
 --- !u!114 &3255383013342161207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +414,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_Extents: {x: 0.48385, y: 0.5, z: 0.48385}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
