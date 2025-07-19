@@ -3,10 +3,8 @@ using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -189,7 +187,8 @@ public class UnitsController : MonoBehaviour
 
         point.y = 0.5f;
 
-        foreach (var unit in SelectedUnits)
+        var movableSelectedUnits = GetMovableSelectedUnits();
+        foreach (var unit in movableSelectedUnits)
         {
             var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
             var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
@@ -443,7 +442,9 @@ public class UnitsController : MonoBehaviour
         var arrayDownSize = 1;
         var insertDirectionIsRight = false;
 
-        foreach (var unit in SelectedUnits)
+        var movableSelectedUnits = GetMovableSelectedUnits();
+
+        foreach (var unit in movableSelectedUnits)
         {
             int insertIndexX;
             int insertIndexY;
@@ -471,7 +472,7 @@ public class UnitsController : MonoBehaviour
             SelectedUnitsMovementMask.Add(unitId, value);
             unitsInserted++;
 
-            if (unitsInserted == SelectedUnits.Count)
+            if (unitsInserted == movableSelectedUnits.Count)
             {
                 break;
             }
@@ -492,12 +493,19 @@ public class UnitsController : MonoBehaviour
 
         var centerPoint = (arrayRightSize / 2.0f, arrayDownSize / 2.0f);
 
-        foreach (var unit in SelectedUnits)
+        foreach (var unit in movableSelectedUnits)
         {
             var value = SelectedUnitsMovementMask[unit.GetInstanceID()];
 
             value.PositionFromCenter = new Vector3(value.PositionX - centerPoint.Item1 + 0.5f, 0, value.PositionY - centerPoint.Item2 + 0.5f);
         }
+    }
+
+    private List<GameObject> GetMovableSelectedUnits()
+    {
+        return SelectedUnits
+            .Where(x => x.GetComponent<MovementBehaviour>() != null)
+            .ToList();
     }
 
     public class UnitMovementMask
