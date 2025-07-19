@@ -1,7 +1,6 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class UnitEventManager : MonoBehaviour
