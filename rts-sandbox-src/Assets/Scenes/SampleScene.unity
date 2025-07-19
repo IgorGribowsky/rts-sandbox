@@ -6977,6 +6977,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5603141132111939247, guid: 17b4e09052fb2f44da6d03daa5bace6a, type: 3}
+      propertyPath: ResourcesAmount
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 8439110323046605351, guid: 17b4e09052fb2f44da6d03daa5bace6a, type: 3}
       propertyPath: m_Name
       value: mine_held

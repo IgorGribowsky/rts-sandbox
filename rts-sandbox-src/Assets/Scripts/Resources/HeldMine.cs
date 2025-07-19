@@ -55,6 +55,7 @@ public class HeldMine : MonoBehaviour
         if (_resouceValues.ResourcesAmount <= 0)
         {
             Destroy(gameObject);
+             _buildingController.OnBuildingRemoved(gameObject);
         }
 
         if (_miners.Count == 0f)
@@ -122,9 +123,9 @@ public class HeldMine : MonoBehaviour
         var point = gameObject.transform.position;
         var mine = Instantiate(ParentMine, point, gameObject.transform.rotation);
         _buildingController.OnBuildingStarted(point, null, mine);
-        var mineBuildingValues = mine.GetComponent<ResourceValues>();
+        var mineResourceValues = mine.GetComponent<ResourceValues>();
 
-        mineBuildingValues.ResourcesAmount = _resouceValues.ResourcesAmount;
+        mineResourceValues.ResourcesAmount = _resouceValues.ResourcesAmount;
     }
 
 
