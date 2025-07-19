@@ -75,6 +75,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
                 if (_triggeredOnEnemy)
                 {
                     _triggeredOnEnemy = false;
+                    _attackBehaviour.IsActive = false;
                     IfTargetNotFoundThen();
                 }
             }

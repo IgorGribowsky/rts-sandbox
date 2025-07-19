@@ -17,7 +17,6 @@ public class AMovementBehaviour : AutoAttackingBehaviourBase
     protected override void IfNoTargetUpdate()
     {
         var differenceVector = _movePoint - transform.position;
-        var destinationDifVector = _navmeshMovement.Destination - _movePoint;
         differenceVector.y = 0;
 
         if (differenceVector.magnitude <= _navmeshMovement.StoppingDistance)
@@ -28,10 +27,6 @@ public class AMovementBehaviour : AutoAttackingBehaviourBase
             {
                 _unitEventManager.OnAMoveActionEnded();
             }
-        }
-        else if (destinationDifVector.magnitude >= _navmeshMovement.StoppingDistance)
-        {
-            _navmeshMovement.Go(_movePoint);
         }
     }
 

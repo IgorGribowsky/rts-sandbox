@@ -40,12 +40,16 @@ public class NavMeshMovement : MonoBehaviour
     {
         _goToObjectFlag = false;
 
-        if (!_navmeshAgent.destination.IsEqual(destination))
+        var differenceVector = _navmeshAgent.destination - destination;
+        differenceVector.y = 0;
+
+        if (differenceVector != Vector3.zero)
         {
             _navmeshAgent.avoidancePriority = 90;
             _navmeshAgent.destination = destination;
         }
     }
+
 
     public void GoToObject(GameObject destinationObj, float distance)
     {
