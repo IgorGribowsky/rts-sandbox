@@ -38,6 +38,12 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         {
             attackCD -= Time.deltaTime;
         }
+
+        if (!IsActive)
+        {
+            attackIsProcessing = false;
+            attackAnimation = 0;
+        }
     }
 
     protected override void UpdateAction()
