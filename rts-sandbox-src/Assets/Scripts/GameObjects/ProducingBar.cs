@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class ProducingBar : BarBase
 {
     private UnitProducing _unitProducing;
@@ -13,13 +15,13 @@ public class ProducingBar : BarBase
 
     void Update()
     {
-        //if (_unitProducing.CurrentProducingTimer <= 0)
-        //{
-        //    return;
-        //}
+        if (_unitProducing.ProductionTime == 0)
+        {
+            UpdateBar(1);
+            return;
+        }
 
-        var percent = _unitProducing.ProductionTime - _unitProducing.CurrentProducingTimer / _unitProducing.ProductionTime;
-
+        var percent = 1 - _unitProducing.CurrentProducingTimer / _unitProducing.ProductionTime;
         UpdateBar(percent);
     }
 }

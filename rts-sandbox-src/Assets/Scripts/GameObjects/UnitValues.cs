@@ -7,6 +7,8 @@ public class UnitValues : MonoBehaviour
 {
     public int Id = 0;
 
+    public bool IsInvulnerable = false;
+
     public float CurrentHp = 100;
 
     public float MaximumHp = 100;
@@ -40,15 +42,34 @@ public class UnitValues : MonoBehaviour
 
     public GameObject RangeAttackProjectile = null;
 
-    public bool CanProduceUnits = false;
+    public List<ResourceAmount> ResourceCost = new List<ResourceAmount>();
+
+    public List<ResourceAmount> SupplyResourceProduces = new List<ResourceAmount>();
 
     public bool IsBuilding = false;
 
+    //Move to BuildingValues
+    public bool CanProduceUnits = false;
+
     public List<GameObject> UnitsToProduce = new List<GameObject>();
+    //Move to BuildingValues
 
     public bool IsBuilder = false;
 
     public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
+
+
+    public bool IsMiner = false;
+
+    public bool IsHarvestor = false;
+
+    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+
+    public float HarvestingRate = 1f;
+
+    public int HarvestingValuePerTick = 1;
+
+    public int HarvestingMaxValue = 10;
 }
 
 [Serializable]

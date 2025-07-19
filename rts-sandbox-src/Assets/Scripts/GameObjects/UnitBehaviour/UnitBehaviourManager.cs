@@ -15,8 +15,12 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private RangeAttackingBehaviour _rangeAttackingBehaviour;
         private AMovementBehaviour _aMovementBehaviour;
         private AutoAttackIdleBehaviour _autoAttackIdleBehaviour;
+        private AutoAttackBuildingBehaviour _autoAttackBuildingBehaviour;
         private HoldingBehaviour _holdingBehaviour;
         private BuildingBehaviour _buildingBehaviour;
+        private MiningBehaviour _miningBehaviour;
+        private HarvestingBehaviour _harvestingBehaviour;
+
 
         public void Awake()
         {
@@ -64,6 +68,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 _unitEventManager.AutoAttackIdleStarted += StartAutoAttackIdle;
             }
 
+            _autoAttackBuildingBehaviour = GetComponent<AutoAttackBuildingBehaviour>();
+            if (_autoAttackBuildingBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_autoAttackBuildingBehaviour);
+                _unitEventManager.AutoAttackIdleStarted += StartAutoAttackBuilding;
+            }
+
             _holdingBehaviour = GetComponent<HoldingBehaviour>();
             if (_holdingBehaviour != null)
             {
@@ -77,62 +88,98 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_buildingBehaviour);
                 _unitEventManager.BuildActionStarted += StartBuildingBehaviour;
             }
+
+            _miningBehaviour = GetComponent<MiningBehaviour>();
+            if (_miningBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_miningBehaviour);
+                _unitEventManager.MineActionStarted += StartMiningBehaviour;
+            }
+
+            _harvestingBehaviour = GetComponent<HarvestingBehaviour>();
+            if (_harvestingBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_harvestingBehaviour);
+                _unitEventManager.HarvestingActionStarted += StartHarvestingBehaviour;
+            }
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _movementBehaviour.StartAction(args);
             _movementBehaviour.IsActive = true;
+            _movementBehaviour.StartAction(args);
         }
 
         private void StartFollowingBehaviour(FollowActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _followingBehaviour.StartAction(args);
             _followingBehaviour.IsActive = true;
+            _followingBehaviour.StartAction(args);
         }
 
         private void StartRangeAttackingBehaviour(AttackActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _rangeAttackingBehaviour.StartAction(args);
             _rangeAttackingBehaviour.IsActive = true;
+            _rangeAttackingBehaviour.StartAction(args);
         }
 
         private void StartMeleeAttackingBehaviour(AttackActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _meleeAttackingBehaviour.StartAction(args);
             _meleeAttackingBehaviour.IsActive = true;
+            _meleeAttackingBehaviour.StartAction(args);
         }
 
         private void StartAMovementBehaviour(MoveActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _aMovementBehaviour.StartAction(args);
             _aMovementBehaviour.IsActive = true;
+            _aMovementBehaviour.StartAction(args);
         }
 
         private void StartAutoAttackIdle(AutoAttackIdleStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
             _autoAttackIdleBehaviour.IsActive = true;
+            _autoAttackIdleBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
         }
+
+        private void StartAutoAttackBuilding(AutoAttackIdleStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _autoAttackBuildingBehaviour.IsActive = true;
+            _autoAttackBuildingBehaviour.StartAction(new MoveActionStartedEventArgs(args.MovePoint));
+        }
+
 
         private void StartHoldingBehaviour(HoldActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _holdingBehaviour.StartAction(args);
             _holdingBehaviour.IsActive = true;
+            _holdingBehaviour.StartAction(args);
         }
 
         private void StartBuildingBehaviour(BuildActionStartedEventArgs args)
         {
             UnitBehaviourCases.ForEach(x => x.IsActive = false);
-            _buildingBehaviour.StartAction(args);
             _buildingBehaviour.IsActive = true;
+            _buildingBehaviour.StartAction(args);
+        }
+
+        private void StartMiningBehaviour(MineActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _miningBehaviour.IsActive = true;
+            _miningBehaviour.StartAction(args);
+        }
+
+        private void StartHarvestingBehaviour(HarvestingActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+            _harvestingBehaviour.IsActive = true;
+            _harvestingBehaviour.StartAction(args);
         }
     }
 }

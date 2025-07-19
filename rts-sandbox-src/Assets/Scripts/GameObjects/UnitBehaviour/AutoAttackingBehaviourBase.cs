@@ -1,4 +1,5 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
@@ -39,7 +40,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
     public override void StartAction(EventArgs args)
     {
         var actionArgs = args as MoveActionStartedEventArgs;
-        if (actionArgs != null)
+        if (actionArgs != null && _navmeshMovement != null)
         {
             _movePoint = actionArgs.MovePoint;
             _navmeshMovement.Go(_movePoint);
@@ -66,7 +67,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
             var target = gameObject.GetNearestUnitInRadius(_unitValues.AutoAttackDistance, unit =>
             {
                 var teamMember = unit.GetComponent<TeamMember>();
-                return teamMember != null && enemyTeamIds.Contains(teamMember.TeamId);
+                return teamMember != null && enemyTeamIds.Contains(teamMember.TeamId) && unit.CanBeAttacked(_unitValues.DamageType);
             });
 
             if (target == null)
@@ -96,6 +97,9 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
 
     protected virtual void IfTargetNotFoundThen()
     {
-        _navmeshMovement.Go(_movePoint);
+        if (_navmeshMovement != null)
+        {
+            _navmeshMovement.Go(_movePoint);
+        }
     }
 }

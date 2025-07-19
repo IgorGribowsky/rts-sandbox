@@ -13,6 +13,7 @@ TagManager:
   - ActiveBar
   - GridSegment
   - Obstacle
+  - HarvestedResource
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - UI
   - MovementSurface
   - Unit
-  - 
+  - HarvestedResource
   - 
   - 
   - 

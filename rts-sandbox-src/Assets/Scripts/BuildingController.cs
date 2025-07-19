@@ -6,6 +6,7 @@ public class BuildingController : MonoBehaviour
 {
     private UnitsController _unitController;
     private BuildingGridController _buildingGridController;
+    private PlayerResources _playerResources;
 
     private bool _buildingMenuMod = false;
     public bool BuildingMenuMod { get { return _buildingMenuMod; } }
@@ -40,6 +41,7 @@ public class BuildingController : MonoBehaviour
     {
         _unitController = gameObject.GetComponent<UnitsController>();
         _buildingGridController = gameObject.GetComponent<BuildingGridController>();
+        _playerResources = gameObject.GetComponent<PlayerResources>();
     }
 
     public void EnableBuildingMenuMod()
@@ -82,29 +84,79 @@ public class BuildingController : MonoBehaviour
         OnBuildingModChanged(_buildingMod);
     }
 
-    public void Build(Vector3 point, GameObject building, int teamId, GameObject builder = null)
+    public void Build(BuildActionStartedEventArgs eventArgs, int teamId, GameObject builder = null)
     {
-        var buildingSize = building.GetComponent<BuildingValues>().GridSize;
+        var building = eventArgs.Building;
+        var point = eventArgs.Point;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(point, buildingSize, builder))
-        {
-            Debug.Log("Can't build here!");
-            return;
-        }
+        if (!CanBuild(building, point, builder)) return;
+        if (!TrySpendResources(building)) return;
 
-        var unit = Instantiate(building, point, building.transform.rotation);
-
-        var renderer = unit.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            float offsetY = renderer.bounds.extents.y;
-            unit.transform.position = new Vector3(point.x, point.y + offsetY, point.z);
-        }
-
+        var unit = InstantiateBuilding(building, point);
         unit.GetComponent<TeamMember>().TeamId = teamId;
-
         unit.GetComponent<Building>().Build();
 
         OnBuildingStarted(point, builder, unit);
+        HandleMineToHeld(eventArgs);
+    }
+
+    private bool CanBuild(GameObject building, Vector3 point, GameObject builder)
+    {
+        var buildingValues = building.GetComponent<BuildingValues>();
+        if (buildingValues.IsHeldMine)
+            return true;
+
+        if (!_buildingGridController.CheckIfCanBuildAt(point, buildingValues.GridSize, builder))
+        {
+            Debug.Log("Can't build here!");
+            return false;
+        }
+        return true;
+    }
+
+    private bool TrySpendResources(GameObject building)
+    {
+        var resourceCost = building.GetComponent<UnitValues>().ResourceCost.ToArray();
+
+        if (!_playerResources.CheckIfCanSpendResources(resourceCost))
+        {
+            Debug.Log("Not enough resources!");
+            return false;
+        }
+
+        if (!_playerResources.CheckIfHaveSupply(resourceCost))
+        {
+            Debug.Log("Not enough supply!");
+            return false;
+        }
+
+        _playerResources.SpendResources(resourceCost);
+        return true;
+    }
+
+    private GameObject InstantiateBuilding(GameObject building, Vector3 point)
+    {
+        var unit = Instantiate(building, point, building.transform.rotation);
+        AdjustBuildingPosition(unit);
+        return unit;
+    }
+
+    private void AdjustBuildingPosition(GameObject unit)
+    {
+        var buildingValues = unit.GetComponent<BuildingValues>();
+        if (!buildingValues.IsHeldMine)
+        {
+            float offsetY = unit.transform.localScale.y / 2f;
+            unit.transform.position += new Vector3(0, offsetY, 0);
+        }
+    }
+
+    private void HandleMineToHeld(BuildActionStartedEventArgs eventArgs)
+    {
+        if (eventArgs.MineToHeld != null)
+        {
+            OnBuildingRemoved(eventArgs.MineToHeld);
+            Destroy(eventArgs.MineToHeld);
+        }
     }
 }

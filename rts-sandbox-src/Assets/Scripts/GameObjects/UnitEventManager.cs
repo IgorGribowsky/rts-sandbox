@@ -1,6 +1,7 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class UnitEventManager : MonoBehaviour
@@ -105,15 +106,21 @@ public class UnitEventManager : MonoBehaviour
     }
 
     public event BuildCommandReceivedHandler BuildCommandReceived;
-    public void OnBuildCommandReceived(Vector3 point, GameObject building, bool addToCommandsQueue = false)
+    public void OnBuildCommandReceived(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld, bool addToCommandsQueue = false)
     {
-        BuildCommandReceived?.Invoke(new BuildCommandReceivedEventArgs(point, building, addToCommandsQueue));
+        BuildCommandReceived?.Invoke(new BuildCommandReceivedEventArgs(point, building, isMineHeld, mineToHeld, addToCommandsQueue));
     }
 
     public event BuildActionStartedHandler BuildActionStarted;
-    public void OnBuildActionStarted(Vector3 point, GameObject building)
+    public void OnBuildActionStarted(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld)
     {
-        BuildActionStarted?.Invoke(new BuildActionStartedEventArgs(point, building));
+        BuildActionStarted?.Invoke(new BuildActionStartedEventArgs(point, building, isMineHeld, mineToHeld));
+    }
+
+    public event BuildingCompletedHandler BuildingCompleted;
+    public void OnBuildingCompleted(GameObject building)
+    {
+        BuildingCompleted?.Invoke(new BuildingCompletedEventArgs(building));
     }
 
     public event BuildActionEndedHandler BuildActionEnded;
@@ -144,5 +151,41 @@ public class UnitEventManager : MonoBehaviour
     public void OnCalledToAttack(GameObject caller, GameObject target)
     {
         CalledToAttack?.Invoke(new CalledToAttackEventArgs(caller, target));
+    }
+
+    public event MineCommandReceivedHandler MineCommandReceived;
+    public void OnMineCommandReceived(GameObject mine, bool addToCommandsQueue = false)
+    {
+        MineCommandReceived?.Invoke(new MineCommandReceivedEventArgs(mine, addToCommandsQueue));
+    }
+
+    public event MineActionStartedHandler MineActionStarted;
+    public void OnMineActionStarted(GameObject mine)
+    {
+        MineActionStarted?.Invoke(new MineActionStartedEventArgs(mine));
+    }
+
+    public event MineActionEndedHandler MineActionEnded;
+    public void OnMineActionEnded()
+    {
+        MineActionEnded?.Invoke(new EventArgs());
+    }
+
+    public event HarvestingCommandReceivedHandler HarvestingCommandReceived;
+    public void OnHarvestingCommandReceived(GameObject resource, GameObject storage, bool toStorage, bool addToCommandsQueue = false)
+    {
+        HarvestingCommandReceived?.Invoke(new HarvestingCommandReceivedEventArgs(resource, storage, toStorage, addToCommandsQueue));
+    }
+
+    public event HarvestingActionStartedHandler HarvestingActionStarted;
+    public void OnHarvestingActionStarted(GameObject resource, GameObject storage, bool toStorage)
+    {
+        HarvestingActionStarted?.Invoke(new HarvestingActionStartedEventArgs(resource, storage, toStorage));
+    }
+
+    public event HarvestingActionEndedHandler HarvestingActionEnded;
+    public void OnHarvestingActionEnded()
+    {
+        HarvestingActionEnded?.Invoke(new EventArgs());
     }
 }

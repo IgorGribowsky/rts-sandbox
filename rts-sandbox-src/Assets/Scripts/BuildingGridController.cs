@@ -13,11 +13,15 @@ public class BuildingGridController : MonoBehaviour
     public Vector3 startGridPoint = new Vector3(-50f, 0.1f, -50f);
     public Vector2 gridSize = new Vector2(100f, 100f);
 
+    public GameObject UnitUnderCursor { get; set; }
+
     public Vector3 MousePosition { get; set; }
 
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
     private BuildingController _buildingController;
-    private GameObject CursorGrid;
+    private GameObject cursorGrid;
+
+    private bool isMineUnderCursor = false;
 
     public void Awake()
     {
@@ -30,7 +34,7 @@ public class BuildingGridController : MonoBehaviour
 
     public void Start()
     {
-        CursorGrid = new GameObject();
+        cursorGrid = new GameObject();
         GenerateRestrictedGridCells();
     }
 
@@ -49,7 +53,7 @@ public class BuildingGridController : MonoBehaviour
                 continue;
             }
 
-            if (collider.CompareTag(Tag.Unit.ToString()) 
+            if (collider.CompareTag(Tag.Unit.ToString())
                 || (collider.CompareTag(Tag.GridSegment.ToString()) && collider.GetComponent<GridSegment>().Restricted))
             {
                 return false;
@@ -61,7 +65,14 @@ public class BuildingGridController : MonoBehaviour
 
     protected void AddToGrid(BuildingStartedEventArgs buildingStartedEventArgs)
     {
-        GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point);
+        var buildingValues = buildingStartedEventArgs.Building.GetComponent<BuildingValues>();
+
+        if (buildingValues == null)
+        {
+            return;
+        }
+
+        GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues);
     }
 
     protected void RemoveFromGrid(BuildingRemovedEventArgs buildingRemovedEventArgs)
@@ -79,36 +90,78 @@ public class BuildingGridController : MonoBehaviour
         _gridForBuildings.Remove(grid);
     }
 
+    public bool CheckIfMineUnderCursor()
+    {
+        var buildingValues = UnitUnderCursor?.GetComponent<BuildingValues>();
+        var currentBuildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+
+        var isMine = false;
+
+        if (buildingValues != null && currentBuildingValues != null && buildingValues.IsResource && currentBuildingValues.IsResource)
+        {
+            var resourceValues = UnitUnderCursor.GetComponent<ResourceValues>();
+            var currentResourceValues = _buildingController.Building.GetComponent<ResourceValues>();
+            isMine = resourceValues.IsMine && currentResourceValues.IsHeldMine && resourceValues.ResourceName == currentResourceValues.ResourceName;
+        }
+
+        return isMine;
+    }
     public void OnCursorMoved()
     {
-        if (_buildingController.BuildingMod)
-        {
-            var gridSize = _buildingController.Building.GetComponent<BuildingValues>().GridSize;
+        if (!_buildingController.BuildingMod) return;
 
-            var position = MousePosition.GetGridPoint(gridSize);
-
-            CursorGrid.transform.position = position;
-        }
+        UpdateCursorPosition();
     }
 
     protected void BuildingModChangedHandler(ModStateChangedEventArgs modStateChangedEventArgs)
     {
-        if (modStateChangedEventArgs.State == true)
+        if (modStateChangedEventArgs.State)
         {
-            var gridSize = _buildingController.Building.GetComponent<BuildingValues>().GridSize;
-
-            var position = MousePosition.GetGridPoint(gridSize);
-
-            CursorGrid.transform.position = position;
-
-            GenerateGridForCursor(CursorGrid, gridSize);
+            HandleModEnabled();
         }
         else
         {
-            foreach (Transform gridSegment in CursorGrid.transform)
+            DestroyGridForCursor();
+        }
+    }
+
+    private void HandleModEnabled()
+    {
+        var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+
+        UpdateCursorPosition();
+        GenerateGridForCursor(cursorGrid, buildingValues.GridSize, buildingValues.IsHeldMine);
+    }
+
+    private void UpdateCursorPosition()
+    {
+        var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+        isMineUnderCursor = CheckIfMineUnderCursor();
+
+        if (isMineUnderCursor)
+        {
+            cursorGrid.transform.position = UnitUnderCursor.transform.position;
+        }
+        else
+        {
+            var gridSize = buildingValues.GridSize;
+            cursorGrid.transform.position = MousePosition.GetGridPoint(gridSize);
+        }
+
+        if (buildingValues.IsHeldMine)
+        {
+            foreach (Transform gridSegment in cursorGrid.transform)
             {
-                Destroy(gridSegment.gameObject);
+                gridSegment.GetComponent<GridSegment>().Restricted = !isMineUnderCursor;
             }
+        }
+    }
+
+    private void DestroyGridForCursor()
+    {
+        foreach (Transform gridSegment in cursorGrid.transform)
+        {
+            Destroy(gridSegment.gameObject);
         }
     }
 
@@ -120,6 +173,8 @@ public class BuildingGridController : MonoBehaviour
         GenerateForBuildings(bottomLeft, topRight);
 
         GenerateForStaticObjects(bottomLeft, topRight);
+
+        GenerateForHarvestedResources(bottomLeft, topRight);
     }
 
     private void GenerateForBuildings(Vector3 bottomLeft, Vector3 topRight)
@@ -128,16 +183,41 @@ public class BuildingGridController : MonoBehaviour
 
         foreach (var collider in colliders)
         {
-            if (!collider.CompareTag(Tag.Unit.ToString()))
+            if (collider.CompareTag(Tag.Unit.ToString()))
             {
-                continue;
-            }
+                var buildingValues = collider.gameObject.GetComponent<BuildingValues>();
 
-            GenerateGridForBuilding(collider.gameObject, collider.transform.position);
+                if (buildingValues == null)
+                {
+                    continue;
+                }
+
+                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
+            }
         }
     }
 
-    private void GenerateGridForCursor(GameObject cursorGameObject, int gridSize)
+    private void GenerateForHarvestedResources(Vector3 bottomLeft, Vector3 topRight)
+    {
+        Collider[] colliders = Physics.OverlapBox((bottomLeft + topRight) / 2, (topRight - bottomLeft) / 2, Quaternion.identity);
+
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag(Tag.HarvestedResource.ToString()))
+            {
+                var buildingValues = collider.gameObject.GetComponent<BuildingValues>();
+
+                if (buildingValues == null)
+                {
+                    continue;
+                }
+
+                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
+            }
+        }
+    }
+
+    private void GenerateGridForCursor(GameObject cursorGameObject, int gridSize, bool isHeldMine)
     {
         var shift = gridSize / 2.0f;
 
@@ -155,21 +235,15 @@ public class BuildingGridController : MonoBehaviour
                 gridSegment.transform.localPosition = yCorrectedPosition;
 
                 var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
-                gridSegmentScript.Restricted = false;
+                var isMineUnderCursor = CheckIfMineUnderCursor();
+                gridSegmentScript.Restricted = isHeldMine && !isMineUnderCursor;
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
             }
         }
     }
 
-    private void GenerateGridForBuilding(GameObject building, Vector3 buildingPosition)
+    private void GenerateGridForBuilding(GameObject building, Vector3 buildingPosition, BuildingValues buildingValues)
     {
-        var buildingValues = building.GetComponent<BuildingValues>();
-
-        if (buildingValues == null)
-        {
-            return;
-        }
-
         var buildingSize = buildingValues.GridSize;
         var shift = buildingSize / 2.0f;
 

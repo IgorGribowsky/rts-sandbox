@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 912157603705236216}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 2144446756044836221}
+  - component: {fileID: 3768760872745874438}
   m_Layer: 7
   m_Name: Giant Unit
   m_TagString: Unit
@@ -180,24 +181,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 3
+  IsInvulnerable: 0
   CurrentHp: 400
   MaximumHp: 400
   MovementSpeed: 5
   Rang: 100
-  ProducingTime: 1
+  ProducingTime: 20
   Damage: 26
   AutoAttackDistance: 8
   AttackRate: 1.4
   AttackDurationPercent: 0.5
   DamageType: 0
   AttackBreakDistance: 3.4
-  MeleeAttackDistance: 0
+  MeleeAttackDistance: 0.1
   HasRangeAttack: 0
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 240
+  - ResourceName: 3
+    Amount: 4
+  IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []
+  IsBuilder: 0
+  BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,7 +228,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7849110260153872687}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -1637299086236206407, guid: 062a0b223d4840547b14f72e0f6b5e0c, type: 3}
 --- !u!114 &8095036300992891173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,5 +490,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c530658d92b91a74bbf5be39f02573d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3768760872745874438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a601245bbad59784f8977df8a387ffcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

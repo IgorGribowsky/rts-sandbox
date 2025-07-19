@@ -46,7 +46,12 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
         if (Target == null)
         {
             IsActive = false;
-            _navmeshMovement.Stop();
+
+            if (_navmeshMovement != null)
+            {
+                _navmeshMovement.Stop();
+            }
+
             if (TriggerEndEventFlag)
             {
                 _unitEventManager.OnAttackActionEnded();
@@ -56,14 +61,18 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
 
-        if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
+        if (_navmeshMovement != null)
         {
-            _navmeshMovement.Go(Target.transform.position);
+            if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
+            {
+                _navmeshMovement.Go(Target.transform.position);
+            }
+            else
+            {
+                _navmeshMovement.Stop();
+            }
         }
-        else
-        {
-            _navmeshMovement.Stop();
-        }
+
 
         if (distanceToTarget < _unitValues.RangeAttackDistance
             && attackCD <= 0
