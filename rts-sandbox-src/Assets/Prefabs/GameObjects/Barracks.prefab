@@ -330,11 +330,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 4
+  IsInvulnerable: 0
   CurrentHp: 500
   MaximumHp: 500
   MovementSpeed: 0
   Rang: 100
-  ProducingTime: 40
+  ProducingTime: 30
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 1
@@ -346,14 +347,18 @@ MonoBehaviour:
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
-  CanProduceUnits: 1
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 200
   IsBuilding: 1
+  CanProduceUnits: 1
   UnitsToProduce:
   - {fileID: 7849110260153872687, guid: ed8daf302b0b72a499b993230da995be, type: 3}
   - {fileID: 7849110260153872687, guid: 1dbac9f1602e01f47a8bb926fa987f76, type: 3}
   - {fileID: 7849110260153872687, guid: 5898d9bf36c51bb43ad91a459a5a2b6a, type: 3}
   IsBuilder: 0
   BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &-4266340262056302114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,6 +385,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 5
   ObstacleSize: 3
+  IsMine: 0
+  IsHeldMine: 0
+  ResourceName: 0
+  IsHarvestableResource: 0
+  ResourcesAmount: 0
 --- !u!114 &3255383013342161207
 MonoBehaviour:
   m_ObjectHideFlags: 0

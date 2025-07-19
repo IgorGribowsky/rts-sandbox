@@ -3,6 +3,7 @@
     public enum Layer
     {
         MovementSurface = 6,
-        Unit = 7
+        Unit = 7,
+        HarvestedResource = 8,
     }
 }

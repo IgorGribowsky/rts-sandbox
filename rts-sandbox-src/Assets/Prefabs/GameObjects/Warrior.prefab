@@ -127,13 +127,13 @@ GameObject:
   - component: {fileID: -1946789511484751996}
   - component: {fileID: -8353055866858728281}
   - component: {fileID: 4867899262287332417}
-  - component: {fileID: -8828656826048325992}
+  - component: {fileID: 8833634646208351774}
   - component: {fileID: -7551129065762226784}
-  - component: {fileID: 3464892157770458886}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 8363517768491279335}
+  - component: {fileID: -8076983816588526718}
   m_Layer: 7
-  m_Name: Unit
+  m_Name: Warrior
   m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -181,31 +181,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 1
-  CurrentHp: 150
-  MaximumHp: 150
+  IsInvulnerable: 0
+  CurrentHp: 140
+  MaximumHp: 140
   MovementSpeed: 5
   Rang: 50
-  ProducingTime: 1
-  Damage: 8
+  ProducingTime: 12
+  Damage: 9
   AutoAttackDistance: 8
   AttackRate: 1.4
   AttackDurationPercent: 0.5
   DamageType: 0
   AttackBreakDistance: 2.2
-  MeleeAttackDistance: 0
+  MeleeAttackDistance: 0.1
   HasRangeAttack: 0
   RangeAttackDistance: 10
   ProjectileSpeed: 12
   RangeAttackProjectile: {fileID: 0}
-  CanProduceUnits: 0
+  ResourceCost:
+  - ResourceName: 1
+    Amount: 100
+  - ResourceName: 3
+    Amount: 2
   IsBuilding: 0
+  CanProduceUnits: 0
   UnitsToProduce: []
-  IsBuilder: 1
-  BuildingsToProduce:
-  - KeyCode: 98
-    Building: {fileID: 9084684201828076527, guid: c19deef7248a12a499233126e8a5cc7a, type: 3}
-  - KeyCode: 116
-    Building: {fileID: 9084684201828076527, guid: 0707842918ec84247b497bc518daad4d, type: 3}
+  IsBuilder: 0
+  BuildingsToProduce: []
+  IsMiner: 0
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,7 +228,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7849110260153872687}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -1637299086236206407, guid: 062a0b223d4840547b14f72e0f6b5e0c, type: 3}
 --- !u!114 &8095036300992891173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,7 +442,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-8828656826048325992
+--- !u!114 &8833634646208351774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -461,18 +464,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3464892157770458886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a840fb1e7da0117408e4543f6b87d2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6873323525821280569
@@ -499,5 +490,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c530658d92b91a74bbf5be39f02573d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8076983816588526718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a601245bbad59784f8977df8a387ffcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

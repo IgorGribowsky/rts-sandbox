@@ -7,6 +7,7 @@
         ActiveBar,
         GridSegment,
         Unit,
+        HarvestedResource,
         Obstacle,
     }
 }

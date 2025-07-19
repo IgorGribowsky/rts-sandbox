@@ -2,6 +2,7 @@
 using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Assets.Scripts.GameObjects
 {
@@ -9,6 +10,8 @@ namespace Assets.Scripts.GameObjects
     {
         public List<string> CommandListInfo;
         public string CurrentRunningCommandInfo;
+
+        public bool HasCommandInQueue { get => CommandsQueue.Any(); }
 
         private UnitEventManager _unitEventManager;
 
@@ -25,13 +28,16 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
             _unitEventManager.HoldCommandReceived += StartHoldCommand;
             _unitEventManager.BuildCommandReceived += StartBuildCommand;
+            _unitEventManager.MineCommandReceived += StartMineCommand;
+            _unitEventManager.HarvestingCommandReceived += StartHarvestingCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
             _unitEventManager.AttackActionEnded += RunNextCommand;
             _unitEventManager.FollowActionEnded += RunNextCommand;
             _unitEventManager.AMoveActionEnded += RunNextCommand;
             _unitEventManager.BuildActionEnded += RunNextCommand;
-
+            _unitEventManager.MineActionEnded += RunNextCommand;
+            _unitEventManager.HarvestingActionEnded += RunNextCommand;
         }
 
         private void Start()
@@ -82,6 +88,20 @@ namespace Assets.Scripts.GameObjects
             var buildCommand = new BuildCommand(_unitEventManager, args);
 
             StartCommand(buildCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartMineCommand(MineCommandReceivedEventArgs args)
+        {
+            var mineCommand = new MineCommand(_unitEventManager, args);
+
+            StartCommand(mineCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartHarvestingCommand(HarvestingCommandReceivedEventArgs args)
+        {
+            var harvestingCommand = new HarvestingCommand(_unitEventManager, args);
+
+            StartCommand(harvestingCommand, args.AddToCommandsQueue);
         }
 
         protected void RunNextCommand(EventArgs args)
@@ -253,7 +273,7 @@ namespace Assets.Scripts.GameObjects
 
             public void Start()
             {
-                _unitEventManager.OnBuildActionStarted(args.Point, args.Building);
+                _unitEventManager.OnBuildActionStarted(args.Point, args.Building, args.IsMineHeld, args.MineToHeld);
             }
         }
 
@@ -279,6 +299,53 @@ namespace Assets.Scripts.GameObjects
                 _unitEventManager.OnHoldActionStarted();
             }
         }
+
+        private class MineCommand : ICommand
+        {
+            public MineCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public MineCommand(UnitEventManager unitEventManager, MineCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return args.Mine != null;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnMineActionStarted(args.Mine);
+            }
+        }
+
+        private class HarvestingCommand : ICommand
+        {
+            public HarvestingCommandReceivedEventArgs args;
+
+            private UnitEventManager _unitEventManager;
+
+            public HarvestingCommand(UnitEventManager unitEventManager, HarvestingCommandReceivedEventArgs args)
+            {
+                this.args = args;
+                _unitEventManager = unitEventManager;
+            }
+
+            public bool Check()
+            {
+                return true;
+            }
+
+            public void Start()
+            {
+                _unitEventManager.OnHarvestingActionStarted(args.Resource, args.Storage, args.ToStorage);
+            }
+        }
+
         #endregion
     }
 }

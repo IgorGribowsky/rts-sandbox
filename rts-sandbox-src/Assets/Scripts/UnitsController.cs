@@ -1,8 +1,12 @@
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
+using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -18,6 +22,7 @@ public class UnitsController : MonoBehaviour
     private GameController _gameController;
     private BuildingController _buildingController;
     private BuildingGridController _buildingGridController;
+    private PlayerResources _playerResources;
 
     private int playerTeamId;
 
@@ -38,6 +43,7 @@ public class UnitsController : MonoBehaviour
         _gameController = gameController.GetComponent<GameController>();
         _buildingController = GetComponent<BuildingController>();
         _buildingGridController = GetComponent<BuildingGridController>();
+        _playerResources = GetComponent<PlayerResources>();
         SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
@@ -45,16 +51,57 @@ public class UnitsController : MonoBehaviour
     {
     }
 
+    public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        foreach (var unit in SelectedUnits)
+        {
+            if (unit.GetComponent<UnitValues>().IsHarvestor
+                && resource.tag == Tag.HarvestedResource.ToString()
+                && unit.GetComponent<UnitValues>().ResourcesCanBeHarvested.Contains(resource.GetComponent<ResourceValues>().ResourceName))
+            {
+                unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(resource, null, false, addToCommandsQueue);
+                continue;
+            }
+            else
+            {
+                unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(point, addToCommandsQueue);
+            }
+        }
+    }
+
     public void Build(Vector3 point, bool addToCommandsQueue = false)
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
         if (CheckBuilderSelected(out var firstUnitBuilder))
         {
-            var buildingSize = _buildingController.Building.GetComponent<BuildingValues>().GridSize;
-            Vector3 resultPoint = point.GetGridPoint(buildingSize);
+            var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+            var buildingSize = buildingValues.GridSize;
+
+            if (buildingValues.IsHeldMine && !_buildingGridController.CheckIfMineUnderCursor())
+            {
+                Debug.Log("Can't build here!");
+                return;
+            }
+
+            Vector3 resultPoint = buildingValues.IsHeldMine 
+                ? _buildingGridController.UnitUnderCursor.transform.position 
+                : point.GetGridPoint(buildingSize);
+
+            var mineToHeld = buildingValues.IsHeldMine ? _buildingGridController.UnitUnderCursor : null;
+            mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
 
             if (addToCommandsQueue)
             {
-                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
             }
             else
             {
@@ -77,13 +124,25 @@ public class UnitsController : MonoBehaviour
                     unitToBuild = firstUnitBuilder;
                 }
 
-                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild))
+                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild) && !buildingValues.IsHeldMine)
                 {
                     Debug.Log("Can't build here!");
                     return;
                 }
 
-                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, addToCommandsQueue);
+                var unitValues = _buildingController.Building.GetComponent<UnitValues>();
+                var resourceCost = unitValues.ResourceCost.ToArray();
+                if (!_playerResources.CheckIfCanSpendResources(resourceCost))
+                {
+                    Debug.Log("Not enough resources!");
+                    return;
+                }
+                else if (!_playerResources.CheckIfHaveSupply(resourceCost))
+                {
+                    Debug.Log("Not enough supply!");
+                    return;
+                }
+                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
                 _buildingController.DisableBuildingMod();
             }
         }
@@ -92,11 +151,22 @@ public class UnitsController : MonoBehaviour
 
     public bool CheckBuilderSelected()
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return false;
+        }
+
         return SelectedUnits.FirstOrDefault()?.GetComponent<UnitValues>()?.IsBuilder ?? false;
     }
 
     public bool CheckBuilderSelected(out GameObject builder)
     {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            builder = null;
+            return false;
+        }
+
         builder = SelectedUnits.FirstOrDefault();
         var response = builder?.GetComponent<UnitValues>()?.IsBuilder ?? false;
         return response;
@@ -164,6 +234,14 @@ public class UnitsController : MonoBehaviour
                 continue;
             }
 
+            var damageType = unit.GetComponent<UnitValues>().DamageType;
+
+            if (!target.CanBeAttacked(damageType))
+            {
+                Debug.Log("Unit can't be attacked!");
+                continue;
+            }
+
             unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
         }
     }
@@ -182,8 +260,14 @@ public class UnitsController : MonoBehaviour
             return;
         }
 
+        if (!SelectedUnits.Any())
+        {
+            return;
+        }
+
         var targetTeamId = target.GetComponent<TeamMember>().TeamId;
         var allyTeamIds = _teamController.GetAllyTeams(playerTeamId);
+
         if (allyTeamIds.Contains(targetTeamId))
         {
             foreach (var unit in SelectedUnits)
@@ -194,6 +278,27 @@ public class UnitsController : MonoBehaviour
                     continue;
                 }
 
+                if (targetTeamId == playerTeamId 
+                    && unit.GetComponent<UnitValues>().IsMiner
+                    && target.GetComponent<UnitValues>().IsBuilding
+                    && target.GetComponent<BuildingValues>().IsHeldMine)
+                {
+                    unit.GetComponent<UnitEventManager>().OnMineCommandReceived(target, addToCommandsQueue);
+                    continue;
+                }
+
+                if (targetTeamId == playerTeamId
+                    && unit.GetComponent<UnitValues>().IsHarvestor
+                    && unit.GetComponent<HarvestingBehaviour>().CurrentResourceValues > 0
+                    && unit.GetComponent<HarvestingBehaviour>().CurrentResource != null
+                    && target.GetComponent<HarvestedResourcesStorage>() != null
+                    && target.GetComponent<HarvestedResourcesStorage>().isActiveAndEnabled
+                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(unit.GetComponent<HarvestingBehaviour>().CurrentResource.Value))
+                {
+                    unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(null, target, true, addToCommandsQueue);
+                    continue;
+                }
+
                 unit.GetComponent<UnitEventManager>().OnFollowCommandReceived(target, addToCommandsQueue);
             }
         }
@@ -201,6 +306,14 @@ public class UnitsController : MonoBehaviour
         {
             foreach (var unit in SelectedUnits)
             {
+                var damageType = unit.GetComponent<UnitValues>().DamageType;
+
+                if (!target.CanBeAttacked(damageType))
+                {
+                    Debug.Log("Unit can't be attacked!");
+                    continue;
+                }
+
                 unit.GetComponent<UnitEventManager>().OnAttackCommandReceived(target, addToCommandsQueue);
             }
         }
@@ -240,12 +353,6 @@ public class UnitsController : MonoBehaviour
 
         foreach (var producingUnit in similarProducingUnits)
         {
-            var buildingScript = producingUnit.GetComponent<Building>();
-            if (buildingScript.BuildingIsInProgress)
-            {
-                continue;
-            }
-
             producingUnit.GetComponent<UnitEventManager>().OnProduceCommandReceived(unitId);
         }
     }

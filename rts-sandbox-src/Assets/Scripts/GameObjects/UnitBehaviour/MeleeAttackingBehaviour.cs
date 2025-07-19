@@ -51,16 +51,13 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
                 _unitEventManager.OnAttackActionEnded();
             }
             return;
-        }
+        } 
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
 
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
-            var sizeVector = Target.GetComponent<Collider>().bounds.extents;
-            sizeVector.y = 0;
-            var size = sizeVector.magnitude / Mathf.Sqrt(2);
-            _navmeshMovement.Go(gameObject.GetClosestPointToInteract(Target.transform.position, size));
+            _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
         }
         else
         {
@@ -74,7 +71,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;
         }
-
         if (attackIsProcessing)
         {
             if (distanceToTarget < _unitValues.MeleeAttackDistance + _unitValues.AttackBreakDistance)
