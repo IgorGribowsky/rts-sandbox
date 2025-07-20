@@ -25,8 +25,6 @@ public class HeldMine : MonoBehaviour
     private List<GameObject> _miners = new List<GameObject>();
     private int?[] _mineCells;
 
-    private float miningSpeed = 0f;
-
     private float miningProgress = 0f;
 
     void Awake()
@@ -45,7 +43,6 @@ public class HeldMine : MonoBehaviour
     void Start()
     {
         _unitEventManager.UnitDied += CreateParentMine;
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
         _mineCells = new int?[MinersMaxCount];
     }
 
@@ -63,6 +60,7 @@ public class HeldMine : MonoBehaviour
             return;
         }
 
+        var miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
         miningProgress += miningSpeed * Time.deltaTime;
 
         if (miningProgress > MiningRate)
@@ -100,8 +98,6 @@ public class HeldMine : MonoBehaviour
         _mineCells[n] = miner.GetInstanceID();
 
         _miners.Add(miner);
-
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
     }
 
     public void RemoveMiner(GameObject miner)
@@ -115,7 +111,6 @@ public class HeldMine : MonoBehaviour
         _mineCells[n] = null;
 
         _miners.Remove(miner);
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
     }
 
     protected void CreateParentMine(DiedEventArgs args)

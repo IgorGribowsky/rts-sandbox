@@ -97,7 +97,11 @@ public class BuildingController : MonoBehaviour
         unit.GetComponent<Building>().Build();
 
         OnBuildingStarted(point, builder, unit);
-        HandleMineToHeld(eventArgs);
+        if (eventArgs.IsMineHeld)
+        {
+            unit.GetComponent<ResourceValues>().ResourcesAmount = eventArgs.MineToHeld.GetComponent<ResourceValues>().ResourcesAmount;
+            HandleMineToHeld(eventArgs);
+        }
     }
 
     private bool CanBuild(GameObject building, Vector3 point, GameObject builder)
