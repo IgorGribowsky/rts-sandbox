@@ -31,25 +31,6 @@ namespace Assets.Scripts.Infrastructure.Helpers
                 return float.MaxValue;
             }
         }
-
-        public static float GetDistanceTo(this GameObject object1, Vector3 point)
-        {
-            if (object1 != null)
-            {
-                var (extendsMagnitude1, adjustedCenter1) = object1.GetSizeAndCenter();
-
-                float centerDistance = Vector3.Distance(adjustedCenter1, point);
-
-                float distance = centerDistance - extendsMagnitude1;
-
-                return distance;
-            }
-            else
-            {
-                return float.MaxValue;
-            }
-        }
-
         public static (float, Vector3) GetSizeAndCenter(this GameObject gameObject)
         {
             var center = GetBoundCenter(gameObject);
