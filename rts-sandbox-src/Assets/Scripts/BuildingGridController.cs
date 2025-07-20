@@ -13,8 +13,10 @@ public class BuildingGridController : MonoBehaviour
     public Vector3 startGridPoint = new Vector3(-50f, 0.1f, -50f);
     public Vector2 gridSize = new Vector2(100f, 100f);
 
+    //TODO: (issue number 59)
     public GameObject UnitUnderCursor { get; set; }
 
+    //TODO: (issue number 59)
     public Vector3 MousePosition { get; set; }
 
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
@@ -106,6 +108,8 @@ public class BuildingGridController : MonoBehaviour
 
         return isMine;
     }
+
+    //TODO: (issue number 59)
     public void OnCursorMoved()
     {
         if (!_buildingController.BuildingMod) return;

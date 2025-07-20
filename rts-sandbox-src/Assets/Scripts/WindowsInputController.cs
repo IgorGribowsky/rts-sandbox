@@ -25,7 +25,7 @@ public class WindowsInputController : MonoBehaviour
     private BuildingController _buildingController;
     private BuildingGridController _buildingGridController;
 
-    private const float snapStep = 0.25f * GameConstants.GridCellSize;
+    private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
     private bool selectionStarted = false;
     private bool aClickPressed = false;
@@ -292,8 +292,8 @@ public class WindowsInputController : MonoBehaviour
 
     private void UpdateMousePosition()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask(Layer.MovementSurface.ToString())))
+        Ray ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 100f, LayerMask.GetMask(Layer.MovementSurface.ToString())))
         {
             Vector3 worldPos = hit.point;
             Vector3 snappedPos = new Vector3(
@@ -304,7 +304,7 @@ public class WindowsInputController : MonoBehaviour
 
             if (snappedPos != lastSnappedPosition)
             {
-                if (Physics.Raycast(ray, out RaycastHit unitHit, Mathf.Infinity, LayerMask.GetMask(Layer.Unit.ToString())))
+                if (Physics.Raycast(ray, out var unitHit, 100f, LayerMask.GetMask(Layer.Unit.ToString())))
                 {
                     _buildingGridController.UnitUnderCursor = unitHit.transform.gameObject;
                 }
