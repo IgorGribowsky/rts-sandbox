@@ -190,10 +190,10 @@ MonoBehaviour:
   Damage: 26
   AutoAttackDistance: 8
   AttackRate: 1.4
-  AttackDurationPercent: 0.5
+  AttackDurationPercent: 0.4
   DamageType: 0
   AttackBreakDistance: 3.4
-  MeleeAttackDistance: 0.1
+  MeleeAttackDistance: 1
   HasRangeAttack: 0
   RangeAttackDistance: 10
   ProjectileSpeed: 12
@@ -203,12 +203,18 @@ MonoBehaviour:
     Amount: 240
   - ResourceName: 3
     Amount: 4
+  SupplyResourceProduces: []
   IsBuilding: 0
   CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
   IsMiner: 0
+  IsHarvestor: 0
+  ResourcesCanBeHarvested: 
+  HarvestingRate: 1
+  HarvestingValuePerTick: 1
+  HarvestingMaxValue: 10
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0

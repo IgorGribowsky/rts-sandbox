@@ -192,10 +192,10 @@ MonoBehaviour:
   Damage: 6
   AutoAttackDistance: 8
   AttackRate: 1.8
-  AttackDurationPercent: 0.5
+  AttackDurationPercent: 0.4
   DamageType: 0
   AttackBreakDistance: 2.2
-  MeleeAttackDistance: 0.1
+  MeleeAttackDistance: 0.4
   HasRangeAttack: 0
   RangeAttackDistance: 10
   ProjectileSpeed: 12

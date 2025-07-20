@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 11
-  IsInvulnerable: 1
+  IsInvulnerable: 0
   CurrentHp: 300
   MaximumHp: 300
   MovementSpeed: 0
@@ -221,7 +221,7 @@ MonoBehaviour:
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 0
-  AttackDurationPercent: 0.5
+  AttackDurationPercent: 0.4
   DamageType: 0
   AttackBreakDistance: 2
   MeleeAttackDistance: 2
@@ -241,6 +241,11 @@ MonoBehaviour:
   IsBuilder: 0
   BuildingsToProduce: []
   IsMiner: 0
+  IsHarvestor: 0
+  ResourcesCanBeHarvested: 
+  HarvestingRate: 1
+  HarvestingValuePerTick: 1
+  HarvestingMaxValue: 10
 --- !u!114 &14064609899549624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,11 +272,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 2
   ObstacleSize: 2
-  IsMine: 0
-  IsHeldMine: 0
-  ResourceName: 0
-  IsHarvestableResource: 0
-  ResourcesAmount: 0
+  IsResource: 0
 --- !u!114 &4019010432902405727
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -340,7 +340,7 @@ MonoBehaviour:
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 1
-  AttackDurationPercent: 0.5
+  AttackDurationPercent: 0.4
   DamageType: 0
   AttackBreakDistance: 2
   MeleeAttackDistance: 2
