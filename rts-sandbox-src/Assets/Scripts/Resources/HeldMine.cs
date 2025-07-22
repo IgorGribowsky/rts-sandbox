@@ -21,6 +21,7 @@ public class HeldMine : MonoBehaviour
     private BuildingController _buildingController;
     private PlayerResources _playerResources;
     private ResourceValues _resouceValues;
+    private UnitsController _playerUnitsController;
 
     private List<GameObject> _miners = new List<GameObject>();
     private int?[] _mineCells;
@@ -37,6 +38,7 @@ public class HeldMine : MonoBehaviour
             .GetComponent<BuildingController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
+        _playerUnitsController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitsController>();
     }
 
     // Start is called before the first frame update
@@ -52,7 +54,9 @@ public class HeldMine : MonoBehaviour
         if (_resouceValues.ResourcesAmount <= 0)
         {
             Destroy(gameObject);
-             _buildingController.OnBuildingRemoved(gameObject);
+            _unitEventManager.OnMineIsFinished(gameObject);
+            _playerUnitsController.OnSelectedUnitDied(gameObject);
+            _buildingController.OnBuildingRemoved(gameObject);
         }
 
         if (_miners.Count == 0f)

@@ -19,6 +19,12 @@ public class UnitEventManager : MonoBehaviour
         UnitDied?.Invoke(new DiedEventArgs(killer, dead));
     }
 
+    public event MineIsFinishedHandler MineIsFinished;
+    public void OnMineIsFinished(GameObject mine)
+    {
+        MineIsFinished?.Invoke(new MineIsFinishedEventArgs(mine));
+    }
+
     public event HealthPointsChangedHandler HealthPointsChanged;
 
     public void OnHealthPointsChanged(float currentHp)
