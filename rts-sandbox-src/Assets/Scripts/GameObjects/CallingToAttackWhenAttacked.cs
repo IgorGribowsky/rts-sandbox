@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Constants;
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class CallingToAttackWhenAttacked : MonoBehaviour
     {
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMember = GetComponent<TeamMember>();
-        _teamController = GameObject.FindGameObjectWithTag("GameController")
+        _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
         _unitEventManager.DamageReceived += OnDamageReceivedHandler;
     }

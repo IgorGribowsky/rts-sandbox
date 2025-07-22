@@ -24,7 +24,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
         _unitEventManager = GetComponent<UnitEventManager>();
         _unitValues = GetComponent<UnitValues>();
         _teamMember = GetComponent<TeamMember>();
-        _teamController = GameObject.FindGameObjectWithTag("GameController")
+        _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
         _unitBehaviourManager = gameObject.GetComponent<UnitBehaviourManager>();
 

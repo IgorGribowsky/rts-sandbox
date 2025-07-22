@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -13,7 +14,7 @@ public class CameraController : MonoBehaviour
             ControlledCamera = Camera.main;
         }
 
-        _mapValues = GameObject.FindGameObjectWithTag("GameController")
+        _mapValues = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<MapValues>();
     }
 

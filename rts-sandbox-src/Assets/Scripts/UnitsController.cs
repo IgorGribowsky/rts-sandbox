@@ -36,7 +36,7 @@ public class UnitsController : MonoBehaviour
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
 
-        var gameController = GameObject.FindGameObjectWithTag("GameController");
+        var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
         _teamController = gameController.GetComponent<TeamController>();
         _gameController = gameController.GetComponent<GameController>();
         _buildingController = GetComponent<BuildingController>();
@@ -385,7 +385,7 @@ public class UnitsController : MonoBehaviour
         var selectedUnits = new List<GameObject>();
         var teamId = 0;
 
-        var selectableUntisInArea = GameObject.FindGameObjectsWithTag("Unit")
+        var selectableUntisInArea = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)

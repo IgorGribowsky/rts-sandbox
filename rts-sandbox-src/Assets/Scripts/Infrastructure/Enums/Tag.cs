@@ -9,5 +9,6 @@
         Unit,
         HarvestedResource,
         Obstacle,
+        GameController,
     }
 }

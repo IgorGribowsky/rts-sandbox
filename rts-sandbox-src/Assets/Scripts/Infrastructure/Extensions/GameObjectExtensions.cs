@@ -129,7 +129,7 @@ namespace Assets.Scripts.Infrastructure.Helpers
 
         public static GameObject GetNearestUnitInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
         {
-            GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+            GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString());
             GameObject closestUnit = null;
             float closestDistance = radius;
 
@@ -174,7 +174,7 @@ namespace Assets.Scripts.Infrastructure.Helpers
 
         public static IEnumerable<GameObject> GetAllUnitsInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
         {
-            GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
+            GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString());
 
             return units.Where(u => gameObject.GetDistanceTo(u) <= radius && filter(u));
         }
