@@ -273,7 +273,7 @@ public class UnitsController : MonoBehaviour
             {
                 if (target == unit)
                 {
-                    OnGroundRightClick(target.transform.position, addToCommandsQueue);
+                    unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(target.transform.position, addToCommandsQueue);
                     continue;
                 }
 
