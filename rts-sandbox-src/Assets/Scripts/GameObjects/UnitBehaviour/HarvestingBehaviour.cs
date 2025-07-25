@@ -152,7 +152,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
         }
     }
 
-    private void HandleArrival(EventArgs args)
+    protected void HandleArrival(EventArgs args)
     {
         if (!IsActive)
         {

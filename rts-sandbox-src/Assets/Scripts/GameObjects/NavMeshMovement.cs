@@ -75,7 +75,7 @@ public class NavMeshMovement : MonoBehaviour
 
         if (_goToObjectFlag)
         {
-            float epsilon = 0.01f;
+            float epsilon = 0.02f;
 
             var v1 = gameObject.transform.position;
             v1.y = 0;
