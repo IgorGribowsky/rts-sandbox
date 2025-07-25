@@ -20,8 +20,9 @@ public class BuildingGridController : MonoBehaviour
     public Vector3 MousePosition { get; set; }
 
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
-    private BuildingController _buildingController;
     private GameObject cursorGrid;
+    private BuildingController _buildingController;
+    private PlayerEventController _playerEventController;
 
     private bool isMineUnderCursor = false;
 
@@ -29,9 +30,12 @@ public class BuildingGridController : MonoBehaviour
     {
         _buildingController = GetComponent<BuildingController>();
 
-        _buildingController.BuildingStarted += AddToGrid;
-        _buildingController.BuildingRemoved += RemoveFromGrid;
-        _buildingController.BuildingModChanged += BuildingModChangedHandler;
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
+
+        _playerEventController.BuildingStarted += AddToGrid;
+        _playerEventController.BuildingRemoved += RemoveFromGrid;
+        _playerEventController.BuildingModChanged += BuildingModChangedHandler;
     }
 
     public void Start()

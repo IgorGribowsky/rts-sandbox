@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class HarvestedResource : MonoBehaviour
 {
-    private BuildingController _buildingController;
     private ResourceValues _resouceValues;
+    private PlayerEventController _playerEventController;
 
     private void Awake()
     {
         _resouceValues = gameObject.GetComponent<ResourceValues>();
-        _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<BuildingController>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
     }
 
     public int Take(int value)
@@ -28,7 +29,7 @@ public class HarvestedResource : MonoBehaviour
 
         if (_resouceValues.ResourcesAmount <= 0)
         {
-            _buildingController.OnBuildingRemoved(gameObject);
+            _playerEventController.OnBuildingRemoved(gameObject);
             Destroy(gameObject);
         }
 

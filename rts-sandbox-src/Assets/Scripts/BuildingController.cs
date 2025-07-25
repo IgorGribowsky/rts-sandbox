@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class BuildingController : MonoBehaviour
     private UnitsController _unitController;
     private BuildingGridController _buildingGridController;
     private PlayerResources _playerResources;
+    private PlayerEventController _playerEventController;
 
     private bool _buildingMenuMod = false;
     public bool BuildingMenuMod { get { return _buildingMenuMod; } }
@@ -16,32 +18,13 @@ public class BuildingController : MonoBehaviour
 
     public GameObject Building { get; set; } = null;
 
-    //TODO: move to global event manager
-    public event ModStateChangedHandler BuildingModChanged;
-    public void OnBuildingModChanged(bool state)
-    {
-        BuildingModChanged?.Invoke(new ModStateChangedEventArgs(state));
-    }
-
-    //TODO: move to global event manager
-    public event BuildingStartedHandler BuildingStarted;
-    public void OnBuildingStarted(Vector3 point, GameObject builder, GameObject building)
-    {
-        BuildingStarted?.Invoke(new BuildingStartedEventArgs(point, builder, building));
-    }
-
-    //TODO: move to global event manager
-    public event BuildingRemovedHandler BuildingRemoved;
-    public void OnBuildingRemoved(GameObject building)
-    {
-        BuildingRemoved?.Invoke(new BuildingRemovedEventArgs(building));
-    }
-
     public void Awake()
     {
         _unitController = gameObject.GetComponent<UnitsController>();
         _buildingGridController = gameObject.GetComponent<BuildingGridController>();
         _playerResources = gameObject.GetComponent<PlayerResources>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
     }
 
     public void EnableBuildingMenuMod()
@@ -72,7 +55,7 @@ public class BuildingController : MonoBehaviour
                 _buildingMod = true;
                 _buildingMenuMod = false;
                 Building = building.Building;
-                OnBuildingModChanged(_buildingMod);
+                _playerEventController.OnBuildingModChanged(_buildingMod);
             }
         }
     }
@@ -81,7 +64,7 @@ public class BuildingController : MonoBehaviour
     {
         _buildingMenuMod = false;
         _buildingMod = false;
-        OnBuildingModChanged(_buildingMod);
+        _playerEventController.OnBuildingModChanged(_buildingMod);
     }
 
     public void Build(BuildActionStartedEventArgs eventArgs, int teamId, GameObject builder = null)
@@ -96,7 +79,7 @@ public class BuildingController : MonoBehaviour
         unit.GetComponent<TeamMember>().TeamId = teamId;
         unit.GetComponent<Building>().Build();
 
-        OnBuildingStarted(point, builder, unit);
+        _playerEventController.OnBuildingStarted(point, builder, unit);
         if (eventArgs.IsMineHeld)
         {
             unit.GetComponent<ResourceValues>().ResourcesAmount = eventArgs.MineToHeld.GetComponent<ResourceValues>().ResourcesAmount;
@@ -159,7 +142,7 @@ public class BuildingController : MonoBehaviour
     {
         if (eventArgs.MineToHeld != null)
         {
-            OnBuildingRemoved(eventArgs.MineToHeld);
+            _playerEventController.OnBuildingRemoved(eventArgs.MineToHeld);
             Destroy(eventArgs.MineToHeld);
         }
     }

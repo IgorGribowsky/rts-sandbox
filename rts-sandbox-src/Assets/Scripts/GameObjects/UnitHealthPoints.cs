@@ -7,8 +7,7 @@ public class UnitHealthPoints : MonoBehaviour
     private UnitValues _unitValues;
     private BuildingValues _buildingValues;
     private UnitEventManager _unitEventManager;
-    private UnitsController _playerUnitController;
-    private BuildingController _buildingController;
+    private PlayerEventController _playerEventController;
 
     public void Update()
     {
@@ -19,10 +18,10 @@ public class UnitHealthPoints : MonoBehaviour
         _unitValues = GetComponent<UnitValues>();
         _buildingValues = GetComponent<BuildingValues>();
         _unitEventManager = GetComponent<UnitEventManager>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
 
         _unitEventManager.DamageReceived += DamageReceivedHandler;
-        _playerUnitController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitsController>();
-        _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<BuildingController>();
     }
 
     protected void DamageReceivedHandler(DamageReceivedEventArgs args)
@@ -35,11 +34,11 @@ public class UnitHealthPoints : MonoBehaviour
         {
             Destroy(gameObject);
             _unitEventManager.OnUnitDied(args.Attacker, gameObject);
-            _playerUnitController.OnSelectedUnitDied(gameObject);
+            _playerEventController.OnSelectedUnitDied(gameObject);
 
             if (_buildingValues != null)
             {
-                _buildingController.OnBuildingRemoved(gameObject);
+                _playerEventController.OnBuildingRemoved(gameObject);
             }
         }
     }

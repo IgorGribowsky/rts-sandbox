@@ -10,17 +10,17 @@ public class GridSegment : MonoBehaviour
     private bool _restricted = false;
     private Renderer _renderer;
     private MeshRenderer _meshRenderer;
-    private BuildingController _buildingController;
+    private PlayerEventController _playerEventController;
 
     public void Awake()
     {
         _renderer = gameObject.GetComponent<Renderer>();
         _meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
-        _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
-            .GetComponent<BuildingController>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
 
-        _buildingController.BuildingModChanged += BuildingModChangedHandler;
+        _playerEventController.BuildingModChanged += BuildingModChangedHandler;
         _renderer.material = BuildingAllowedMaterial;
     }
 
@@ -56,6 +56,6 @@ public class GridSegment : MonoBehaviour
 
     private void OnDestroy()
     {
-        _buildingController.BuildingModChanged -= BuildingModChangedHandler;
+        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
     }
 }

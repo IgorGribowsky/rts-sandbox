@@ -9598,6 +9598,7 @@ GameObject:
   - component: {fileID: 1332743805}
   - component: {fileID: 1332743806}
   - component: {fileID: 1332743807}
+  - component: {fileID: 1332743808}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: PlayerController
@@ -9723,6 +9724,18 @@ MonoBehaviour:
   MaxSupplyResourcesAmount:
   - ResourceName: 3
     Amount: 10
+--- !u!114 &1332743808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332743797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d70ee88059abb4d8d1954fd8f81c93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1353226623
 PrefabInstance:
   m_ObjectHideFlags: 0

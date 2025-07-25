@@ -17,6 +17,7 @@ public class UnitProducing : MonoBehaviour
     private UnitEventManager _unitEventManager;
     private UnitValues _unitValues;
     private PlayerResources _playerResources;
+    private PlayerEventController _playerEventController;
 
     private bool isProcessing = false;
 
@@ -33,9 +34,11 @@ public class UnitProducing : MonoBehaviour
         _unitValues = GetComponent<UnitValues>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
 
         _unitEventManager.ProduceCommandReceived += ProduceCommandHandler;
-        _playerResources.ResourceChanged += OnSupplyChanged;
+        _playerEventController.ResourceChanged += OnSupplyChanged;
     }
 
     public void ProduceCommandHandler(ProduceCommandReceivedEventArgs args)

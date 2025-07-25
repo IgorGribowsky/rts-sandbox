@@ -21,16 +21,9 @@ public class UnitsController : MonoBehaviour
     private BuildingController _buildingController;
     private BuildingGridController _buildingGridController;
     private PlayerResources _playerResources;
+    private PlayerEventController _playerEventController;
 
     private int playerTeamId;
-
-    public event DiedHandler SelectedUnitDied;
-
-    //TODO: move to common event handler
-    public void OnSelectedUnitDied(GameObject dead)
-    {
-        SelectedUnitDied?.Invoke(new DiedEventArgs(null, dead));
-    }
 
     void Start()
     {
@@ -42,7 +35,10 @@ public class UnitsController : MonoBehaviour
         _buildingController = GetComponent<BuildingController>();
         _buildingGridController = GetComponent<BuildingGridController>();
         _playerResources = GetComponent<PlayerResources>();
-        SelectedUnitDied += SelectedUnitDiedHandler;
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
+
+        _playerEventController.SelectedUnitDied += SelectedUnitDiedHandler;
     }
 
     private void Update()

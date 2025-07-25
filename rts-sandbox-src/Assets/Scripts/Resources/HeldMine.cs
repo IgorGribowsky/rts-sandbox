@@ -18,10 +18,9 @@ public class HeldMine : MonoBehaviour
     private BuildingValues _buildingValues;
     private Building _buildingScript;
     private UnitEventManager _unitEventManager;
-    private BuildingController _buildingController;
     private PlayerResources _playerResources;
     private ResourceValues _resouceValues;
-    private UnitsController _playerUnitsController;
+    private PlayerEventController _playerEventController;
 
     private List<GameObject> _miners = new List<GameObject>();
     private int?[] _mineCells;
@@ -34,11 +33,10 @@ public class HeldMine : MonoBehaviour
         _resouceValues = GetComponent<ResourceValues>();
         _buildingScript = GetComponent<Building>();
         _unitEventManager = GetComponent<UnitEventManager>();
-        _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
-            .GetComponent<BuildingController>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
-        _playerUnitsController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString()).GetComponent<UnitsController>();
     }
 
     // Start is called before the first frame update
@@ -55,8 +53,8 @@ public class HeldMine : MonoBehaviour
         {
             Destroy(gameObject);
             _unitEventManager.OnMineIsFinished(gameObject);
-            _playerUnitsController.OnSelectedUnitDied(gameObject);
-            _buildingController.OnBuildingRemoved(gameObject);
+            _playerEventController.OnSelectedUnitDied(gameObject);
+            _playerEventController.OnBuildingRemoved(gameObject);
         }
 
         if (_miners.Count == 0f)
@@ -121,7 +119,7 @@ public class HeldMine : MonoBehaviour
     {
         var point = gameObject.transform.position;
         var mine = Instantiate(ParentMine, point, gameObject.transform.rotation);
-        _buildingController.OnBuildingStarted(point, null, mine);
+        _playerEventController.OnBuildingStarted(point, null, mine);
         var mineResourceValues = mine.GetComponent<ResourceValues>();
 
         mineResourceValues.ResourcesAmount = _resouceValues.ResourcesAmount;
