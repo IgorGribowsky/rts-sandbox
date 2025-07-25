@@ -8,7 +8,7 @@ This is a game engine designed for creating and playing real-time strategy (RTS)
 
 ### Unit Management
 - **Barracks Unit Production:**
-  - Press `1`, `2`, or `3` (not on the numpad) to train different types of units in the barracks.
+  - Press `1`, `2`, or `3` (not on the numpad) to train different types of units in the barracks or in the castle.
 
 - **Camera Centering:**
   - Press `Space` to center the camera on the scene's center or selected units.
@@ -25,6 +25,10 @@ This is a game engine designed for creating and playing real-time strategy (RTS)
   - Available buildings:
     - `B` - Barracks
     - `T` - Wall
+    - `G` - Held Gold Mine
+    - `C` - Castle
+    - `F` - Farm
+    - `R` - Tower
   - A construction grid has been implemented for easier building placement.
 
 ---
