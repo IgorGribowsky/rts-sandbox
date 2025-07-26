@@ -4540,6 +4540,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ControlledCamera: {fileID: 0}
+  FixScreen: 0
+  Sensitivity: 30
+  MoveCameraBorderSize: 20
+  Zoom: 0.5
+  SensitivityZoom: 1.4
+  ZoomChangingVelocity: 0.5
+  MinY: 10
+  MaxY: 30
 --- !u!114 &1332743801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4946,10 +4954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ac74bbce56cae4ba95c378fea3eb2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Sensitivity: 30
-  MoveCameraBorderSize: 20
   Controller: {fileID: 1332743797}
-  FixScreen: 0
   AClickKey: 97
   FixScreenKey: 289
   HoldKey: 104

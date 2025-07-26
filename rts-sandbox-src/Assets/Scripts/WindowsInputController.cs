@@ -1,14 +1,11 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
+using System;
 using UnityEngine;
 
 public class WindowsInputController : MonoBehaviour
 {
-    public float Sensitivity = 30f;
-    public float MoveCameraBorderSize = 20f;
     public GameObject Controller;
-
-    public bool FixScreen = false;
 
     public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
@@ -70,33 +67,39 @@ public class WindowsInputController : MonoBehaviour
     {
         UpdateMousePosition();
 
-        if (!FixScreen)
+        if (!_cameraController.FixScreen)
         {
             var moveCameraVector = Vector3.zero;
-            if (Input.mousePosition.x < MoveCameraBorderSize)
+            if (Input.mousePosition.x < _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(-Sensitivity, 0, 0);
+                moveCameraVector += new Vector3(-_cameraController.Sensitivity, 0, 0);
             }
-            else if (Input.mousePosition.x > Screen.width - MoveCameraBorderSize)
+            else if (Input.mousePosition.x > Screen.width - _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(Sensitivity, 0, 0);
+                moveCameraVector += new Vector3(_cameraController.Sensitivity, 0, 0);
             }
-            if (Input.mousePosition.y < MoveCameraBorderSize)
+            if (Input.mousePosition.y < _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(0, 0, -Sensitivity);
+                moveCameraVector += new Vector3(0, 0, -_cameraController.Sensitivity);
             }
-            else if (Input.mousePosition.y > Screen.height - MoveCameraBorderSize)
+            else if (Input.mousePosition.y > Screen.height - _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(0, 0, Sensitivity);
+                moveCameraVector += new Vector3(0, 0, _cameraController.Sensitivity);
             }
 
-            _cameraController.Move(moveCameraVector * Time.deltaTime);
+            _cameraController.MoveCamera(moveCameraVector * Time.deltaTime);
+        }
+
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            var zoomDelta = -1 * Input.mouseScrollDelta.y * Time.deltaTime * _cameraController.SensitivityZoom;
+            _cameraController.ChangeZoom(zoomDelta);
         }
 
         if (Input.GetKey(ReturnCameraKey))
         {
             var center = _unitController.GetTheMostRangedUnitPosition();
-            _cameraController.Set(center);
+            _cameraController.SetCamera(center);
         }
 
         if (aClickPressed)
@@ -245,7 +248,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetKeyDown(FixScreenKey))
         {
-            FixScreen = !FixScreen;
+            _cameraController.SwitchFixScreen();
         }
 
         if (Input.GetKeyDown(OpenBuildingMenuKey))
