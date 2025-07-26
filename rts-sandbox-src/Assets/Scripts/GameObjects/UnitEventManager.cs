@@ -128,6 +128,12 @@ public class UnitEventManager : MonoBehaviour
         BuildingCompleted?.Invoke(new BuildingCompletedEventArgs(building));
     }
 
+    public event CanceledHandler Canceled;
+    public void OnCanceled(GameObject building)
+    {
+        Canceled?.Invoke(new CanceledEventArgs(building));
+    }
+
     public event BuildActionEndedHandler BuildActionEnded;
     public void OnBuildActionEnded()
     {

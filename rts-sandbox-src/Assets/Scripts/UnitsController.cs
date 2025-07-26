@@ -429,6 +429,20 @@ public class UnitsController : MonoBehaviour
         PostSelectActions(firstUnit, targetTeamId);
     }
 
+    public void OnCancelClick()
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+        var selectedUnitsArray = SelectedUnits.ToArray();
+        for (var i = 0; i < selectedUnitsArray.Length; i++)
+        {
+            var unit = selectedUnitsArray[i];
+            unit.GetComponent<UnitEventManager>().OnCanceled(unit);
+        }
+    }
+
     private void ApplySelection(List<GameObject> units, bool addToPreviousSelection)
     {
         if (addToPreviousSelection)

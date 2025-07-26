@@ -111,7 +111,7 @@ public class WindowsInputController : MonoBehaviour
 
             if (Input.GetKeyDown(CancelKey))
             {
-                _buildingController.DisableBuildingMod();
+                aClickPressed = false;
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -166,6 +166,12 @@ public class WindowsInputController : MonoBehaviour
 
         if (_buildingController.BuildingMenuMod)
         {
+            if (Input.GetKeyDown(CancelKey))
+            {
+                _buildingController.DisableBuildingMenuMod();
+                return;
+            }
+
             if (AlphabetKeyDown(out KeyCode alphabetKeyDown))
             {
                 _buildingController.EnableBuildingMod(alphabetKeyDown);
@@ -239,6 +245,11 @@ public class WindowsInputController : MonoBehaviour
                     _unitController.RightClickOnResource(targetGameObject, hit.point, isShiftButtonPressed);
                 }
             }
+        }
+
+        if (Input.GetKeyDown(CancelKey))
+        {
+            _unitController.OnCancelClick();
         }
 
         if (KeypadCodeDown(out KeyCode keypadCode, out int num))

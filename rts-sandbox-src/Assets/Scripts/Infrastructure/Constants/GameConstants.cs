@@ -23,5 +23,8 @@
         public const float DoubleClickTime = 0.3f; // Максимальное время между кликами
 
         public const float DoubleClickSelectDistance = 20f;
+
+        public const float ResourcesReturnedWhenBuildingCanceled = 0.7f;
+
     }
 }

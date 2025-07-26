@@ -1,5 +1,7 @@
 using Assets.Scripts.GameObjects;
 using Assets.Scripts.Infrastructure.Constants;
+using Assets.Scripts.Infrastructure.Enums;
+using Assets.Scripts.Infrastructure.Events;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,6 +17,8 @@ public class Building : MonoBehaviour
     private UnitProducing _unitProducing;
     private UnitCommandManager _unitCommandManager;
     private HarvestedResourcesStorage _harvestedResourcesStorage;
+    private PlayerEventController _playerEventController;
+    private PlayerResources _playerResources;
 
     private float timeToBuild;
     private float hpToBuild;
@@ -30,6 +34,11 @@ public class Building : MonoBehaviour
         _unitProducing = GetComponent<UnitProducing>();
         _unitCommandManager = GetComponent<UnitCommandManager>();
         _harvestedResourcesStorage = GetComponent<HarvestedResourcesStorage>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
+        _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerResources>();
+        _unitEventManager.Canceled += CancelBulding;
     }
 
     public void Start()
@@ -84,6 +93,25 @@ public class Building : MonoBehaviour
             }
 
             _unitEventManager.OnHealthPointsChanged(_unitValues.CurrentHp);
+        }
+    }
+
+    protected void CancelBulding(CanceledEventArgs args)
+    {
+        if (!BuildingIsInProgress)
+        {
+            return;
+        }
+
+        Destroy(gameObject);
+        _playerEventController.OnSelectedUnitDied(gameObject);
+        _playerEventController.OnBuildingRemoved(gameObject);
+        _unitEventManager.OnUnitDied(gameObject, gameObject);
+
+        foreach (var resourceCost in _unitValues.ResourceCost)
+        {
+            var valueToReturn = Mathf.RoundToInt(resourceCost.Amount * GameConstants.ResourcesReturnedWhenBuildingCanceled);
+            _playerResources.AddResource(resourceCost.ResourceName, valueToReturn);
         }
     }
 
