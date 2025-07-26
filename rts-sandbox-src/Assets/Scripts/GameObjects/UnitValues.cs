@@ -26,7 +26,7 @@ public class UnitValues : MonoBehaviour
     public float AttackRate = 1f;
 
     //percent of AttackRate
-    public float AttackDurationPercent = 0.5f;
+    public float AttackDurationPercent = 0.4f;
 
     public DamageType DamageType = DamageType.Normal;
 

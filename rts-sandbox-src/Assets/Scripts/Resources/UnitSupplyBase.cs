@@ -13,7 +13,7 @@ public abstract class UnitSupplyBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        var gameController = GameObject.FindGameObjectWithTag("GameController");
+        var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
         _gameResources = gameController.GetComponent<GameResources>();
 
         var teamMember = gameObject.GetComponent<TeamMember>();

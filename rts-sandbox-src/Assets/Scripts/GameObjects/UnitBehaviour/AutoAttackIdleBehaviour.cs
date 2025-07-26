@@ -92,4 +92,9 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
             }
         }
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.CalledToAttack -= OnCalledToAttackHandler;
+    }
 }

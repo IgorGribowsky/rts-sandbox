@@ -15,10 +15,8 @@ public class NavMeshMovement : MonoBehaviour
 
     private bool _goToObjectFlag = false;
     private GameObject _destinationObj;
-    private float _destinationObjSize;
+    private Vector3 _currentDestination;
     private float _thisObjSize;
-    private float _repositionCheckInterval = 0.5f; // Интервал проверки препятствий
-    private float _lastCheckTime;
     private float _distance;
 
     public event MoveActionEndedHandler NavMeshMovementArrive;
@@ -34,18 +32,25 @@ public class NavMeshMovement : MonoBehaviour
 
         _navmeshAgent = gameObject.GetComponent<NavMeshAgent>();
         _navmeshAgent.speed = _unitValues.MovementSpeed;
+
+        _thisObjSize = gameObject.GetSize();
     }
 
     public void Go(Vector3 destination)
     {
         _goToObjectFlag = false;
 
-        if (!_navmeshAgent.destination.IsEqual(destination))
+        var differenceVector = _currentDestination - destination;
+        differenceVector.y = 0;
+
+        if (differenceVector != Vector3.zero)
         {
             _navmeshAgent.avoidancePriority = 90;
             _navmeshAgent.destination = destination;
+            _currentDestination = destination;
         }
     }
+
 
     public void GoToObject(GameObject destinationObj, float distance)
     {
@@ -54,9 +59,10 @@ public class NavMeshMovement : MonoBehaviour
         if (destinationObj != _destinationObj)
         {
             _destinationObj = destinationObj;
-            _destinationObjSize = _destinationObj.GetSize();
-            _thisObjSize = gameObject.GetSize();
-            _distance = _destinationObjSize + distance;
+
+            var destinationObjSize = _destinationObj.GetSize();
+
+            _distance = destinationObjSize + _thisObjSize + distance;
             AdjustDestination();
         }
     }
@@ -64,19 +70,18 @@ public class NavMeshMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_goToObjectFlag && _destinationObj != null && Time.time - _lastCheckTime > _repositionCheckInterval)
+        if (_goToObjectFlag && _destinationObj != null)
         {
-            _lastCheckTime = Time.time;
             AdjustDestination();
         }
 
         if (_goToObjectFlag)
         {
-            float epsilon = 0.01f;
+            float epsilon = 0.02f;
 
             var v1 = gameObject.transform.position;
             v1.y = 0;
-            var v2 = _navmeshAgent.destination;
+            var v2 = _currentDestination;
             v2.y = 0;
 
             bool equal = Vector2.Distance(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z)) < epsilon;
@@ -93,13 +98,24 @@ public class NavMeshMovement : MonoBehaviour
     {
         if (_destinationObj == null) return;
 
-        Vector3 position = FindBestPosition(_destinationObj.transform.position);
-        _navmeshAgent.destination = position;
+
+        Vector3 position = FindBestPosition();
+
+        var differenceVector = _currentDestination - position;
+        differenceVector.y = 0;
+
+        if (differenceVector.magnitude > 0.066f)
+        {
+            _navmeshAgent.destination = position;
+            _currentDestination = position;
+        }
     }
 
-    private Vector3 FindBestPosition(Vector3 targetPosition)
+    private Vector3 FindBestPosition()
     {
-        Vector3 bestPosition = targetPosition + (transform.position - targetPosition).normalized * _distance;
+        var destinationObjCenter = _destinationObj.GetBoundCenter();
+
+        Vector3 bestPosition = destinationObjCenter + (gameObject.transform.position - destinationObjCenter).normalized * _distance;
 
         // Проверка, свободна ли точка
         if (IsPositionFree(bestPosition))
@@ -108,7 +124,7 @@ public class NavMeshMovement : MonoBehaviour
         }
 
         // Ищем ближайшую свободную точку вокруг цели
-        return FindNearestFreePosition(targetPosition, _distance);
+        return FindNearestFreePosition(destinationObjCenter, _distance);
     }
 
     private Vector3 FindNearestFreePosition(Vector3 targetPosition, float radius)
@@ -147,5 +163,6 @@ public class NavMeshMovement : MonoBehaviour
 
         _navmeshAgent.avoidancePriority = 50;
         _navmeshAgent.destination = gameObject.transform.position;
+        _currentDestination = gameObject.transform.position;
     }
 }

@@ -18,14 +18,12 @@ public class HeldMine : MonoBehaviour
     private BuildingValues _buildingValues;
     private Building _buildingScript;
     private UnitEventManager _unitEventManager;
-    private BuildingController _buildingController;
     private PlayerResources _playerResources;
     private ResourceValues _resouceValues;
+    private PlayerEventController _playerEventController;
 
     private List<GameObject> _miners = new List<GameObject>();
     private int?[] _mineCells;
-
-    private float miningSpeed = 0f;
 
     private float miningProgress = 0f;
 
@@ -35,8 +33,8 @@ public class HeldMine : MonoBehaviour
         _resouceValues = GetComponent<ResourceValues>();
         _buildingScript = GetComponent<Building>();
         _unitEventManager = GetComponent<UnitEventManager>();
-        _buildingController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
-            .GetComponent<BuildingController>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
     }
@@ -45,7 +43,6 @@ public class HeldMine : MonoBehaviour
     void Start()
     {
         _unitEventManager.UnitDied += CreateParentMine;
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
         _mineCells = new int?[MinersMaxCount];
     }
 
@@ -55,7 +52,9 @@ public class HeldMine : MonoBehaviour
         if (_resouceValues.ResourcesAmount <= 0)
         {
             Destroy(gameObject);
-             _buildingController.OnBuildingRemoved(gameObject);
+            _unitEventManager.OnMineIsFinished(gameObject);
+            _playerEventController.OnSelectedUnitDied(gameObject);
+            _playerEventController.OnBuildingRemoved(gameObject);
         }
 
         if (_miners.Count == 0f)
@@ -63,6 +62,7 @@ public class HeldMine : MonoBehaviour
             return;
         }
 
+        var miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
         miningProgress += miningSpeed * Time.deltaTime;
 
         if (miningProgress > MiningRate)
@@ -100,8 +100,6 @@ public class HeldMine : MonoBehaviour
         _mineCells[n] = miner.GetInstanceID();
 
         _miners.Add(miner);
-
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
     }
 
     public void RemoveMiner(GameObject miner)
@@ -115,14 +113,13 @@ public class HeldMine : MonoBehaviour
         _mineCells[n] = null;
 
         _miners.Remove(miner);
-        miningSpeed = (MiningRate / MinersMaxCount) * _miners.Count;
     }
 
     protected void CreateParentMine(DiedEventArgs args)
     {
         var point = gameObject.transform.position;
         var mine = Instantiate(ParentMine, point, gameObject.transform.rotation);
-        _buildingController.OnBuildingStarted(point, null, mine);
+        _playerEventController.OnBuildingStarted(point, null, mine);
         var mineResourceValues = mine.GetComponent<ResourceValues>();
 
         mineResourceValues.ResourcesAmount = _resouceValues.ResourcesAmount;
@@ -190,5 +187,10 @@ public class HeldMine : MonoBehaviour
         }
 
         return n;
+    }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.UnitDied -= CreateParentMine;
     }
 }

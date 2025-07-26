@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Enums;
 using System.Linq;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class TeamMember : MonoBehaviour
 
     void Start()
     {
-        _teamController = GameObject.FindGameObjectWithTag("GameController")
+        _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
         var team = _teamController.Teams.FirstOrDefault(t => t.Id == TeamId);
 

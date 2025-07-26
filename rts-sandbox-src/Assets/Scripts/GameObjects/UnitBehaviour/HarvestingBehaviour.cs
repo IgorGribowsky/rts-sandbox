@@ -152,7 +152,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
         }
     }
 
-    private void HandleArrival(EventArgs args)
+    protected void HandleArrival(EventArgs args)
     {
         if (!IsActive)
         {
@@ -205,5 +205,10 @@ public class HarvestingBehaviour : UnitBehaviourBase
             }
             harvestTimer = 0;
         }
+    }
+
+    private void OnDestroy()
+    {
+        _navmeshMovement.NavMeshMovementArrive -= HandleArrival;
     }
 }

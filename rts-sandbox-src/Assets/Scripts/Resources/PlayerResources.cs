@@ -12,18 +12,14 @@ public class PlayerResources : MonoBehaviour
     public List<ResourceAmount> MaxSupplyResourcesAmount = new List<ResourceAmount>();
 
     private GameResources _gameResources;
-
-    //TODO: move on common event class
-    public event ResourceChangedHandler ResourceChanged;
-    public void OnResourceChanged(ResourceName name, ResourceType type, int oldValue, int newValue)
-    {
-        ResourceChanged?.Invoke(new ResourceChangedEventArgs(name, type, oldValue, newValue));
-    }
+    private PlayerEventController _playerEventController;
 
     void Awake()
     {
-        var gameController = GameObject.FindGameObjectWithTag("GameController");
+        var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
         _gameResources = gameController.GetComponent<GameResources>();
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
     }
 
     void Start()
@@ -62,7 +58,7 @@ public class PlayerResources : MonoBehaviour
         var gameResource = _gameResources.Resources
             .FirstOrDefault(x => x.ResourceName == resourceName);
 
-        OnResourceChanged(resourceName, gameResource.ResourceType, oldValue, newValue);
+        _playerEventController.OnResourceChanged(resourceName, gameResource.ResourceType, oldValue, newValue);
     }
 
     public bool CheckIfCanSpendResources(params ResourceAmount[] resourceAmounts)
@@ -128,7 +124,7 @@ public class PlayerResources : MonoBehaviour
             playerResource.Amount -= resource.Amount;
             var newValue = playerResource.Amount;
 
-            OnResourceChanged(gameResource.ResourceName, gameResource.ResourceType, oldValue, newValue);
+            _playerEventController.OnResourceChanged(gameResource.ResourceName, gameResource.ResourceType, oldValue, newValue);
         }
     }
 }

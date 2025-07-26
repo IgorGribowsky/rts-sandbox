@@ -1,14 +1,11 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
+using System;
 using UnityEngine;
 
 public class WindowsInputController : MonoBehaviour
 {
-    public float Sensitivity = 30f;
-    public float MoveCameraBorderSize = 20f;
     public GameObject Controller;
-
-    public bool FixScreen = false;
 
     public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
@@ -23,15 +20,17 @@ public class WindowsInputController : MonoBehaviour
     private UnitsController _unitController;
     private SelectionBoxController _selectionBoxController;
     private BuildingController _buildingController;
-    private BuildingGridController _buildingGridController;
+    private PlayerEventController _playerEventController;
 
-    private const float snapStep = 0.25f * GameConstants.GridCellSize;
+    private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
     private bool selectionStarted = false;
     private bool aClickPressed = false;
     private int clickLayerMask;
     private int buildLayerMask;
     private Vector3 lastSnappedPosition;
+
+    private float lastClickTime = -1f;
 
     KeyCode[] keypadCodes = new KeyCode[]
         {
@@ -61,40 +60,46 @@ public class WindowsInputController : MonoBehaviour
         _buildingController = Controller.GetComponent<BuildingController>();
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
-        _buildingGridController = Controller.GetComponent<BuildingGridController>();
+        _playerEventController = Controller.GetComponent<PlayerEventController>();
     }
 
     void Update()
     {
         UpdateMousePosition();
 
-        if (!FixScreen)
+        if (!_cameraController.FixScreen)
         {
             var moveCameraVector = Vector3.zero;
-            if (Input.mousePosition.x < MoveCameraBorderSize)
+            if (Input.mousePosition.x < _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(-Sensitivity, 0, 0);
+                moveCameraVector += new Vector3(-_cameraController.Sensitivity, 0, 0);
             }
-            else if (Input.mousePosition.x > Screen.width - MoveCameraBorderSize)
+            else if (Input.mousePosition.x > Screen.width - _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(Sensitivity, 0, 0);
+                moveCameraVector += new Vector3(_cameraController.Sensitivity, 0, 0);
             }
-            if (Input.mousePosition.y < MoveCameraBorderSize)
+            if (Input.mousePosition.y < _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(0, 0, -Sensitivity);
+                moveCameraVector += new Vector3(0, 0, -_cameraController.Sensitivity);
             }
-            else if (Input.mousePosition.y > Screen.height - MoveCameraBorderSize)
+            else if (Input.mousePosition.y > Screen.height - _cameraController.MoveCameraBorderSize)
             {
-                moveCameraVector += new Vector3(0, 0, Sensitivity);
+                moveCameraVector += new Vector3(0, 0, _cameraController.Sensitivity);
             }
 
-            _cameraController.Move(moveCameraVector * Time.deltaTime);
+            _cameraController.MoveCamera(moveCameraVector * Time.deltaTime);
+        }
+
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            var zoomDelta = -1 * Input.mouseScrollDelta.y * Time.deltaTime * _cameraController.SensitivityZoom;
+            _cameraController.ChangeZoom(zoomDelta);
         }
 
         if (Input.GetKey(ReturnCameraKey))
         {
             var center = _unitController.GetTheMostRangedUnitPosition();
-            _cameraController.Set(center);
+            _cameraController.SetCamera(center);
         }
 
         if (aClickPressed)
@@ -106,7 +111,7 @@ public class WindowsInputController : MonoBehaviour
 
             if (Input.GetKeyDown(CancelKey))
             {
-                _buildingController.DisableBuildingMod();
+                aClickPressed = false;
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -161,6 +166,12 @@ public class WindowsInputController : MonoBehaviour
 
         if (_buildingController.BuildingMenuMod)
         {
+            if (Input.GetKeyDown(CancelKey))
+            {
+                _buildingController.DisableBuildingMenuMod();
+                return;
+            }
+
             if (AlphabetKeyDown(out KeyCode alphabetKeyDown))
             {
                 _buildingController.EnableBuildingMod(alphabetKeyDown);
@@ -194,6 +205,21 @@ public class WindowsInputController : MonoBehaviour
                 {
                     _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
                     _selectionBoxController.EndDrawSelection();
+
+                    var targetGameObject = hit.transform.gameObject;
+                    if (targetGameObject.layer == (int)Layer.Unit)
+                    {
+                        float timeSinceLastClick = Time.time - lastClickTime;
+                        if (timeSinceLastClick <= GameConstants.DoubleClickTime)
+                        {
+                            _unitController.OnDoubleClick(targetGameObject, Input.GetKey(KeyCode.LeftShift));
+                            lastClickTime = -1f;
+                        }
+                        else
+                        {
+                            lastClickTime = Time.time;
+                        }
+                    }
                 }
                 selectionStarted = false;
             }
@@ -221,6 +247,11 @@ public class WindowsInputController : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(CancelKey))
+        {
+            _unitController.OnCancelClick();
+        }
+
         if (KeypadCodeDown(out KeyCode keypadCode, out int num))
         {
             _unitController.ProduceUnit(num);
@@ -228,7 +259,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetKeyDown(FixScreenKey))
         {
-            FixScreen = !FixScreen;
+            _cameraController.SwitchFixScreen();
         }
 
         if (Input.GetKeyDown(OpenBuildingMenuKey))
@@ -292,8 +323,8 @@ public class WindowsInputController : MonoBehaviour
 
     private void UpdateMousePosition()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask(Layer.MovementSurface.ToString())))
+        Ray ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 100f, LayerMask.GetMask(Layer.MovementSurface.ToString())))
         {
             Vector3 worldPos = hit.point;
             Vector3 snappedPos = new Vector3(
@@ -304,21 +335,18 @@ public class WindowsInputController : MonoBehaviour
 
             if (snappedPos != lastSnappedPosition)
             {
-                if (Physics.Raycast(ray, out RaycastHit unitHit, Mathf.Infinity, LayerMask.GetMask(Layer.Unit.ToString())))
+                GameObject unitUnderCursor = null;
+
+                if (Physics.Raycast(ray, out var unitHit, 100f, LayerMask.GetMask(Layer.Unit.ToString())))
                 {
-                    _buildingGridController.UnitUnderCursor = unitHit.transform.gameObject;
-                }
-                else
-                {
-                    _buildingGridController.UnitUnderCursor = null;
+                    unitUnderCursor = unitHit.transform.gameObject;
                 }
 
-                _buildingGridController.MousePosition = worldPos;
+                var cursorPosition = worldPos;
+
+                _playerEventController.OnCursorMoved(cursorPosition, unitUnderCursor);
 
                 lastSnappedPosition = snappedPos;
-
-                _buildingGridController.OnCursorMoved();
-
             }
         }
     }

@@ -3,6 +3,8 @@ using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Assets.Scripts.Infrastructure.Abstractions;
+using Assets.Scripts.Infrastructure.Enums;
 
 namespace Assets.Scripts.GameObjects
 {
@@ -17,10 +19,13 @@ namespace Assets.Scripts.GameObjects
 
         private ICommand CurrentRunningCommand;
         private Queue<ICommand> CommandsQueue = new Queue<ICommand>();
+        private PlayerEventController _playerEventController;
 
         void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();
+            _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+                .GetComponent<PlayerEventController>();
 
             _unitEventManager.MoveCommandReceived += StartMoveCommand;
             _unitEventManager.AttackCommandReceived += StartAttackCommand;
@@ -109,6 +114,7 @@ namespace Assets.Scripts.GameObjects
             if (CommandsQueue.Count > 0)
             {
                 CommandListInfo.RemoveAt(0);
+                TriggerEventCurrentCommandEnded();
                 CurrentRunningCommand = CommandsQueue.Dequeue();
                 CurrentRunningCommandInfo = CurrentRunningCommand.GetType().Name;
                 if (CurrentRunningCommand.Check())
@@ -129,6 +135,7 @@ namespace Assets.Scripts.GameObjects
 
         private void SetIdleState()
         {
+            TriggerEventCurrentCommandEnded();
             CurrentRunningCommand = null;
             CurrentRunningCommandInfo = "Idle";
             _unitEventManager.OnAutoAttackIdleStarted(gameObject.transform.position);
@@ -138,8 +145,10 @@ namespace Assets.Scripts.GameObjects
         {
             if (!addToCommandsQueue)
             {
+                TriggerEventCommandsQueueCleared();
                 CommandsQueue.Clear();
                 CommandListInfo.Clear();
+                TriggerEventCurrentCommandEnded();
                 CurrentRunningCommand = null;
                 CurrentRunningCommandInfo = "";
             }
@@ -147,6 +156,7 @@ namespace Assets.Scripts.GameObjects
             var commandName = command.GetType().Name;
             CommandListInfo.Add(commandName);
 
+            TriggerEventCommandAddedToQueue(command);
             CommandsQueue.Enqueue(command);
 
             if (CurrentRunningCommand == null)
@@ -155,13 +165,22 @@ namespace Assets.Scripts.GameObjects
             }
         }
 
-        #region Commands
-        private interface ICommand
+        private void TriggerEventCurrentCommandEnded()
         {
-            bool Check();
-            void Start();
+            _playerEventController.OnCurrentCommandEnded(CurrentRunningCommand);
         }
 
+        private void TriggerEventCommandAddedToQueue(ICommand command)
+        {
+            _playerEventController.OnCommandAddedToQueue(command);
+        }
+
+        private void TriggerEventCommandsQueueCleared()
+        {
+            _playerEventController.OnCommandsQueueCleared(CommandsQueue);
+        }
+
+        #region Commands
         private class MoveCommand : ICommand
         {
             public MoveCommandReceivedEventArgs args;
@@ -254,7 +273,7 @@ namespace Assets.Scripts.GameObjects
             }
         }
 
-        private class BuildCommand : ICommand
+        private class BuildCommand : IBuildCommand
         {
             public BuildCommandReceivedEventArgs args;
 
@@ -274,6 +293,16 @@ namespace Assets.Scripts.GameObjects
             public void Start()
             {
                 _unitEventManager.OnBuildActionStarted(args.Point, args.Building, args.IsMineHeld, args.MineToHeld);
+            }
+
+            public GameObject GetBuildingObject()
+            {
+                return args.Building;
+            }
+
+            public Vector3 GetPoint()
+            {
+                return args.Point;
             }
         }
 
@@ -347,5 +376,25 @@ namespace Assets.Scripts.GameObjects
         }
 
         #endregion
+
+        private void OnDestroy()
+        {
+            _unitEventManager.MoveCommandReceived -= StartMoveCommand;
+            _unitEventManager.AttackCommandReceived -= StartAttackCommand;
+            _unitEventManager.FollowCommandReceived -= StartFollowCommand;
+            _unitEventManager.AMoveCommandReceived -= StartAMoveCommand;
+            _unitEventManager.HoldCommandReceived -= StartHoldCommand;
+            _unitEventManager.BuildCommandReceived -= StartBuildCommand;
+            _unitEventManager.MineCommandReceived -= StartMineCommand;
+            _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
+
+            _unitEventManager.MoveActionEnded -= RunNextCommand;
+            _unitEventManager.AttackActionEnded -= RunNextCommand;
+            _unitEventManager.FollowActionEnded -= RunNextCommand;
+            _unitEventManager.AMoveActionEnded -= RunNextCommand;
+            _unitEventManager.BuildActionEnded -= RunNextCommand;
+            _unitEventManager.MineActionEnded -= RunNextCommand;
+            _unitEventManager.HarvestingActionEnded -= RunNextCommand;
+        }
     }
 }
