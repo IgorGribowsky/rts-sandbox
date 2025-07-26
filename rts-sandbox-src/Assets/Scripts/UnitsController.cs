@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
@@ -363,37 +364,28 @@ public class UnitsController : MonoBehaviour
         StartSelectionPoint = point;
     }
 
-    public void EndSelection(Vector3 point, bool addToPrevoiusSelected)
+    public void EndSelection(Vector3 point, bool addToPreviousSelection)
     {
         var firstUnit = SelectedUnits.FirstOrDefault();
 
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(false));
-        var minx = Mathf.Min(StartSelectionPoint.x, point.x);
-        var maxx = Mathf.Max(StartSelectionPoint.x, point.x);
-        var minz = Mathf.Min(StartSelectionPoint.z, point.z);
-        var maxz = Mathf.Max(StartSelectionPoint.z, point.z);
-        var start = new Vector3(minx, 0f, minz);
-        var end = new Vector3(maxx, 100f, maxz);
 
-        point.y = 100f;
-        Bounds bounds = new Bounds();
-        bounds.SetMinMax(start, end);
+        var bounds = CreateBoundsFromSelection(StartSelectionPoint, point);
 
-        var selectedUnits = new List<GameObject>();
-        var teamId = 0;
-
-        var selectableUntisInArea = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
+        var selectableUnits = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 
-        if (selectableUntisInArea.Any())
-        {
-            var groupedByTeamId = selectableUntisInArea
-                .GroupBy(u => u.GetComponent<TeamMember>().TeamId);
+        var selectedUnits = new List<GameObject>();
+        var teamId = 0;
 
-            var playerGroup = groupedByTeamId.FirstOrDefault(u => u.Key == playerTeamId);
+        if (selectableUnits.Any())
+        {
+            var groupedByTeamId = selectableUnits.GroupBy(u => u.GetComponent<TeamMember>().TeamId);
+            var playerGroup = groupedByTeamId.FirstOrDefault(g => g.Key == playerTeamId);
+
             if (playerGroup != null)
             {
                 selectedUnits = playerGroup.ToList();
@@ -401,22 +393,61 @@ public class UnitsController : MonoBehaviour
             }
             else
             {
-                selectedUnits = selectableUntisInArea
-                    .Take(1)
-                    .ToList();
+                selectedUnits = selectableUnits.Take(1).ToList();
                 teamId = selectedUnits.First().GetComponent<TeamMember>().TeamId;
+                addToPreviousSelection = false;
             }
         }
+        addToPreviousSelection = CanAddToPreviousSelection(addToPreviousSelection, teamId);
 
-        if (addToPrevoiusSelected)
+        ApplySelection(selectedUnits, addToPreviousSelection);
+        PostSelectActions(firstUnit, teamId);
+    }
+
+    public void OnDoubleClick(GameObject targetUnit, bool addToPreviousSelection)
+    {
+        var targetTeamId = targetUnit.GetComponent<TeamMember>().TeamId;
+        var unitId = targetUnit.GetComponent<UnitValues>().Id;
+
+        if (targetTeamId != playerTeamId)
+            return;
+
+        addToPreviousSelection = CanAddToPreviousSelection(addToPreviousSelection, targetTeamId);
+
+        var firstUnit = SelectedUnits.FirstOrDefault();
+
+        var unitsToSelect = targetUnit.GetAllUnitsInRadius(GameConstants.DoubleClickSelectDistance, unit =>
         {
-            SelectedUnits.AddRange(selectedUnits.Except(SelectedUnits));
+            var teamMember = unit.GetComponent<TeamMember>();
+            var unitValues = unit.GetComponent<UnitValues>();
+            return teamMember != null && unitValues != null
+                && teamMember.TeamId == targetTeamId
+                && unitValues.Id == unitId;
+        }).ToList();
+
+        ApplySelection(unitsToSelect, addToPreviousSelection);
+        PostSelectActions(firstUnit, targetTeamId);
+    }
+
+    private void ApplySelection(List<GameObject> units, bool addToPreviousSelection)
+    {
+        if (addToPreviousSelection)
+        {
+            SelectedUnits.AddRange(units.Except(SelectedUnits));
         }
         else
         {
-            SelectedUnits = selectedUnits;
+            SelectedUnits = units;
         }
+    }
 
+    private bool CanAddToPreviousSelection(bool requestedAdd, int targetTeamId)
+    {
+        return requestedAdd && SelectedUnitsTeamId == playerTeamId && targetTeamId == playerTeamId;
+    }
+
+    private void PostSelectActions(GameObject firstUnit, int teamId)
+    {
         SelectedUnitsTeamId = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
@@ -429,6 +460,21 @@ public class UnitsController : MonoBehaviour
                 _buildingController.DisableBuildingMenuMod();
             }
         }
+    }
+
+    private Bounds CreateBoundsFromSelection(Vector3 start, Vector3 end)
+    {
+        var minx = Mathf.Min(start.x, end.x);
+        var maxx = Mathf.Max(start.x, end.x);
+        var minz = Mathf.Min(start.z, end.z);
+        var maxz = Mathf.Max(start.z, end.z);
+
+        var min = new Vector3(minx, 0f, minz);
+        var max = new Vector3(maxx, 100f, maxz);
+
+        Bounds bounds = new Bounds();
+        bounds.SetMinMax(min, max);
+        return bounds;
     }
 
     private void CreateMovememtMask()

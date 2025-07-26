@@ -33,6 +33,8 @@ public class WindowsInputController : MonoBehaviour
     private int buildLayerMask;
     private Vector3 lastSnappedPosition;
 
+    private float lastClickTime = -1f;
+
     KeyCode[] keypadCodes = new KeyCode[]
         {
           KeyCode.Alpha1,
@@ -194,6 +196,21 @@ public class WindowsInputController : MonoBehaviour
                 {
                     _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
                     _selectionBoxController.EndDrawSelection();
+
+                    var targetGameObject = hit.transform.gameObject;
+                    if (targetGameObject.layer == (int)Layer.Unit)
+                    {
+                        float timeSinceLastClick = Time.time - lastClickTime;
+                        if (timeSinceLastClick <= GameConstants.DoubleClickTime)
+                        {
+                            _unitController.OnDoubleClick(targetGameObject, Input.GetKey(KeyCode.LeftShift));
+                            lastClickTime = -1f;
+                        }
+                        else
+                        {
+                            lastClickTime = Time.time;
+                        }
+                    }
                 }
                 selectionStarted = false;
             }
