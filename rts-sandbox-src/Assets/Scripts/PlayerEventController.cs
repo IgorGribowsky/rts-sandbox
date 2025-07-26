@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class PlayerEventController : MonoBehaviour
 {
+    public event CursorMovedHandler CursorMoved;
+    public void OnCursorMoved(Vector3 cursorPosition, GameObject unitUnderCursor)
+    {
+        CursorMoved?.Invoke(new CursorMovedEventArgs(cursorPosition, unitUnderCursor));
+    }
+
     public event ModStateChangedHandler BuildingModChanged;
     public void OnBuildingModChanged(bool state)
     {

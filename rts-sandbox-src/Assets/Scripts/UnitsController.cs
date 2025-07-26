@@ -24,6 +24,7 @@ public class UnitsController : MonoBehaviour
     private PlayerEventController _playerEventController;
 
     private int playerTeamId;
+    private GameObject _unitUnderCursor;
 
     void Start()
     {
@@ -35,10 +36,10 @@ public class UnitsController : MonoBehaviour
         _buildingController = GetComponent<BuildingController>();
         _buildingGridController = GetComponent<BuildingGridController>();
         _playerResources = GetComponent<PlayerResources>();
-        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
-            .GetComponent<PlayerEventController>();
+        _playerEventController = GetComponent<PlayerEventController>();
 
         _playerEventController.SelectedUnitDied += SelectedUnitDiedHandler;
+        _playerEventController.CursorMoved += CursorMovedHandler;
     }
 
     private void Update()
@@ -87,10 +88,10 @@ public class UnitsController : MonoBehaviour
             }
 
             Vector3 resultPoint = buildingValues.IsHeldMine 
-                ? _buildingGridController.UnitUnderCursor.transform.position 
+                ? _unitUnderCursor.transform.position 
                 : point.GetGridPoint(buildingSize);
 
-            var mineToHeld = buildingValues.IsHeldMine ? _buildingGridController.UnitUnderCursor : null;
+            var mineToHeld = buildingValues.IsHeldMine ? _unitUnderCursor : null;
             mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
 
             if (addToCommandsQueue)
@@ -497,6 +498,11 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    protected void CursorMovedHandler(CursorMovedEventArgs args)
+    {
+        _unitUnderCursor = args.UnitUnderCursor;
+    }
+
     private List<GameObject> GetMovableSelectedUnits()
     {
         return SelectedUnits
@@ -504,7 +510,7 @@ public class UnitsController : MonoBehaviour
             .ToList();
     }
 
-    public class UnitMovementMask
+    private class UnitMovementMask
     {
         public float UnitId { get; set; }
 

@@ -23,7 +23,7 @@ public class WindowsInputController : MonoBehaviour
     private UnitsController _unitController;
     private SelectionBoxController _selectionBoxController;
     private BuildingController _buildingController;
-    private BuildingGridController _buildingGridController;
+    private PlayerEventController _playerEventController;
 
     private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
@@ -61,7 +61,7 @@ public class WindowsInputController : MonoBehaviour
         _buildingController = Controller.GetComponent<BuildingController>();
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
-        _buildingGridController = Controller.GetComponent<BuildingGridController>();
+        _playerEventController = Controller.GetComponent<PlayerEventController>();
     }
 
     void Update()
@@ -304,21 +304,18 @@ public class WindowsInputController : MonoBehaviour
 
             if (snappedPos != lastSnappedPosition)
             {
+                GameObject unitUnderCursor = null;
+
                 if (Physics.Raycast(ray, out var unitHit, 100f, LayerMask.GetMask(Layer.Unit.ToString())))
                 {
-                    _buildingGridController.UnitUnderCursor = unitHit.transform.gameObject;
-                }
-                else
-                {
-                    _buildingGridController.UnitUnderCursor = null;
+                    unitUnderCursor = unitHit.transform.gameObject;
                 }
 
-                _buildingGridController.MousePosition = worldPos;
+                var cursorPosition = worldPos;
+
+                _playerEventController.OnCursorMoved(cursorPosition, unitUnderCursor);
 
                 lastSnappedPosition = snappedPos;
-
-                _buildingGridController.OnCursorMoved();
-
             }
         }
     }

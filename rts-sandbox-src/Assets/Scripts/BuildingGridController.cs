@@ -13,16 +13,13 @@ public class BuildingGridController : MonoBehaviour
     public Vector3 startGridPoint = new Vector3(-50f, 0.1f, -50f);
     public Vector2 gridSize = new Vector2(100f, 100f);
 
-    //TODO: (issue number 59)
-    public GameObject UnitUnderCursor { get; set; }
-
-    //TODO: (issue number 59)
-    public Vector3 MousePosition { get; set; }
-
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
     private GameObject cursorGrid;
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
+
+    private GameObject _unitUnderCursor { get; set; }
+    private Vector3 _mousePosition { get; set; }
 
     private bool isMineUnderCursor = false;
 
@@ -36,6 +33,7 @@ public class BuildingGridController : MonoBehaviour
         _playerEventController.BuildingStarted += AddToGrid;
         _playerEventController.BuildingRemoved += RemoveFromGrid;
         _playerEventController.BuildingModChanged += BuildingModChangedHandler;
+        _playerEventController.CursorMoved += CursorMovedHandler;
     }
 
     public void Start()
@@ -98,14 +96,14 @@ public class BuildingGridController : MonoBehaviour
 
     public bool CheckIfMineUnderCursor()
     {
-        var buildingValues = UnitUnderCursor?.GetComponent<BuildingValues>();
+        var buildingValues = _unitUnderCursor?.GetComponent<BuildingValues>();
         var currentBuildingValues = _buildingController.Building.GetComponent<BuildingValues>();
 
         var isMine = false;
 
         if (buildingValues != null && currentBuildingValues != null && buildingValues.IsResource && currentBuildingValues.IsResource)
         {
-            var resourceValues = UnitUnderCursor.GetComponent<ResourceValues>();
+            var resourceValues = _unitUnderCursor.GetComponent<ResourceValues>();
             var currentResourceValues = _buildingController.Building.GetComponent<ResourceValues>();
             isMine = resourceValues.IsMine && currentResourceValues.IsHeldMine && resourceValues.ResourceName == currentResourceValues.ResourceName;
         }
@@ -113,12 +111,15 @@ public class BuildingGridController : MonoBehaviour
         return isMine;
     }
 
-    //TODO: (issue number 59)
-    public void OnCursorMoved()
+    protected void CursorMovedHandler(CursorMovedEventArgs args)
     {
-        if (!_buildingController.BuildingMod) return;
+        _mousePosition = args.CursorPosition;
+        _unitUnderCursor = args.UnitUnderCursor;
 
-        UpdateCursorPosition();
+        if (_buildingController.BuildingMod)
+        {
+            UpdateCursorPosition();
+        }
     }
 
     protected void BuildingModChangedHandler(ModStateChangedEventArgs modStateChangedEventArgs)
@@ -148,12 +149,12 @@ public class BuildingGridController : MonoBehaviour
 
         if (isMineUnderCursor)
         {
-            cursorGrid.transform.position = UnitUnderCursor.transform.position;
+            cursorGrid.transform.position = _unitUnderCursor.transform.position;
         }
         else
         {
             var gridSize = buildingValues.GridSize;
-            cursorGrid.transform.position = MousePosition.GetGridPoint(gridSize);
+            cursorGrid.transform.position = _mousePosition.GetGridPoint(gridSize);
         }
 
         if (buildingValues.IsHeldMine)
