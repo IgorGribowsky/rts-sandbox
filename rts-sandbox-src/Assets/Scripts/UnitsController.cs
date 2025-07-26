@@ -388,8 +388,14 @@ public class UnitsController : MonoBehaviour
 
             if (playerGroup != null)
             {
-                selectedUnits = playerGroup.ToList();
                 teamId = playerGroup.Key;
+
+                //units without buldings
+                selectedUnits = playerGroup
+                    .GroupBy(u => u.GetComponent<UnitValues>().IsBuilding)
+                    .OrderBy(u => u.Key)
+                    .First()
+                    .ToList();
             }
             else
             {
