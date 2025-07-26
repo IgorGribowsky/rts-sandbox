@@ -100,8 +100,15 @@ public class NavMeshMovement : MonoBehaviour
 
 
         Vector3 position = FindBestPosition();
-        _navmeshAgent.destination = position;
-        _currentDestination = position;
+
+        var differenceVector = _currentDestination - position;
+        differenceVector.y = 0;
+
+        if (differenceVector.magnitude > 0.066f)
+        {
+            _navmeshAgent.destination = position;
+            _currentDestination = position;
+        }
     }
 
     private Vector3 FindBestPosition()
