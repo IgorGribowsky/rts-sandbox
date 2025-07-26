@@ -26,4 +26,9 @@ public class UnitSupplyRequirement : UnitSupplyBase
     protected void RemoveSupplyLimit(DiedEventArgs args) => ProcessResources(
         (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount),
         unitValues => unitValues.ResourceCost);
+
+    private void OnDestroy()
+    {
+        _unitEventManager.UnitDied -= RemoveSupplyLimit;
+    }
 }

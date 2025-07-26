@@ -1,7 +1,6 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class UnitEventManager : MonoBehaviour
@@ -18,6 +17,12 @@ public class UnitEventManager : MonoBehaviour
     public void OnUnitDied(GameObject killer, GameObject dead)
     {
         UnitDied?.Invoke(new DiedEventArgs(killer, dead));
+    }
+
+    public event MineIsFinishedHandler MineIsFinished;
+    public void OnMineIsFinished(GameObject mine)
+    {
+        MineIsFinished?.Invoke(new MineIsFinishedEventArgs(mine));
     }
 
     public event HealthPointsChangedHandler HealthPointsChanged;
@@ -121,6 +126,12 @@ public class UnitEventManager : MonoBehaviour
     public void OnBuildingCompleted(GameObject building)
     {
         BuildingCompleted?.Invoke(new BuildingCompletedEventArgs(building));
+    }
+
+    public event CanceledHandler Canceled;
+    public void OnCanceled(GameObject building)
+    {
+        Canceled?.Invoke(new CanceledEventArgs(building));
     }
 
     public event BuildActionEndedHandler BuildActionEnded;

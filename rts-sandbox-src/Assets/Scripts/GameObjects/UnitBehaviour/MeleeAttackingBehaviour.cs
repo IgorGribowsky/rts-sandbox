@@ -38,6 +38,12 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         {
             attackCD -= Time.deltaTime;
         }
+
+        if (!IsActive)
+        {
+            attackIsProcessing = false;
+            attackAnimation = 0;
+        }
     }
 
     protected override void UpdateAction()
@@ -58,16 +64,18 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
             _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
+            Debug.Log("GoToObject");
         }
         else
         {
             _navmeshMovement.Stop();
         }
 
-        if (distanceToTarget < _unitValues.MeleeAttackDistance
+        if (distanceToTarget < _unitValues.MeleeAttackDistance + 0.01f
             && attackCD <= 0
             && !attackIsProcessing)
         {
+            Debug.Log("Attack started");
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;
         }
@@ -79,6 +87,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             }
             else
             {
+                Debug.Log("Attack rejected");
                 attackIsProcessing = false;
                 attackAnimation = 0;
             }
@@ -87,6 +96,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             {
                 _targetEventManager.OnDamageReceived(gameObject, _unitValues.Damage, _unitValues.DamageType);
 
+                Debug.Log("Attack finished");
                 attackIsProcessing = false;
                 attackAnimation = 0;
             }

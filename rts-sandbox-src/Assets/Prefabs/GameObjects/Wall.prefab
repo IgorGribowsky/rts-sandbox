@@ -321,7 +321,7 @@ MonoBehaviour:
   Damage: 0
   AutoAttackDistance: 8
   AttackRate: 0
-  AttackDurationPercent: 0.5
+  AttackDurationPercent: 0.4
   DamageType: 0
   AttackBreakDistance: 2
   MeleeAttackDistance: 2
@@ -332,12 +332,18 @@ MonoBehaviour:
   ResourceCost:
   - ResourceName: 1
     Amount: 5
+  SupplyResourceProduces: []
   IsBuilding: 1
   CanProduceUnits: 0
   UnitsToProduce: []
   IsBuilder: 0
   BuildingsToProduce: []
   IsMiner: 0
+  IsHarvestor: 0
+  ResourcesCanBeHarvested: 
+  HarvestingRate: 1
+  HarvestingValuePerTick: 1
+  HarvestingMaxValue: 10
 --- !u!114 &6829857401807089985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -364,11 +370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 2
   ObstacleSize: 2
-  IsMine: 0
-  IsHeldMine: 0
-  ResourceName: 0
-  IsHarvestableResource: 0
-  ResourcesAmount: 0
+  IsResource: 0
 --- !u!114 &265988409696462404
 MonoBehaviour:
   m_ObjectHideFlags: 0

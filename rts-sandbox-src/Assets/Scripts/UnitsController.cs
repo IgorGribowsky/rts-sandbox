@@ -1,12 +1,11 @@
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class UnitsController : MonoBehaviour
 {
@@ -23,28 +22,25 @@ public class UnitsController : MonoBehaviour
     private BuildingController _buildingController;
     private BuildingGridController _buildingGridController;
     private PlayerResources _playerResources;
+    private PlayerEventController _playerEventController;
 
     private int playerTeamId;
-
-    public event DiedHandler SelectedUnitDied;
-
-    //TODO: move to common event handler
-    public void OnSelectedUnitDied(GameObject dead)
-    {
-        SelectedUnitDied?.Invoke(new DiedEventArgs(null, dead));
-    }
+    private GameObject _unitUnderCursor;
 
     void Start()
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
 
-        var gameController = GameObject.FindGameObjectWithTag("GameController");
+        var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
         _teamController = gameController.GetComponent<TeamController>();
         _gameController = gameController.GetComponent<GameController>();
         _buildingController = GetComponent<BuildingController>();
         _buildingGridController = GetComponent<BuildingGridController>();
         _playerResources = GetComponent<PlayerResources>();
-        SelectedUnitDied += SelectedUnitDiedHandler;
+        _playerEventController = GetComponent<PlayerEventController>();
+
+        _playerEventController.SelectedUnitDied += SelectedUnitDiedHandler;
+        _playerEventController.CursorMoved += CursorMovedHandler;
     }
 
     private void Update()
@@ -93,10 +89,10 @@ public class UnitsController : MonoBehaviour
             }
 
             Vector3 resultPoint = buildingValues.IsHeldMine 
-                ? _buildingGridController.UnitUnderCursor.transform.position 
+                ? _unitUnderCursor.transform.position 
                 : point.GetGridPoint(buildingSize);
 
-            var mineToHeld = buildingValues.IsHeldMine ? _buildingGridController.UnitUnderCursor : null;
+            var mineToHeld = buildingValues.IsHeldMine ? _unitUnderCursor : null;
             mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
 
             if (addToCommandsQueue)
@@ -189,7 +185,8 @@ public class UnitsController : MonoBehaviour
 
         point.y = 0.5f;
 
-        foreach (var unit in SelectedUnits)
+        var movableSelectedUnits = GetMovableSelectedUnits();
+        foreach (var unit in movableSelectedUnits)
         {
             var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
             var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
@@ -274,7 +271,7 @@ public class UnitsController : MonoBehaviour
             {
                 if (target == unit)
                 {
-                    OnGroundRightClick(target.transform.position, addToCommandsQueue);
+                    unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(target.transform.position, addToCommandsQueue);
                     continue;
                 }
 
@@ -367,60 +364,110 @@ public class UnitsController : MonoBehaviour
         StartSelectionPoint = point;
     }
 
-    public void EndSelection(Vector3 point, bool addToPrevoiusSelected)
+    public void EndSelection(Vector3 point, bool addToPreviousSelection)
     {
         var firstUnit = SelectedUnits.FirstOrDefault();
 
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(false));
-        var minx = Mathf.Min(StartSelectionPoint.x, point.x);
-        var maxx = Mathf.Max(StartSelectionPoint.x, point.x);
-        var minz = Mathf.Min(StartSelectionPoint.z, point.z);
-        var maxz = Mathf.Max(StartSelectionPoint.z, point.z);
-        var start = new Vector3(minx, 0f, minz);
-        var end = new Vector3(maxx, 100f, maxz);
 
-        point.y = 100f;
-        Bounds bounds = new Bounds();
-        bounds.SetMinMax(start, end);
+        var bounds = CreateBoundsFromSelection(StartSelectionPoint, point);
 
-        var selectedUnits = new List<GameObject>();
-        var teamId = 0;
-
-        var selectableUntisInArea = GameObject.FindGameObjectsWithTag("Unit")
+        var selectableUnits = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 
-        if (selectableUntisInArea.Any())
-        {
-            var groupedByTeamId = selectableUntisInArea
-                .GroupBy(u => u.GetComponent<TeamMember>().TeamId);
+        var selectedUnits = new List<GameObject>();
+        var teamId = 0;
 
-            var playerGroup = groupedByTeamId.FirstOrDefault(u => u.Key == playerTeamId);
+        if (selectableUnits.Any())
+        {
+            var groupedByTeamId = selectableUnits.GroupBy(u => u.GetComponent<TeamMember>().TeamId);
+            var playerGroup = groupedByTeamId.FirstOrDefault(g => g.Key == playerTeamId);
+
             if (playerGroup != null)
             {
-                selectedUnits = playerGroup.ToList();
                 teamId = playerGroup.Key;
+
+                //units without buldings
+                selectedUnits = playerGroup
+                    .GroupBy(u => u.GetComponent<UnitValues>().IsBuilding)
+                    .OrderBy(u => u.Key)
+                    .First()
+                    .ToList();
             }
             else
             {
-                selectedUnits = selectableUntisInArea
-                    .Take(1)
-                    .ToList();
+                selectedUnits = selectableUnits.Take(1).ToList();
                 teamId = selectedUnits.First().GetComponent<TeamMember>().TeamId;
+                addToPreviousSelection = false;
             }
         }
+        addToPreviousSelection = CanAddToPreviousSelection(addToPreviousSelection, teamId);
 
-        if (addToPrevoiusSelected)
+        ApplySelection(selectedUnits, addToPreviousSelection);
+        PostSelectActions(firstUnit, teamId);
+    }
+
+    public void OnDoubleClick(GameObject targetUnit, bool addToPreviousSelection)
+    {
+        var targetTeamId = targetUnit.GetComponent<TeamMember>().TeamId;
+        var unitId = targetUnit.GetComponent<UnitValues>().Id;
+
+        if (targetTeamId != playerTeamId)
+            return;
+
+        addToPreviousSelection = CanAddToPreviousSelection(addToPreviousSelection, targetTeamId);
+
+        var firstUnit = SelectedUnits.FirstOrDefault();
+
+        var unitsToSelect = targetUnit.GetAllUnitsInRadius(GameConstants.DoubleClickSelectDistance, unit =>
         {
-            SelectedUnits.AddRange(selectedUnits.Except(SelectedUnits));
+            var teamMember = unit.GetComponent<TeamMember>();
+            var unitValues = unit.GetComponent<UnitValues>();
+            return teamMember != null && unitValues != null
+                && teamMember.TeamId == targetTeamId
+                && unitValues.Id == unitId;
+        }).ToList();
+
+        ApplySelection(unitsToSelect, addToPreviousSelection);
+        PostSelectActions(firstUnit, targetTeamId);
+    }
+
+    public void OnCancelClick()
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+        var selectedUnitsArray = SelectedUnits.ToArray();
+        for (var i = 0; i < selectedUnitsArray.Length; i++)
+        {
+            var unit = selectedUnitsArray[i];
+            unit.GetComponent<UnitEventManager>().OnCanceled(unit);
+        }
+    }
+
+    private void ApplySelection(List<GameObject> units, bool addToPreviousSelection)
+    {
+        if (addToPreviousSelection)
+        {
+            SelectedUnits.AddRange(units.Except(SelectedUnits));
         }
         else
         {
-            SelectedUnits = selectedUnits;
+            SelectedUnits = units;
         }
+    }
 
+    private bool CanAddToPreviousSelection(bool requestedAdd, int targetTeamId)
+    {
+        return requestedAdd && SelectedUnitsTeamId == playerTeamId && targetTeamId == playerTeamId;
+    }
+
+    private void PostSelectActions(GameObject firstUnit, int teamId)
+    {
         SelectedUnitsTeamId = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
@@ -435,6 +482,21 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    private Bounds CreateBoundsFromSelection(Vector3 start, Vector3 end)
+    {
+        var minx = Mathf.Min(start.x, end.x);
+        var maxx = Mathf.Max(start.x, end.x);
+        var minz = Mathf.Min(start.z, end.z);
+        var maxz = Mathf.Max(start.z, end.z);
+
+        var min = new Vector3(minx, 0f, minz);
+        var max = new Vector3(maxx, 100f, maxz);
+
+        Bounds bounds = new Bounds();
+        bounds.SetMinMax(min, max);
+        return bounds;
+    }
+
     private void CreateMovememtMask()
     {
         SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
@@ -443,7 +505,9 @@ public class UnitsController : MonoBehaviour
         var arrayDownSize = 1;
         var insertDirectionIsRight = false;
 
-        foreach (var unit in SelectedUnits)
+        var movableSelectedUnits = GetMovableSelectedUnits();
+
+        foreach (var unit in movableSelectedUnits)
         {
             int insertIndexX;
             int insertIndexY;
@@ -471,7 +535,7 @@ public class UnitsController : MonoBehaviour
             SelectedUnitsMovementMask.Add(unitId, value);
             unitsInserted++;
 
-            if (unitsInserted == SelectedUnits.Count)
+            if (unitsInserted == movableSelectedUnits.Count)
             {
                 break;
             }
@@ -492,7 +556,7 @@ public class UnitsController : MonoBehaviour
 
         var centerPoint = (arrayRightSize / 2.0f, arrayDownSize / 2.0f);
 
-        foreach (var unit in SelectedUnits)
+        foreach (var unit in movableSelectedUnits)
         {
             var value = SelectedUnitsMovementMask[unit.GetInstanceID()];
 
@@ -500,7 +564,19 @@ public class UnitsController : MonoBehaviour
         }
     }
 
-    public class UnitMovementMask
+    protected void CursorMovedHandler(CursorMovedEventArgs args)
+    {
+        _unitUnderCursor = args.UnitUnderCursor;
+    }
+
+    private List<GameObject> GetMovableSelectedUnits()
+    {
+        return SelectedUnits
+            .Where(x => x.GetComponent<MovementBehaviour>() != null)
+            .ToList();
+    }
+
+    private class UnitMovementMask
     {
         public float UnitId { get; set; }
 
@@ -509,5 +585,11 @@ public class UnitsController : MonoBehaviour
         public float PositionY { get; set; }
 
         public Vector3 PositionFromCenter { get; set; }
+    }
+
+    private void OnDestroy()
+    {
+        _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
     }
 }

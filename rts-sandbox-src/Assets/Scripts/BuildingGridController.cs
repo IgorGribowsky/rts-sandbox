@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Abstractions;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -13,13 +14,18 @@ public class BuildingGridController : MonoBehaviour
     public Vector3 startGridPoint = new Vector3(-50f, 0.1f, -50f);
     public Vector2 gridSize = new Vector2(100f, 100f);
 
-    public GameObject UnitUnderCursor { get; set; }
-
-    public Vector3 MousePosition { get; set; }
+    public Material BuildingAllowedMaterial;
+    public Material BuildingRestrictedMaterial;
+    public Material BuildingShadowMaterial;
 
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
-    private BuildingController _buildingController;
+    private List<GridForShadow> _gridForShadows = new List<GridForShadow>();
     private GameObject cursorGrid;
+    private BuildingController _buildingController;
+    private PlayerEventController _playerEventController;
+
+    private GameObject _unitUnderCursor { get; set; }
+    private Vector3 _mousePosition { get; set; }
 
     private bool isMineUnderCursor = false;
 
@@ -27,9 +33,17 @@ public class BuildingGridController : MonoBehaviour
     {
         _buildingController = GetComponent<BuildingController>();
 
-        _buildingController.BuildingStarted += AddToGrid;
-        _buildingController.BuildingRemoved += RemoveFromGrid;
-        _buildingController.BuildingModChanged += BuildingModChangedHandler;
+        _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
+            .GetComponent<PlayerEventController>();
+
+        _playerEventController.BuildingStarted += AddToGrid;
+        _playerEventController.BuildingRemoved += RemoveFromGrid;
+        _playerEventController.BuildingModChanged += BuildingModChangedHandler;
+        _playerEventController.CursorMoved += CursorMovedHandler;
+
+        _playerEventController.CurrentCommandEnded += RemoveShadow;
+        _playerEventController.CommandAddedToQueue += AddShadow;
+        _playerEventController.CommandsQueueCleared += RemoveShadows;
     }
 
     public void Start()
@@ -72,7 +86,8 @@ public class BuildingGridController : MonoBehaviour
             return;
         }
 
-        GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues);
+        var gridForBuilding = GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues, BuildingRestrictedMaterial);
+        _gridForBuildings.Add(gridForBuilding);
     }
 
     protected void RemoveFromGrid(BuildingRemovedEventArgs buildingRemovedEventArgs)
@@ -92,25 +107,30 @@ public class BuildingGridController : MonoBehaviour
 
     public bool CheckIfMineUnderCursor()
     {
-        var buildingValues = UnitUnderCursor?.GetComponent<BuildingValues>();
+        var buildingValues = _unitUnderCursor?.GetComponent<BuildingValues>();
         var currentBuildingValues = _buildingController.Building.GetComponent<BuildingValues>();
 
         var isMine = false;
 
         if (buildingValues != null && currentBuildingValues != null && buildingValues.IsResource && currentBuildingValues.IsResource)
         {
-            var resourceValues = UnitUnderCursor.GetComponent<ResourceValues>();
+            var resourceValues = _unitUnderCursor.GetComponent<ResourceValues>();
             var currentResourceValues = _buildingController.Building.GetComponent<ResourceValues>();
             isMine = resourceValues.IsMine && currentResourceValues.IsHeldMine && resourceValues.ResourceName == currentResourceValues.ResourceName;
         }
 
         return isMine;
     }
-    public void OnCursorMoved()
-    {
-        if (!_buildingController.BuildingMod) return;
 
-        UpdateCursorPosition();
+    protected void CursorMovedHandler(CursorMovedEventArgs args)
+    {
+        _mousePosition = args.CursorPosition;
+        _unitUnderCursor = args.UnitUnderCursor;
+
+        if (_buildingController.BuildingMod)
+        {
+            UpdateCursorPosition();
+        }
     }
 
     protected void BuildingModChangedHandler(ModStateChangedEventArgs modStateChangedEventArgs)
@@ -122,6 +142,57 @@ public class BuildingGridController : MonoBehaviour
         else
         {
             DestroyGridForCursor();
+        }
+    }
+
+    protected void AddShadow(CommandAddedToQueueEventArgs args)
+    {
+        if (args.Command is not IBuildCommand buildCommand)
+            return;
+
+        var building = buildCommand.GetBuildingObject();
+        var point = buildCommand.GetPoint();
+        var buildingValues = building.GetComponent<BuildingValues>();
+
+        GridForBuilding gridForBuilding = GenerateGridForBuilding(building, point, buildingValues, BuildingShadowMaterial, false);
+        GridForShadow gridForShadow = ConvertBuildingGridToShadowGrid(buildCommand, gridForBuilding);
+
+        _gridForShadows.Add(gridForShadow);
+    }
+
+    private static GridForShadow ConvertBuildingGridToShadowGrid(IBuildCommand buildCommand, GridForBuilding gridForBuilding)
+    {
+        return new GridForShadow()
+        {
+            Building = gridForBuilding.Building,
+            GridSegments = gridForBuilding.GridSegments,
+            Command = buildCommand
+        };
+    }
+
+    protected void RemoveShadow(CurrentCommandEndedEventArgs args)
+    {
+        if (args.Command is not IBuildCommand buildCommand)
+            return;
+
+        var grid = _gridForShadows.FirstOrDefault(x => x.Command == buildCommand);
+
+        if (grid != null)
+        {
+            foreach (var gridSegment in grid.GridSegments)
+            {
+                Destroy(gridSegment);
+            }
+        }
+
+        _gridForShadows.Remove(grid);
+    }
+
+    protected void RemoveShadows(CommandsQueueClearedEventArgs args)
+    {
+        foreach (var command in args.Commands)
+        {
+            RemoveShadow(new CurrentCommandEndedEventArgs(command));
         }
     }
 
@@ -140,19 +211,24 @@ public class BuildingGridController : MonoBehaviour
 
         if (isMineUnderCursor)
         {
-            cursorGrid.transform.position = UnitUnderCursor.transform.position;
+            cursorGrid.transform.position = _unitUnderCursor.transform.position;
         }
         else
         {
             var gridSize = buildingValues.GridSize;
-            cursorGrid.transform.position = MousePosition.GetGridPoint(gridSize);
+            cursorGrid.transform.position = _mousePosition.GetGridPoint(gridSize);
         }
 
         if (buildingValues.IsHeldMine)
         {
             foreach (Transform gridSegment in cursorGrid.transform)
             {
-                gridSegment.GetComponent<GridSegment>().Restricted = !isMineUnderCursor;
+                var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
+
+                var isRestricted = !isMineUnderCursor;
+                gridSegmentScript.Restricted = isRestricted;
+                var material = isRestricted ? BuildingRestrictedMaterial : BuildingAllowedMaterial;
+                gridSegmentScript.SetMaterial(material);
             }
         }
     }
@@ -192,7 +268,8 @@ public class BuildingGridController : MonoBehaviour
                     continue;
                 }
 
-                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
+                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues, BuildingRestrictedMaterial);
+                _gridForBuildings.Add(gridForBuilding);
             }
         }
     }
@@ -212,7 +289,8 @@ public class BuildingGridController : MonoBehaviour
                     continue;
                 }
 
-                GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues);
+                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues, BuildingRestrictedMaterial);
+                _gridForBuildings.Add(gridForBuilding);
             }
         }
     }
@@ -236,13 +314,23 @@ public class BuildingGridController : MonoBehaviour
 
                 var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
                 var isMineUnderCursor = CheckIfMineUnderCursor();
-                gridSegmentScript.Restricted = isHeldMine && !isMineUnderCursor;
+
+                var isRestricted = isHeldMine && !isMineUnderCursor;
+                gridSegmentScript.Restricted = isRestricted;
+                var material = isRestricted ? BuildingRestrictedMaterial : BuildingAllowedMaterial;
+                gridSegmentScript.SetMaterial(material);
+
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
             }
         }
     }
 
-    private void GenerateGridForBuilding(GameObject building, Vector3 buildingPosition, BuildingValues buildingValues)
+    private GridForBuilding GenerateGridForBuilding(
+        GameObject building,
+        Vector3 buildingPosition,
+        BuildingValues buildingValues,
+        Material material,
+        bool isRestricted = true)
     {
         var buildingSize = buildingValues.GridSize;
         var shift = buildingSize / 2.0f;
@@ -252,8 +340,6 @@ public class BuildingGridController : MonoBehaviour
             GridSegments = new List<GameObject>(),
             Building = building,
         };
-
-        _gridForBuildings.Add(gridForBuilding);
 
         for (float i = -shift; i < shift; i += GameConstants.GridCellSize)
         {
@@ -267,11 +353,14 @@ public class BuildingGridController : MonoBehaviour
 
                 var gridSegment = Instantiate(GridSegment, yCorrectedPosition, Quaternion.identity);
                 var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
-                gridSegmentScript.Restricted = true;
+                gridSegmentScript.Restricted = isRestricted;
+                gridSegmentScript.SetMaterial(material);
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
                 gridForBuilding.GridSegments.Add(gridSegment);
             }
         }
+
+        return gridForBuilding;
     }
 
     private void GenerateForStaticObjects(Vector3 bottomLeft, Vector3 topRight)
@@ -287,6 +376,7 @@ public class BuildingGridController : MonoBehaviour
                     var gridSegment = Instantiate(GridSegment, cellPosition, Quaternion.identity);
                     var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
                     gridSegmentScript.Restricted = true;
+                    gridSegmentScript.SetMaterial(BuildingRestrictedMaterial);
                     gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
                 }
             }
@@ -304,5 +394,22 @@ public class BuildingGridController : MonoBehaviour
         public GameObject Building { get; set; }
 
         public List<GameObject> GridSegments { get; set; }
+    }
+
+    private class GridForShadow : GridForBuilding
+    {
+        public IBuildCommand Command { get; set; }
+    }
+
+    private void OnDestroy()
+    {
+        _playerEventController.BuildingStarted -= AddToGrid;
+        _playerEventController.BuildingRemoved -= RemoveFromGrid;
+        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
+
+        _playerEventController.CurrentCommandEnded -= RemoveShadow;
+        _playerEventController.CommandAddedToQueue -= AddShadow;
+        _playerEventController.CommandsQueueCleared -= RemoveShadows;
     }
 }

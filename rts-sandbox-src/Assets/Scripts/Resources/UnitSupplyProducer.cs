@@ -41,4 +41,10 @@ public class UnitSupplyProducer : UnitSupplyBase
     protected void RemoveMaxSupplyLimit(DiedEventArgs args) => ProcessResources(
         (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount, true),
         unitValues => unitValues.SupplyResourceProduces);
+
+    private void OnDestroy()
+    {
+        _unitEventManager.BuildingCompleted -= OnBuildingCompletedHandler;
+        _unitEventManager.UnitDied -= RemoveMaxSupplyLimit;
+    }
 }

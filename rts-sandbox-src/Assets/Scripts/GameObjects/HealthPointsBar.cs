@@ -23,4 +23,9 @@ public class HealthPointsBar : BarBase
 
         UpdateBar(percent);
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.HealthPointsChanged -= UpdateScale;
+    }
 }

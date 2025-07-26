@@ -14,7 +14,7 @@ public class TestScenarios : MonoBehaviour
 
     void Start()
     {
-        _teamController = GameObject.FindGameObjectWithTag("GameController")
+        _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
 
         _playerTeamId = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
@@ -36,7 +36,7 @@ public class TestScenarios : MonoBehaviour
 
     public void AllEnemiesAttackUs()
     {
-        var allUnitsWithTeams = GameObject.FindGameObjectsWithTag("Unit")
+        var allUnitsWithTeams = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => o.GetComponent<TeamMember>() != null)
             .ToList();
 
@@ -66,7 +66,7 @@ public class TestScenarios : MonoBehaviour
 
     public void WeAttackAllEnemies()
     {
-        var allUnitsWithTeams = GameObject.FindGameObjectsWithTag("Unit")
+        var allUnitsWithTeams = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => o.GetComponent<TeamMember>() != null)
             .ToList();
 
