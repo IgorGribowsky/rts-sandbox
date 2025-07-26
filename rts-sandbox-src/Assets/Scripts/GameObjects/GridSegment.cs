@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class GridSegment : MonoBehaviour
 {
-    public Material BuildingAllowedMaterial;
-    public Material BuildingRestrictedMaterial;
-
     private bool _restricted = false;
     private Renderer _renderer;
     private MeshRenderer _meshRenderer;
@@ -21,7 +18,6 @@ public class GridSegment : MonoBehaviour
             .GetComponent<PlayerEventController>();
 
         _playerEventController.BuildingModChanged += BuildingModChangedHandler;
-        _renderer.material = BuildingAllowedMaterial;
     }
 
     public void Start()
@@ -43,15 +39,12 @@ public class GridSegment : MonoBehaviour
         set 
         { 
             _restricted = value;
-            if (_restricted)
-            {
-                _renderer.material = BuildingRestrictedMaterial;
-            }
-            else
-            {
-                _renderer.material = BuildingAllowedMaterial;
-            }
         }
+    }
+
+    public void SetMaterial(Material material)
+    {
+        _renderer.material = material;
     }
 
     private void OnDestroy()

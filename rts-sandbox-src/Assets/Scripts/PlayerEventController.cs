@@ -1,5 +1,7 @@
+using Assets.Scripts.Infrastructure.Abstractions;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerEventController : MonoBehaviour
@@ -39,4 +41,23 @@ public class PlayerEventController : MonoBehaviour
     {
         SelectedUnitDied?.Invoke(new DiedEventArgs(null, dead));
     }
+
+    public event CurrentCommandEndedHandler CurrentCommandEnded;
+    public void OnCurrentCommandEnded(ICommand command)
+    {
+        CurrentCommandEnded?.Invoke(new CurrentCommandEndedEventArgs(command));
+    }
+
+    public event CommandAddedToQueueHandler CommandAddedToQueue;
+    public void OnCommandAddedToQueue(ICommand command)
+    {
+        CommandAddedToQueue?.Invoke(new CommandAddedToQueueEventArgs(command));
+    }
+
+    public event CommandsQueueClearedHandler CommandsQueueCleared;
+    public void OnCommandsQueueCleared(IEnumerable<ICommand> command)
+    {
+        CommandsQueueCleared?.Invoke(new CommandsQueueClearedEventArgs(command));
+    }
+
 }

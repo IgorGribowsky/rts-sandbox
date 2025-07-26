@@ -1473,6 +1473,9 @@ MonoBehaviour:
   GridSegment: {fileID: 1540792035525082505, guid: 636665d5afef73d4987d77b0fafacb40, type: 3}
   startGridPoint: {x: -74, y: 0.1, z: -74}
   gridSize: {x: 148, y: 148}
+  BuildingAllowedMaterial: {fileID: 2100000, guid: faaaf4eb417f9554bb5427832fb45642, type: 2}
+  BuildingRestrictedMaterial: {fileID: 2100000, guid: 2689153389e65a5428f95804183435d5, type: 2}
+  BuildingShadowMaterial: {fileID: 2100000, guid: f59bf3e8f63a8754e9408811200b7d2e, type: 2}
 --- !u!114 &1332743807
 MonoBehaviour:
   m_ObjectHideFlags: 0
