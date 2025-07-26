@@ -376,5 +376,25 @@ namespace Assets.Scripts.GameObjects
         }
 
         #endregion
+
+        private void OnDestroy()
+        {
+            _unitEventManager.MoveCommandReceived -= StartMoveCommand;
+            _unitEventManager.AttackCommandReceived -= StartAttackCommand;
+            _unitEventManager.FollowCommandReceived -= StartFollowCommand;
+            _unitEventManager.AMoveCommandReceived -= StartAMoveCommand;
+            _unitEventManager.HoldCommandReceived -= StartHoldCommand;
+            _unitEventManager.BuildCommandReceived -= StartBuildCommand;
+            _unitEventManager.MineCommandReceived -= StartMineCommand;
+            _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
+
+            _unitEventManager.MoveActionEnded -= RunNextCommand;
+            _unitEventManager.AttackActionEnded -= RunNextCommand;
+            _unitEventManager.FollowActionEnded -= RunNextCommand;
+            _unitEventManager.AMoveActionEnded -= RunNextCommand;
+            _unitEventManager.BuildActionEnded -= RunNextCommand;
+            _unitEventManager.MineActionEnded -= RunNextCommand;
+            _unitEventManager.HarvestingActionEnded -= RunNextCommand;
+        }
     }
 }

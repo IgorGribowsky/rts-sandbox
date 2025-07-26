@@ -586,4 +586,10 @@ public class UnitsController : MonoBehaviour
 
         public Vector3 PositionFromCenter { get; set; }
     }
+
+    private void OnDestroy()
+    {
+        _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
+    }
 }

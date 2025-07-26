@@ -39,4 +39,9 @@ public class CallingToAttackWhenAttacked : MonoBehaviour
             unit.GetComponent<UnitEventManager>()?.OnCalledToAttack(gameObject, args.Attacker);
         }
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.DamageReceived -= OnDamageReceivedHandler;
+    }
 }

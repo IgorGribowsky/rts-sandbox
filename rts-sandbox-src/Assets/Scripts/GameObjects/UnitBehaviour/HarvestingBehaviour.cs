@@ -206,4 +206,9 @@ public class HarvestingBehaviour : UnitBehaviourBase
             harvestTimer = 0;
         }
     }
+
+    private void OnDestroy()
+    {
+        _navmeshMovement.NavMeshMovementArrive -= HandleArrival;
+    }
 }

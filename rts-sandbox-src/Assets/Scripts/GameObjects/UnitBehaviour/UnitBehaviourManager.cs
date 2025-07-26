@@ -181,5 +181,63 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _harvestingBehaviour.IsActive = true;
             _harvestingBehaviour.StartAction(args);
         }
+
+        private void OnDestroy()
+        {
+            if (_movementBehaviour != null)
+            {
+                _unitEventManager.MoveActionStarted -= StartMovementBehaviour;
+            }
+
+            if (_followingBehaviour != null)
+            {
+                _unitEventManager.FollowActionStarted -= StartFollowingBehaviour;
+            }
+
+            if (_rangeAttackingBehaviour != null)
+            {
+                _unitEventManager.AttackActionStarted -= StartRangeAttackingBehaviour;
+            }
+
+            if (_meleeAttackingBehaviour != null)
+            {
+                _unitEventManager.AttackActionStarted -= StartMeleeAttackingBehaviour;
+            }
+
+            if (_aMovementBehaviour != null)
+            {
+                _unitEventManager.AMoveActionStarted -= StartAMovementBehaviour;
+            }
+
+            if (_autoAttackIdleBehaviour != null)
+            {
+                _unitEventManager.AutoAttackIdleStarted -= StartAutoAttackIdle;
+            }
+
+            if (_autoAttackBuildingBehaviour != null)
+            {
+                _unitEventManager.AutoAttackIdleStarted -= StartAutoAttackBuilding;
+            }
+
+            if (_holdingBehaviour != null)
+            {
+                _unitEventManager.HoldActionStarted -= StartHoldingBehaviour;
+            }
+
+            if (_buildingBehaviour != null)
+            {
+                _unitEventManager.BuildActionStarted -= StartBuildingBehaviour;
+            }
+
+            if (_miningBehaviour != null)
+            {
+                _unitEventManager.MineActionStarted -= StartMiningBehaviour;
+            }
+
+            if (_harvestingBehaviour != null)
+            {
+                _unitEventManager.HarvestingActionStarted -= StartHarvestingBehaviour;
+            }
+        }
     }
 }

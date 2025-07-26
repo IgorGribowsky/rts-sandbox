@@ -188,4 +188,9 @@ public class HeldMine : MonoBehaviour
 
         return n;
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.UnitDied -= CreateParentMine;
+    }
 }

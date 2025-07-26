@@ -155,4 +155,10 @@ public class UnitProducing : MonoBehaviour
         productionTime = unitValues.ProducingTime;
         currentProducingTimer = productionTime;
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
+        _playerEventController.ResourceChanged -= OnSupplyChanged;
+    }
 }

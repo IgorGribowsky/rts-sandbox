@@ -400,4 +400,16 @@ public class BuildingGridController : MonoBehaviour
     {
         public IBuildCommand Command { get; set; }
     }
+
+    private void OnDestroy()
+    {
+        _playerEventController.BuildingStarted -= AddToGrid;
+        _playerEventController.BuildingRemoved -= RemoveFromGrid;
+        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
+
+        _playerEventController.CurrentCommandEnded -= RemoveShadow;
+        _playerEventController.CommandAddedToQueue -= AddShadow;
+        _playerEventController.CommandsQueueCleared -= RemoveShadows;
+    }
 }

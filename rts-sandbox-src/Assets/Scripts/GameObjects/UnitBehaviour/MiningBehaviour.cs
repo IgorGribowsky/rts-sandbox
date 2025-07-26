@@ -103,4 +103,10 @@ public class MiningBehaviour : UnitBehaviourBase
             _miningIsProcessing = false;
         }
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.UnitDied -= UnitDiedHandler;
+        _navmeshMovement.NavMeshMovementArrive -= HandleArrival;
+    }
 }

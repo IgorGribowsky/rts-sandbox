@@ -137,4 +137,9 @@ public class Building : MonoBehaviour
 
         _unitEventManager.OnBuildingCompleted(gameObject);
     }
+
+    private void OnDestroy()
+    {
+        _unitEventManager.Canceled -= CancelBulding;
+    }
 }

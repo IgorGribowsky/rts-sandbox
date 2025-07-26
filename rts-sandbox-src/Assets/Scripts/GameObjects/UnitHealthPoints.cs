@@ -42,4 +42,8 @@ public class UnitHealthPoints : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        _unitEventManager.DamageReceived -= DamageReceivedHandler;
+    }
 }
