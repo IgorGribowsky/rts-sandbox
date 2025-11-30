@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Infrastructure.Events;
+using Assets.SkillsSection.Scripts.Events;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         private BuildingBehaviour _buildingBehaviour;
         private MiningBehaviour _miningBehaviour;
         private HarvestingBehaviour _harvestingBehaviour;
-
+        private SkillCastingToPointBehaviour _skillCastingToPointBehaviour;
 
         public void Awake()
         {
@@ -102,6 +103,20 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 UnitBehaviourCases.Add(_harvestingBehaviour);
                 _unitEventManager.HarvestingActionStarted += StartHarvestingBehaviour;
             }
+
+            _unitEventManager.SkillCastActionStarted += StartSkillCastingBehaviour;
+
+            _skillCastingToPointBehaviour = GetComponent<SkillCastingToPointBehaviour>();
+            if (_skillCastingToPointBehaviour != null)
+            {
+                UnitBehaviourCases.Add(_skillCastingToPointBehaviour);
+            }
+
+            //_skillCastingToTargetBehaviour = GetComponent<SkillCastingToTargetBehaviour>();
+            //if (_skillCastingToTargetBehaviour != null)
+            //{
+            //    UnitBehaviourCases.Add(_skillCastingToTargetBehaviour);
+            //}
         }
 
         private void StartMovementBehaviour(MoveActionStartedEventArgs args)
@@ -182,6 +197,17 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _harvestingBehaviour.StartAction(args);
         }
 
+        private void StartSkillCastingBehaviour(SkillCastActionStartedEventArgs args)
+        {
+            UnitBehaviourCases.ForEach(x => x.IsActive = false);
+
+            if ((args.UnitSkill.Skill as ActiveSkill).Action is CastToPointAction)
+            {
+                _skillCastingToPointBehaviour.IsActive = true;
+                _skillCastingToPointBehaviour.StartAction(args);
+            }
+        }
+
         private void OnDestroy()
         {
             if (_movementBehaviour != null)
@@ -237,6 +263,11 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             if (_harvestingBehaviour != null)
             {
                 _unitEventManager.HarvestingActionStarted -= StartHarvestingBehaviour;
+            }
+
+            if (_skillCastingToPointBehaviour != null)
+            {
+                _unitEventManager.SkillCastActionStarted -= StartSkillCastingBehaviour;
             }
         }
     }

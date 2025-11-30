@@ -1,5 +1,6 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
+using Assets.SkillsSection.Scripts.Events;
 using System;
 using UnityEngine;
 
@@ -10,6 +11,13 @@ public class UnitEventManager : MonoBehaviour
     public void OnDamageReceived(GameObject attacker, float damageAmount, DamageType damageType)
     {
         DamageReceived?.Invoke(new DamageReceivedEventArgs(attacker, damageAmount, damageType));
+    }
+
+    public event ManaUsedHandler ManaUsed;
+
+    public void OnManaUsed(float manaUsed)
+    {
+        ManaUsed?.Invoke(new ManaUsedEventArgs(manaUsed));
     }
 
     public event DiedHandler UnitDied;
@@ -30,6 +38,13 @@ public class UnitEventManager : MonoBehaviour
     public void OnHealthPointsChanged(float currentHp)
     {
         HealthPointsChanged?.Invoke(new HealthPointsChangedEventArgs(currentHp));
+    }
+
+    public event ManaPointsChangedHandler ManaPointsChanged;
+
+    public void OnManaPointsChanged(float currentMana)
+    {
+        ManaPointsChanged?.Invoke(new ManaPointsChangedEventArgs(currentMana));
     }
 
     public event MoveCommandReceivedHandler MoveCommandReceived;
@@ -198,5 +213,23 @@ public class UnitEventManager : MonoBehaviour
     public void OnHarvestingActionEnded()
     {
         HarvestingActionEnded?.Invoke(new EventArgs());
+    }
+
+    public event SkillCastCommandReceivedHandler SkillCastCommandReceived;
+    public void OnSkillCastCommandReceived(SkillCastCommandReceivedEventArgs args)
+    {
+        SkillCastCommandReceived?.Invoke(args);
+    }
+
+    public event SkillCastActionStartedHandler SkillCastActionStarted;
+    public void OnSkillCastActionStarted(SkillCastActionStartedEventArgs args)
+    {
+        SkillCastActionStarted?.Invoke(args);
+    }
+
+    public event SkillCastActionEndedHandler SkillCastActionEnded;
+    public void OnSkillCastActionEnded()
+    {
+        SkillCastActionEnded?.Invoke(new EventArgs());
     }
 }

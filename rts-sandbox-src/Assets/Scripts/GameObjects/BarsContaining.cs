@@ -46,8 +46,12 @@ public class BarsContaining : MonoBehaviour
         foreach (var bar in _barsList.Where(b => b.activeSelf))
         {
             var rectTransform = (RectTransform)bar.transform;
+            if (shift != 0f)
+            {
+                shift += rectTransform.rect.height / 2;
+            }
             rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, -shift, rectTransform.localPosition.z);
-            shift += rectTransform.rect.height;
+            shift += rectTransform.rect.height/2;
         }
     }
 

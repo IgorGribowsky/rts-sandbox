@@ -177,6 +177,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -198,6 +201,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -334,6 +338,7 @@ MonoBehaviour:
   IsInvulnerable: 0
   CurrentHp: 800
   MaximumHp: 800
+  BaseHpRegen: 0
   MovementSpeed: 0
   Rang: 120
   ProducingTime: 50
@@ -360,10 +365,14 @@ MonoBehaviour:
   BuildingsToProduce: []
   IsMiner: 0
   IsHarvestor: 0
+  CanCastSkills: 0
   ResourcesCanBeHarvested: 
   HarvestingRate: 1
   HarvestingValuePerTick: 1
   HarvestingMaxValue: 10
+  CurrentMana: 0
+  MaximumMana: 0
+  BaseManaRegen: 1
 --- !u!114 &-4266340262056302114
 MonoBehaviour:
   m_ObjectHideFlags: 0

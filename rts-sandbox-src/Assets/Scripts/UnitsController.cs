@@ -3,9 +3,13 @@ using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
+using Assets.SkillsSection.Scripts;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.iOS;
 using UnityEngine;
+using static Assets.SkillsSection.Scripts.UnitSkills;
+using static UnityEditor.ObjectChangeEventStream;
 
 public class UnitsController : MonoBehaviour
 {
@@ -45,7 +49,89 @@ public class UnitsController : MonoBehaviour
 
     private void Update()
     {
+
     }
+
+    #region Skill cast logic
+    //Maybe it could be moved in new separate class SkillController
+    private UnitSkill prepearedSkill = null;
+
+    public bool PrepareSkillCast(KeyCode keyCode)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return false;
+        }
+
+        if (!SelectedUnits.Any())
+        {
+            return false;
+        }
+
+        var firstUnit = SelectedUnits.FirstOrDefault();
+        var canCastSkills = firstUnit.GetComponent<UnitValues>()?.CanCastSkills ?? false;
+        if (!canCastSkills)
+        {
+            return false;
+        }
+
+        var unitSkillsScript = firstUnit.GetComponent<UnitSkills>();
+        var unitSkill = unitSkillsScript.GetSkillByKeycode(keyCode);
+        if (unitSkill == null)
+        {
+            return false;
+        }
+
+        if (!unitSkillsScript.CheckIfCanCast(unitSkill))
+        {
+            return false;
+        }
+
+        prepearedSkill = unitSkill;
+        return true;
+    }
+
+    public void CommandSkillCast(KeyCode keyCode, bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        if (!SelectedUnits.Any())
+        {
+            return;
+        }
+
+        var firstUnit = SelectedUnits.FirstOrDefault();
+        var canCastSkills = firstUnit.GetComponent<UnitValues>()?.CanCastSkills ?? false;
+        if (!canCastSkills)
+        {
+            return;
+        }
+
+        var unitSkillsScript = firstUnit.GetComponent<UnitSkills>();
+        var unitSkill = unitSkillsScript.GetSkillByKeycode(keyCode);
+        if (unitSkill == null)
+        {
+            return;
+        }
+
+        if (!unitSkillsScript.CheckIfCanCast(unitSkill))
+        {
+            return;
+        }
+
+        if (prepearedSkill != unitSkill)
+        {
+            return;
+        }
+
+        var skillCastArgs = unitSkillsScript.CreateCommandArgs(unitSkill, addToCommandsQueue);
+        firstUnit.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
+    }
+
+    #endregion
 
     public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
     {

@@ -1,6 +1,7 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WindowsInputController : MonoBehaviour
@@ -13,6 +14,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode OpenBuildingMenuKey = KeyCode.B;
     public KeyCode CancelKey = KeyCode.Escape;
     public KeyCode ReturnCameraKey = KeyCode.Space;
+    public KeyCode AddToQueueKey = KeyCode.LeftShift;
 
     public bool AClickPressed { get => aClickPressed; }
 
@@ -32,6 +34,11 @@ public class WindowsInputController : MonoBehaviour
 
     private float lastClickTime = -1f;
 
+    private KeyCode[] allKeyCodes;
+    private List<KeyCode> usedKeys;
+    private KeyCode currentKeyPressed = KeyCode.None;
+
+
     KeyCode[] keypadCodes = new KeyCode[]
         {
           KeyCode.Alpha1,
@@ -45,6 +52,23 @@ public class WindowsInputController : MonoBehaviour
           KeyCode.Alpha9,
           KeyCode.Alpha0,
         };
+
+    void Awake()
+    {
+        allKeyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
+
+        usedKeys = new List<KeyCode>
+        {
+            AClickKey,
+            FixScreenKey,
+            HoldKey,
+            OpenBuildingMenuKey,
+            CancelKey,
+            ReturnCameraKey,
+            AddToQueueKey,
+        };
+        usedKeys.AddRange(keypadCodes);
+    }
 
     void Start()
     {
@@ -102,6 +126,8 @@ public class WindowsInputController : MonoBehaviour
             _cameraController.SetCamera(center);
         }
 
+        var isShiftButtonPressed = Input.GetKey(AddToQueueKey);
+
         if (aClickPressed)
         {
             if (Input.GetMouseButtonDown(1))
@@ -122,7 +148,6 @@ public class WindowsInputController : MonoBehaviour
                 {
                     aClickPressed = false;
 
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                     var gameObject = hit.transform.gameObject;
                     if (gameObject.layer == (int)Layer.MovementSurface)
                     {
@@ -156,7 +181,6 @@ public class WindowsInputController : MonoBehaviour
 
                 if (Physics.Raycast(ray, out var hit, 100f, buildLayerMask))
                 {
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                     _unitController.Build(hit.point, isShiftButtonPressed);
                 }
             }
@@ -203,7 +227,7 @@ public class WindowsInputController : MonoBehaviour
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
                 {
-                    _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
+                    _unitController.EndSelection(hit.point, isShiftButtonPressed);
                     _selectionBoxController.EndDrawSelection();
 
                     var targetGameObject = hit.transform.gameObject;
@@ -212,7 +236,7 @@ public class WindowsInputController : MonoBehaviour
                         float timeSinceLastClick = Time.time - lastClickTime;
                         if (timeSinceLastClick <= GameConstants.DoubleClickTime)
                         {
-                            _unitController.OnDoubleClick(targetGameObject, Input.GetKey(KeyCode.LeftShift));
+                            _unitController.OnDoubleClick(targetGameObject, isShiftButtonPressed);
                             lastClickTime = -1f;
                         }
                         else
@@ -230,7 +254,6 @@ public class WindowsInputController : MonoBehaviour
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
             {
-                var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                 var targetGameObject = hit.transform.gameObject;
                 if (targetGameObject.layer == (int)Layer.MovementSurface)
                 {
@@ -244,6 +267,26 @@ public class WindowsInputController : MonoBehaviour
                 {
                     _unitController.RightClickOnResource(targetGameObject, hit.point, isShiftButtonPressed);
                 }
+            }
+        }
+
+        if (currentKeyPressed != KeyCode.None)
+        {
+            if (Input.GetKeyUp(currentKeyPressed))
+            {
+                _unitController.CommandSkillCast(currentKeyPressed, isShiftButtonPressed);
+                currentKeyPressed = KeyCode.None;
+            }
+
+            return;
+        }
+
+        if (currentKeyPressed == KeyCode.None && GetAllowedKeyDown(out var keyCode))
+        {
+            var isSkillExists = _unitController.PrepareSkillCast(keyCode);
+            if (isSkillExists)
+            {
+                currentKeyPressed = keyCode;
             }
         }
 
@@ -274,10 +317,26 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetKeyDown(HoldKey))
         {
-            var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-
             _unitController.OnHoldKeyDown(isShiftButtonPressed);
         }
+    }
+
+    private bool GetAllowedKeyDown(out KeyCode keyCode)
+    {
+        foreach (KeyCode key in allKeyCodes)
+        {
+            if (usedKeys.Contains(key))
+                continue;
+
+            if (Input.GetKeyDown(key))
+            {
+                keyCode = key;
+                return true;
+            }
+        }
+
+        keyCode = KeyCode.None;
+        return false;
     }
 
     bool KeypadCodeDown(out KeyCode keypadCodeDown, out int num)

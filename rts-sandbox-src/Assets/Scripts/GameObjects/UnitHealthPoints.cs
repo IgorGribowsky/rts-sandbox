@@ -1,5 +1,7 @@
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
+using System.Collections;
 using UnityEngine;
 
 public class UnitHealthPoints : MonoBehaviour
@@ -9,8 +11,21 @@ public class UnitHealthPoints : MonoBehaviour
     private UnitEventManager _unitEventManager;
     private PlayerEventController _playerEventController;
 
+    private Coroutine _hpRegenCoroutine;
+
     public void Update()
     {
+    }
+
+    private void OnEnable()
+    {
+        _hpRegenCoroutine = StartCoroutine(HpRegeneration());
+    }
+
+    private void OnDisable()
+    {
+        if (_hpRegenCoroutine != null)
+            StopCoroutine(_hpRegenCoroutine);   
     }
 
     public void Start()
@@ -42,6 +57,23 @@ public class UnitHealthPoints : MonoBehaviour
             }
         }
     }
+
+    private IEnumerator HpRegeneration()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(GameConstants.HpRegenRate);
+
+            var hpRegenValue = _unitValues.BaseHpRegen;
+            if (_unitValues.CurrentHp < _unitValues.MaximumHp && hpRegenValue > 0)
+            {
+                _unitValues.CurrentHp = Mathf.Min(_unitValues.CurrentHp + hpRegenValue, _unitValues.MaximumHp);
+
+                _unitEventManager.OnHealthPointsChanged(_unitValues.CurrentHp);
+            }
+        }
+    }
+
     private void OnDestroy()
     {
         _unitEventManager.DamageReceived -= DamageReceivedHandler;

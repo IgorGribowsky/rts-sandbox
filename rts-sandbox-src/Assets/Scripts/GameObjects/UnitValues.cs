@@ -13,6 +13,8 @@ public class UnitValues : MonoBehaviour
 
     public float MaximumHp = 100;
 
+    public float BaseHpRegen = 1;
+
     public float MovementSpeed = 5f;
 
     public int Rang = 100;
@@ -58,10 +60,11 @@ public class UnitValues : MonoBehaviour
 
     public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
 
-
     public bool IsMiner = false;
 
     public bool IsHarvestor = false;
+
+    public bool CanCastSkills = false;
 
     public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
 
@@ -70,6 +73,12 @@ public class UnitValues : MonoBehaviour
     public int HarvestingValuePerTick = 1;
 
     public int HarvestingMaxValue = 10;
+
+    public float CurrentMana = 0;
+
+    public float MaximumMana = 0;
+
+    public float BaseManaRegen = 1;
 }
 
 [Serializable]

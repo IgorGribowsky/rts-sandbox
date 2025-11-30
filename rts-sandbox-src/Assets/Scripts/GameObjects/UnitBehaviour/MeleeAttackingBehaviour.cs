@@ -64,7 +64,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
             _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
-            Debug.Log("GoToObject");
         }
         else
         {
@@ -75,7 +74,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             && attackCD <= 0
             && !attackIsProcessing)
         {
-            Debug.Log("Attack started");
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;
         }
@@ -87,7 +85,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             }
             else
             {
-                Debug.Log("Attack rejected");
                 attackIsProcessing = false;
                 attackAnimation = 0;
             }
@@ -96,7 +93,6 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             {
                 _targetEventManager.OnDamageReceived(gameObject, _unitValues.Damage, _unitValues.DamageType);
 
-                Debug.Log("Attack finished");
                 attackIsProcessing = false;
                 attackAnimation = 0;
             }

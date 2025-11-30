@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.Infrastructure.Abstractions;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -6,6 +7,11 @@ using UnityEngine;
 
 public class PlayerEventController : MonoBehaviour
 {
+    private void Awake()
+    {
+        GameServices.PlayerEventController = this;
+    }
+
     public event CursorMovedHandler CursorMoved;
     public void OnCursorMoved(Vector3 cursorPosition, GameObject unitUnderCursor)
     {
@@ -59,5 +65,4 @@ public class PlayerEventController : MonoBehaviour
     {
         CommandsQueueCleared?.Invoke(new CommandsQueueClearedEventArgs(command));
     }
-
 }
