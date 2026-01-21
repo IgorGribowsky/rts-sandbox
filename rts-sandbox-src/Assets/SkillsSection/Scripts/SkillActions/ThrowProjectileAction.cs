@@ -1,14 +1,12 @@
 
 using Assets.Scripts;
 using Assets.Scripts.Infrastructure.Enums;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewThrowProjectileAction", menuName = "Game/SkillActions/Throw Projectile Action")]
 public class ThrowProjectileAction : CastToPointAction
 {
-    //Temp. Move to impacts
-    public float Damage;
-
     public float ProjectileSpeed;
 
     public float ProjectileRadius;
@@ -27,13 +25,16 @@ public class ThrowProjectileAction : CastToPointAction
 
     public void HitProjectile(GameObject target)
     {
-        target.GetComponent<UnitEventManager>().OnDamageReceived(
-            attacker: Skill.SkillOwner,
-            damageAmount: Damage,
-            damageType: DamageType.Magic);
+        foreach (var impact in Impacts)
+        {
+            if (impact is SkillUnitImpact unitImpact)
+            {
+                unitImpact.ImpactToUnit(target);
+            }
+        }
     }
 
-    //Move to base class with predicate param addition rules 
+    //part of code can be moved to common helper class when another actions will be implemented and common code finded
     public bool CanHitCheck(GameObject target)
     {
         var skillOwnerTeam = Skill.SkillOwner.GetComponent<TeamMember>().TeamId;
@@ -51,7 +52,7 @@ public class ThrowProjectileAction : CastToPointAction
 
         var targetTeam = targetTeamScript.TeamId;
 
-        switch (ImpactType)
+        switch (TargetType)
         {
             case TargetType.Allies:
                 return GameServices.TeamController.GetAllyTeams(skillOwnerTeam).Contains(targetTeam);
@@ -62,6 +63,5 @@ public class ThrowProjectileAction : CastToPointAction
             default:
                 return false;
         }
-        
     }
 }

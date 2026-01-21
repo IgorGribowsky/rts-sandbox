@@ -12,9 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b6ce07ec82a5a4babd063392d674fc, type: 3}
   m_Name: ThrowLightOrb
   m_EditorClassIdentifier: 
-  ImpactType: 3
-  Impacts: []
-  Damage: 50
+  TargetType: 3
+  Impacts:
+  - rid: 5405108387445473339
+  - rid: 5405108387445473343
   ProjectileSpeed: 16
   ProjectileRadius: 13
   Projectile: {fileID: 8813355520705666629, guid: 0bbc23daeed6c47429fec01dc7686d59, type: 3}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5405108387445473339
+      type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: InstantDamageImpact
+        damage: 50
+        type: 2
+    - rid: 5405108387445473343
+      type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: InstantDamageImpact
+        damage: 20
+        type: 0

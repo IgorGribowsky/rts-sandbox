@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class SkillAction : ScriptableObject
+public abstract partial class SkillAction : ScriptableObject
 {
-    public TargetType ImpactType;
+    public TargetType TargetType;
 
+    [SerializeReference]
     public List<SkillImpact> Impacts;
 
     //Navigation property
