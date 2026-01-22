@@ -3,8 +3,6 @@ using UnityEngine;
 
 public abstract partial class SkillAction : ScriptableObject
 {
-    public TargetType TargetType;
-
     [SerializeReference]
     public List<SkillImpact> Impacts;
 

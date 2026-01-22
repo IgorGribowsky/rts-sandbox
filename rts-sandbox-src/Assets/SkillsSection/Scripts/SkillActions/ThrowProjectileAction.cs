@@ -1,26 +1,28 @@
 
 using Assets.Scripts;
-using Assets.Scripts.Infrastructure.Enums;
-using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewThrowProjectileAction", menuName = "Game/SkillActions/Throw Projectile Action")]
-public class ThrowProjectileAction : CastToPointAction
+public class ThrowProjectileAction : CastToPointAction, ITargetSelected
 {
     public float ProjectileSpeed;
 
-    public float ProjectileRadius;
+    public float ProjectileRange;
 
     public GameObject Projectile;
+
+    [SerializeField]
+    public TargetType _targetType = TargetType.Enemies;
+    public TargetType TargetType => _targetType;
 
     public override void Act()
     {
         var projectile = Instantiate(Projectile, Skill.SkillOwner.transform.position, Quaternion.identity);
-        var projectileScript = projectile.GetComponent<ThrownSkillProjectile>();
+        var projectileScript = projectile.GetComponent<ThrownProjectile>();
         var direction = CastPoint - Skill.SkillOwner.transform.position;
         direction.y = 0;
 
-        projectileScript.StartThrow(CanHitCheck, HitProjectile, direction, ProjectileRadius, ProjectileSpeed);
+        projectileScript.StartThrow(CanHitCheck, HitProjectile, direction, ProjectileRange, ProjectileSpeed);
     }
 
     public void HitProjectile(GameObject target)

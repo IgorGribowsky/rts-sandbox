@@ -85,13 +85,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 12
   IsInvulnerable: 0
-  CurrentHp: 200
-  MaximumHp: 200
-  BaseHpRegen: 1
+  CurrentHp: 1100
+  MaximumHp: 1100
+  BaseHpRegen: 4
   MovementSpeed: 5
   Rang: 110
   ProducingTime: 12
-  Damage: 12
+  Damage: 23
   AutoAttackDistance: 12
   AttackRate: 1
   AttackDurationPercent: 0.4
@@ -120,8 +120,8 @@ MonoBehaviour:
   HarvestingRate: 1
   HarvestingValuePerTick: 1
   HarvestingMaxValue: 10
-  CurrentMana: 100
-  MaximumMana: 100
+  CurrentMana: 330
+  MaximumMana: 330
   BaseManaRegen: 3.5
 --- !u!114 &8194165234619379714
 MonoBehaviour:
@@ -142,7 +142,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7849110260153872687}
-  m_Mesh: {fileID: 340963829963341933, guid: dbc4d1fbdc17e454ba55ccb0988d91a0, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: d95e47ff9cbee4743834e1dd6fd70fb2, type: 3}
 --- !u!114 &8095036300992891173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,6 +437,10 @@ MonoBehaviour:
   Skills:
   - Skill: {fileID: 11400000, guid: 45f2a6f87c5d8624cb3c9c56b31c6328, type: 2}
     Keycode: 113
+  - Skill: {fileID: 11400000, guid: b247c8824ba3fc24ca3499896957987e, type: 2}
+    Keycode: 119
+  - Skill: {fileID: 11400000, guid: 2e536d2e273f45f408424a36681ece91, type: 2}
+    Keycode: 101
 --- !u!114 &5195221929972069443
 MonoBehaviour:
   m_ObjectHideFlags: 0

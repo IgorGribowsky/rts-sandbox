@@ -9,21 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b6ce07ec82a5a4babd063392d674fc, type: 3}
-  m_Name: ThrowLightOrb
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 93110bfed79ac354e81bc73ee3a39396, type: 3}
+  m_Name: ThrowWaterWave
+  m_EditorClassIdentifier: Assembly-CSharp::ThrowWaveProjectileAction
   Impacts:
-  - rid: 5405108387445473339
-  ProjectileSpeed: 20
-  ProjectileRange: 13
-  Projectile: {fileID: 8813355520705666629, guid: 0bbc23daeed6c47429fec01dc7686d59, type: 3}
+  - rid: 5405108411566129204
+  ProjectileSpeed: 13
+  ProjectileRange: 10
+  Projectile: {fileID: 3595707779014563729, guid: 23c77659c224f2e4fac38791d2032e86, type: 3}
   _targetType: 0
+  WaveWidthScale: 2.4
   references:
     version: 2
     RefIds:
-    - rid: 5405108387445473339
+    - rid: 5405108411566129204
       type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
       data:
         _impactType: InstantDamageImpact
-        damage: 60
+        damage: 40
         type: 2

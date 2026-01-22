@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 797c3aa6f89b477458dc4c9317a034bc, type: 3}
-  m_Name: LightOrb
-  m_EditorClassIdentifier: 
-  Name: Light Orb
-  Cooldown: 3.5
-  CastDuration: 0.15
-  CastRange: 12.5
-  ManaCost: 25
-  Action: {fileID: 11400000, guid: 55c085b6c1e2940499fcd2e82ccfa166, type: 2}
+  m_Name: WaterWave
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
+  Name: Water Wave
+  Cooldown: 7
+  CastDuration: 0.2
+  CastRange: 9.5
+  ManaCost: 55
+  Action: {fileID: 11400000, guid: ae5f7b58939b9554da23904240783c03, type: 2}
