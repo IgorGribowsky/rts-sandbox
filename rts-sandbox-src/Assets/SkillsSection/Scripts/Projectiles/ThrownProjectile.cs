@@ -47,6 +47,11 @@ public class ThrownProjectile : MonoBehaviour
         CanHitCheck = canHitCheck;
         HitCallback = hitCallback;
 
+        if (Direction == Vector3.zero)
+        {
+            Direction = projectileOwner.transform.forward;
+        }
+
         transform.rotation = Quaternion.LookRotation(Direction);
     }
 

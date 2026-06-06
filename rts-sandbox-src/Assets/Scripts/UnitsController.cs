@@ -6,10 +6,8 @@ using Assets.Scripts.Infrastructure.Helpers;
 using Assets.SkillsSection.Scripts;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.iOS;
 using UnityEngine;
 using static Assets.SkillsSection.Scripts.UnitSkills;
-using static UnityEditor.ObjectChangeEventStream;
 
 public class UnitsController : MonoBehaviour
 {
@@ -56,36 +54,50 @@ public class UnitsController : MonoBehaviour
     //Maybe it could be moved in new separate class SkillController
     private UnitSkill prepearedSkill = null;
 
+    private bool TryGetSkillCaster(KeyCode keyCode, out GameObject unitToCast, out UnitSkill unitSkill, out UnitSkills unitSkillsScript)
+    {
+        unitToCast = null;
+        unitSkill = null;
+        unitSkillsScript = null;
+
+        if (SelectedUnitsTeamId != playerTeamId || !SelectedUnits.Any())
+            return false;
+
+        var firstUnit = SelectedUnits.First();
+        var firstValues = firstUnit.GetComponent<UnitValues>();
+
+        if (firstValues == null || !firstValues.CanCastSkills)
+            return false;
+
+        var firstSkillsScript = firstUnit.GetComponent<UnitSkills>();
+        var firstSkill = firstSkillsScript?.GetSkillByKeycode(keyCode);
+
+        if (firstSkill == null)
+            return false;
+
+        var unitId = firstValues.Id;
+
+        foreach (var caster in SelectedUnits.Where(x => x.GetComponent<UnitValues>().Id == unitId))
+        {
+            var skillsScript = caster.GetComponent<UnitSkills>();
+            var skill = skillsScript.GetSkillByKeycode(keyCode);
+
+            if (skillsScript.CheckIfCanCast(skill))
+            {
+                unitToCast = caster;
+                unitSkill = skill;
+                unitSkillsScript = skillsScript;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public bool PrepareSkillCast(KeyCode keyCode)
     {
-        if (SelectedUnitsTeamId != playerTeamId)
-        {
+        if (!TryGetSkillCaster(keyCode, out _, out var unitSkill, out _))
             return false;
-        }
-
-        if (!SelectedUnits.Any())
-        {
-            return false;
-        }
-
-        var firstUnit = SelectedUnits.FirstOrDefault();
-        var canCastSkills = firstUnit.GetComponent<UnitValues>()?.CanCastSkills ?? false;
-        if (!canCastSkills)
-        {
-            return false;
-        }
-
-        var unitSkillsScript = firstUnit.GetComponent<UnitSkills>();
-        var unitSkill = unitSkillsScript.GetSkillByKeycode(keyCode);
-        if (unitSkill == null)
-        {
-            return false;
-        }
-
-        if (!unitSkillsScript.CheckIfCanCast(unitSkill))
-        {
-            return false;
-        }
 
         prepearedSkill = unitSkill;
         return true;
@@ -93,42 +105,14 @@ public class UnitsController : MonoBehaviour
 
     public void CommandSkillCast(KeyCode keyCode, bool addToCommandsQueue = false)
     {
-        if (SelectedUnitsTeamId != playerTeamId)
-        {
+        if (!TryGetSkillCaster(keyCode, out var unitToCast, out var unitSkill, out var unitSkillsScript))
             return;
-        }
-
-        if (!SelectedUnits.Any())
-        {
-            return;
-        }
-
-        var firstUnit = SelectedUnits.FirstOrDefault();
-        var canCastSkills = firstUnit.GetComponent<UnitValues>()?.CanCastSkills ?? false;
-        if (!canCastSkills)
-        {
-            return;
-        }
-
-        var unitSkillsScript = firstUnit.GetComponent<UnitSkills>();
-        var unitSkill = unitSkillsScript.GetSkillByKeycode(keyCode);
-        if (unitSkill == null)
-        {
-            return;
-        }
-
-        if (!unitSkillsScript.CheckIfCanCast(unitSkill))
-        {
-            return;
-        }
 
         if (prepearedSkill != unitSkill)
-        {
             return;
-        }
 
         var skillCastArgs = unitSkillsScript.CreateCommandArgs(unitSkill, addToCommandsQueue);
-        firstUnit.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
+        unitToCast.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
     }
 
     #endregion
@@ -178,8 +162,10 @@ public class UnitsController : MonoBehaviour
                 ? _unitUnderCursor.transform.position 
                 : point.GetGridPoint(buildingSize);
 
-            var mineToHeld = buildingValues.IsHeldMine ? _unitUnderCursor : null;
-            mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
+            var mineToHeld = buildingValues.IsHeldMine
+                && _unitUnderCursor?.GetComponent<BuildingValues>()?.IsMine == true
+                    ? _unitUnderCursor
+                    : null;
 
             if (addToCommandsQueue)
             {
@@ -231,15 +217,7 @@ public class UnitsController : MonoBehaviour
     }
 
 
-    public bool CheckBuilderSelected()
-    {
-        if (SelectedUnitsTeamId != playerTeamId)
-        {
-            return false;
-        }
-
-        return SelectedUnits.FirstOrDefault()?.GetComponent<UnitValues>()?.IsBuilder ?? false;
-    }
+    public bool CheckBuilderSelected() => CheckBuilderSelected(out _);
 
     public bool CheckBuilderSelected(out GameObject builder)
     {
