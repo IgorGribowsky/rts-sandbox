@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ThrownWaveProjectile : ThrownProjectile
 {
-    public void StartThrow(Predicate<GameObject> canHitCheck, Action<GameObject> hitCallback, Vector3 direction, float range, float speed, float widthScale)
+    public void StartThrow(Func<GameObject, GameObject, bool> canHitCheck, Action<GameObject, GameObject> hitCallback, GameObject projectileOwner, Vector3 direction, float range, float speed, float widthScale)
     {
-        base.StartThrow(canHitCheck, hitCallback, direction, range, speed);
+        base.StartThrow(canHitCheck, hitCallback, projectileOwner, direction, range, speed);
 
         var scale = transform.localScale;
         scale.x = widthScale;
@@ -19,9 +19,9 @@ public class ThrownWaveProjectile : ThrownProjectile
         {
             TriggeredUnits.Add(collidedGameObject);
 
-            if (CanHitCheck(collidedGameObject))
+            if (CanHitCheck(collidedGameObject, ProjectileOwner))
             {
-                HitCallback(collidedGameObject);
+                HitCallback(collidedGameObject, ProjectileOwner);
             }
         }
     }

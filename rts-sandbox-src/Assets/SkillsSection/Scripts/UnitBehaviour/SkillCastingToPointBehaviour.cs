@@ -14,6 +14,7 @@ public class SkillCastingToPointBehaviour : UnitBehaviourBase
     private UnitSkill unitSkill;
     private ActiveSkill skill;
     private CastToPointAction castAction;
+    private Vector3 castPoint;
 
     private bool castIsProcessing = false; 
     private bool isMoving = false;
@@ -36,7 +37,7 @@ public class SkillCastingToPointBehaviour : UnitBehaviourBase
         skill = unitSkill.Skill as ActiveSkill;
         castAction = skill.Action as CastToPointAction;
 
-        castAction.CastPoint = actionArgs.Point;
+        castPoint = actionArgs.Point;
     }
 
     protected override void PreUpdate()
@@ -52,13 +53,13 @@ public class SkillCastingToPointBehaviour : UnitBehaviourBase
 
     protected override void UpdateAction()
     {
-        var distanceToTarget = Vector3.Distance(transform.position, castAction.CastPoint);
+        var distanceToTarget = Vector3.Distance(transform.position, castPoint);
 
         if (!castIsProcessing)
         {
             if (distanceToTarget > skill.CastRange)
             {
-                _navmeshMovement.Go(castAction.CastPoint);
+                _navmeshMovement.Go(castPoint);
                 isMoving = true;
             }
             else if (!_unitSkills.CheckIfCanCast(unitSkill))
@@ -81,7 +82,7 @@ public class SkillCastingToPointBehaviour : UnitBehaviourBase
             {
                 if (_unitSkills.CheckIfCanCast(unitSkill))
                 {
-                    _unitSkills.Cast(unitSkill);
+                    _unitSkills.Cast(unitSkill, new SkillParams { Owner = gameObject, CastPoint = castPoint});
                 }
                 castIsProcessing = false;
                 StopAction();

@@ -12,7 +12,7 @@ public class PoisonDamageImpact : SkillUnitImpact
 
     public float duration;
 
-    public override void ImpactToUnit(GameObject target)
+    public override void ImpactToUnit(GameObject target, GameObject skillOwner)
     {
         throw new NotImplementedException();
     }

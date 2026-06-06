@@ -10,10 +10,10 @@ public class InstantDamageImpact : SkillUnitImpact
 
     public DamageType type;
 
-    public override void ImpactToUnit(GameObject target)
+    public override void ImpactToUnit(GameObject target, GameObject skillOwner)
     {
         target.GetComponent<UnitEventManager>().OnDamageReceived(
-            attacker: SkillAction.Skill.SkillOwner,
+            attacker: skillOwner,
             damageAmount: damage,
             damageType: type);
     }

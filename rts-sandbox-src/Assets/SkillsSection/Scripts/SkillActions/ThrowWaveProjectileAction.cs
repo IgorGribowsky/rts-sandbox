@@ -6,13 +6,13 @@ public class ThrowWaveProjectileAction : ThrowProjectileAction
 {
     public float WaveWidthScale = 1f;
 
-    public override void Act()
+    public override void Act(GameObject owner, Vector3 castPoint)
     {
-        var projectile = Instantiate(Projectile, Skill.SkillOwner.transform.position, Quaternion.identity);
+        var projectile = Instantiate(Projectile, owner.transform.position, Quaternion.identity);
         var projectileScript = projectile.GetComponent<ThrownWaveProjectile>();
-        var direction = CastPoint - Skill.SkillOwner.transform.position;
+        var direction = castPoint - owner.transform.position;
         direction.y = 0;
 
-        projectileScript.StartThrow(CanHitCheck, HitProjectile, direction, ProjectileRange, ProjectileSpeed, WaveWidthScale);
+        projectileScript.StartThrow(CanHitCheck, HitProjectile, owner, direction, ProjectileRange, ProjectileSpeed, WaveWidthScale);
     }
 }

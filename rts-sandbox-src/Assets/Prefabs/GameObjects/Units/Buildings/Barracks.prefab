@@ -362,6 +362,7 @@ MonoBehaviour:
   - {fileID: 7849110260153872687, guid: ed8daf302b0b72a499b993230da995be, type: 3}
   - {fileID: 7849110260153872687, guid: 1dbac9f1602e01f47a8bb926fa987f76, type: 3}
   - {fileID: 7849110260153872687, guid: 5898d9bf36c51bb43ad91a459a5a2b6a, type: 3}
+  - {fileID: 7849110260153872687, guid: f6da9cbb466180742bdd0bc99810ab58, type: 3}
   IsBuilder: 0
   BuildingsToProduce: []
   IsMiner: 0

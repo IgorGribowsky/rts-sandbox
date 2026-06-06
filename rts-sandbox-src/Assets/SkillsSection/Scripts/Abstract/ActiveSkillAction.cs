@@ -1,4 +1,4 @@
 public abstract class ActiveSkillAction : SkillAction
 {
-    public abstract void Act();
+    public abstract void Act(SkillParams skillParams);
 }

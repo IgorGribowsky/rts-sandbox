@@ -6,9 +6,10 @@ public class ThrownProjectile : MonoBehaviour
 {
     protected float Speed;
     protected float Range;
+    protected GameObject ProjectileOwner;
     protected Vector3 Direction;
-    protected Predicate<GameObject> CanHitCheck;
-    protected Action<GameObject> HitCallback;
+    protected Func<GameObject, GameObject, bool> CanHitCheck;
+    protected Action<GameObject, GameObject> HitCallback;
     protected List<GameObject> TriggeredUnits;
 
     protected Vector3 _startPoint;
@@ -37,10 +38,11 @@ public class ThrownProjectile : MonoBehaviour
         gameObject.transform.position += moveVector;
     }
 
-    public void StartThrow(Predicate<GameObject> canHitCheck, Action<GameObject> hitCallback, Vector3 direction, float range, float speed)
+    public void StartThrow(Func<GameObject, GameObject, bool> canHitCheck, Action<GameObject, GameObject> hitCallback, GameObject projectileOwner, Vector3 direction, float range, float speed)
     {
         Speed = speed;
         Range = range;
+        ProjectileOwner = projectileOwner;
         Direction = direction;
         CanHitCheck = canHitCheck;
         HitCallback = hitCallback;
@@ -55,9 +57,9 @@ public class ThrownProjectile : MonoBehaviour
         {
             TriggeredUnits.Add(collidedGameObject);
 
-            if (CanHitCheck(collidedGameObject))
+            if (CanHitCheck(collidedGameObject, ProjectileOwner))
             {
-                HitCallback(collidedGameObject);
+                HitCallback(collidedGameObject, ProjectileOwner);
                 Destroy(gameObject);
             }
         }

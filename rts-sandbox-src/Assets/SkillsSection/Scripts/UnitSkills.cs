@@ -69,10 +69,10 @@ namespace Assets.SkillsSection.Scripts
             return args;
         }
 
-        public void Cast(UnitSkill unitSkill)
+        public void Cast(UnitSkill unitSkill, SkillParams skillParams)
         {
             var activeSkill = unitSkill.Skill as ActiveSkill;
-            activeSkill.Action.Act();
+            activeSkill.Action.Act(skillParams);
             unitSkill.StartCooldown(activeSkill.Cooldown);
             var spendMana = (unitSkill.Skill as ActiveSkill).ManaCost;
             _unitEventManager.OnManaUsed(spendMana);
@@ -107,7 +107,6 @@ namespace Assets.SkillsSection.Scripts
         {
             foreach (var unitSkill in Skills)
             {
-                unitSkill.Skill.SkillOwner = gameObject;
                 if (unitSkill.Skill is ActiveSkill)
                 {
                     var activeSkill = (ActiveSkill)unitSkill.Skill;

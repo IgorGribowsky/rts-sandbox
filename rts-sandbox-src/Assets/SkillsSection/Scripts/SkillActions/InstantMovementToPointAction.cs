@@ -6,33 +6,32 @@ public class InstantMovementToPointAction : CastToPointAction
 {
     public float MaxRange;
 
-    public override void Act()
+    public override void Act(GameObject owner, Vector3 castPoint)
     {
-        InstantlyMove();
+        InstantlyMove(owner, castPoint);
 
         foreach (var impact in Impacts)
         {
             if (impact is SkillUnitImpact unitImpact)
             {
-                unitImpact.ImpactToUnit(Skill.SkillOwner);
+                unitImpact.ImpactToUnit(owner, owner);
             }
         }
     }
 
-    private void InstantlyMove()
+    private void InstantlyMove(GameObject owner, Vector3 castPoint)
     {
-        var owner = Skill.SkillOwner.transform;
+        var ownerTransform = owner.transform;
+        var target = castPoint;
+        target.y = ownerTransform.position.y;
 
-        var target = CastPoint;
-        target.y = owner.position.y;
-
-        var delta = target - owner.position;
+        var delta = target - ownerTransform.position;
         if (delta.sqrMagnitude > MaxRange * MaxRange)
         {
-            target = owner.position + delta.normalized * MaxRange;
+            target = ownerTransform.position + delta.normalized * MaxRange;
         }
 
-        var navMeshMovement = Skill.SkillOwner.GetComponent<NavMeshMovement>();
+        var navMeshMovement = owner.GetComponent<NavMeshMovement>();
 
         if (navMeshMovement != null)
         {
@@ -40,7 +39,7 @@ public class InstantMovementToPointAction : CastToPointAction
         }
         else
         {
-            owner.position = target;
+            ownerTransform.position = target;
         }
     }
 }

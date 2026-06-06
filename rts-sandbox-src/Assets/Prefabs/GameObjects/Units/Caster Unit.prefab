@@ -104,9 +104,9 @@ MonoBehaviour:
   RangeAttackProjectile: {fileID: 8957964713747606781, guid: f91ff0591897655499ec98952904e511, type: 3}
   ResourceCost:
   - ResourceName: 1
-    Amount: 200
+    Amount: 350
   - ResourceName: 3
-    Amount: 3
+    Amount: 6
   SupplyResourceProduces: []
   IsBuilding: 0
   CanProduceUnits: 0
