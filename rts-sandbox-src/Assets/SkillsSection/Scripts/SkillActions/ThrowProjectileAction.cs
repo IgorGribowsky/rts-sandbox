@@ -40,6 +40,11 @@ public class ThrowProjectileAction : CastToPointAction, ITargetSelected
     //part of code can be moved to common helper class when another actions will be implemented and common code finded
     public bool CanHitCheck(GameObject target, GameObject skillOwner)
     {
+        if (target == skillOwner)
+        {
+            return false;
+        }
+
         var skillOwnerTeam = skillOwner.GetComponent<TeamMember>().TeamId;
         var targetTeamScript = target.GetComponent<TeamMember>();
         if (targetTeamScript == null)

@@ -16,7 +16,7 @@ MonoBehaviour:
   - rid: 5405108387445473339
   ProjectileSpeed: 20
   ProjectileRange: 13
-  Projectile: {fileID: 8813355520705666629, guid: 0bbc23daeed6c47429fec01dc7686d59, type: 3}
+  Projectile: {fileID: 671119673789793273, guid: 0bbc23daeed6c47429fec01dc7686d59, type: 3}
   _targetType: 0
   references:
     version: 2
