@@ -2,7 +2,7 @@
 id: T-001
 title: Яд: периодический урон вместо заглушки PoisonDamageImpact
 status: todo
-milestone: backlog
+milestone: v0.1.1
 parent:
 origin: ai
 needs-design: false

@@ -2,7 +2,7 @@
 id: T-002
 title: Каст способности в юнита не реализован
 status: todo
-milestone: backlog
+milestone: v0.1.1
 parent:
 origin: ai
 needs-design: false

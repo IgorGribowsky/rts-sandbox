@@ -2,7 +2,7 @@
 id: T-016
 title: Переосмыслить систему способностей: данные в ScriptableObject, логика вне
 status: todo
-milestone: backlog
+milestone: v0.1.1
 parent:
 origin: ai
 needs-design: false

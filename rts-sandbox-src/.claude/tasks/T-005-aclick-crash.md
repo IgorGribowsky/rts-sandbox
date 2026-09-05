@@ -2,7 +2,7 @@
 id: T-005
 title: A-клик по земле падает при неподвижных юнитах в выделении
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false

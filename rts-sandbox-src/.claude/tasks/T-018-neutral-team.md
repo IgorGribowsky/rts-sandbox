@@ -2,7 +2,7 @@
 id: T-018
 title: Правила союзничества: IsNeutral и команда без альянса
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false

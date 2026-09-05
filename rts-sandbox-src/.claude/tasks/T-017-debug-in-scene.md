@@ -2,7 +2,7 @@
 id: T-017
 title: FPSTracker пишет в консоль каждый кадр
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false

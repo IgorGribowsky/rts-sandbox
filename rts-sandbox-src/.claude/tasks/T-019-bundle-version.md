@@ -2,7 +2,7 @@
 id: T-019
 title: bundleVersion отстал от рабочей ветки
 status: todo
-milestone: backlog
+milestone: v0.1.1
 parent:
 origin: ai
 needs-design: false

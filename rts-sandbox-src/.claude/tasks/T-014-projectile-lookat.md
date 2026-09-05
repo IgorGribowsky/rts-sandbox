@@ -2,7 +2,7 @@
 id: T-014
 title: Снаряд разворачивается по неверной точке
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false

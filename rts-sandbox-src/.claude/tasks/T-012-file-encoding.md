@@ -2,7 +2,7 @@
 id: T-012
 title: Часть файлов кода сохранена не в UTF-8
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false

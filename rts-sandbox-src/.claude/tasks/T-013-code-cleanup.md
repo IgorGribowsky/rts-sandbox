@@ -2,7 +2,7 @@
 id: T-013
 title: Мусор в коде: лишние using, пустые Update, опечатки в именах
 status: todo
-milestone: backlog
+milestone: v0.2.0
 parent:
 origin: ai
 needs-design: false
