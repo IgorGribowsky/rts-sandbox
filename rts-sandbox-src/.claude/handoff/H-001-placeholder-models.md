@@ -1,10 +1,10 @@
 ---
 id: H-001
 title: Модели для Builder, Barracks и Wall вместо примитивных кубов
-status: ready
+status: waiting
 blocking: no
 kind: модель
-target: Assets/Models/
+target: Assets/Models/Incoming/
 task:
 created: 2026-09-05
 ---
@@ -28,7 +28,9 @@ created: 2026-09-05
 `mine_held.fbx`, `cube2.fbx` (Tower).
 
 ## Когда появится
-Импортирую в `Assets/Models/`, подменю Mesh Filter на префабах
+Клади файлы в `Assets/Models/Incoming/` — папку создавать не нужно, Unity
+сделает её при перетаскивании. Я перенесу их в `Assets/Models/` к остальным,
+подменю Mesh Filter на префабах
 `Builder.prefab`, `Barracks.prefab`, `Wall.prefab`, подгоню масштаб под
 `ObstacleSize` и проверю, что коллайдер и `NavMeshObstacle` остались
 прежними, а круг выделения по-прежнему помещается под юнитом.
