@@ -1,11 +1,11 @@
 <!-- PIPELINE:HEADER:START — заполняет /intake. install.js --update это НЕ трогает -->
-# Astraline (название рабочее)
+# rts-sandbox (рабочее название)
 
-Жанр: пошаговая карточная дуэль магов, 3D · Ощущение: копишь силу шести стихий
-и решаешь, какую разменять сейчас — карты не тратятся, тратится только мана ·
-Референс: Hearthstone по подаче карт, бой свой (нет руки и добора)
-Платформы: ПК, управление мышью
-Стек: Unity 6000.3.12f1 · URP 17.3 · Input System (new) 1.19 · C# · MCP for Unity
+Жанр: RTS в реальном времени, 3D, вид сверху · Ощущение: не сформулировано,
+см. Q-1 в docs/06-open-questions.md · Референс: не задан
+Платформы: ПК, управление мышью и клавиатурой
+Стек: Unity 6000.2.13f1 · Built-in Render Pipeline · legacy Input Manager ·
+AI Navigation 2.0.9 · uGUI · C# · MCP for Unity
 <!-- PIPELINE:HEADER:END -->
 
 <!-- PIPELINE:RULES:START — перезаписывается install.js --update, руками не правь -->

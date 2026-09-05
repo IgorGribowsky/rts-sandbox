@@ -1,0 +1,49 @@
+---
+id: T-011
+title: Поиск целей перебирает всех юнитов сцены каждый кадр
+status: todo
+milestone: backlog
+parent:
+origin: ai
+needs-design: false
+blocked-by: []
+mechanics: [M-005, M-006]
+handoff: []
+checkpoint:
+created: 2026-09-05
+updated: 2026-09-05
+---
+
+# T-011 · Поиск целей перебирает всех юнитов сцены каждый кадр
+
+## Что нужно
+`AutoAttackingBehaviourBase.FindNearestTargetAndAct` вызывается из
+`UpdateAction` каждый кадр у каждого юнита в бою или в Idle. Внутри —
+`GetNearestUnitInRadius`, а он делает `FindGameObjectsWithTag("Unit")`
+и считает `GetDistanceTo` до каждого найденного. `GetDistanceTo` в свою
+очередь берёт `GetComponent<Renderer>().bounds` у обоих объектов.
+
+Итого сложность порядка N в квадрате на кадр, где N — все юниты на карте,
+плюс `GetComponent` в горячем цикле.
+
+Рядом лежит `NavMeshMovement.AdjustDestination`: тоже каждый кадр, и в
+худшем случае 12 вызовов `Physics.OverlapSphere` на юнита.
+
+Смерить профайлером, потом решать. Возможные ходы: искать цель не каждый
+кадр, а раз в N кадров со сдвигом фазы; кешировать список юнитов по
+командам; заменить перебор на `Physics.OverlapSphere` по слою `Unit`.
+
+## Как проверить
+Расставить в сцене 100+ юнитов и стравить их через `TestScenarios`.
+Записать FPS до и после правки, показать оба числа.
+
+## План
+
+## Ход работы
+
+## Решения
+
+- 2026-09-05 найдено при `/adopt` чтением кода. Замеров нет, задача
+  начинается с профайлера, а не с правки.
+
+## Итог
