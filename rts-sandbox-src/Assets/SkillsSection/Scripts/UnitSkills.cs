@@ -72,7 +72,7 @@ namespace Assets.SkillsSection.Scripts
         public void Cast(UnitSkill unitSkill, SkillParams skillParams)
         {
             var activeSkill = unitSkill.Skill as ActiveSkill;
-            activeSkill.Action.Act(skillParams);
+            SkillActionExecutorFactory.Create(activeSkill.Action)?.Act(skillParams);
             unitSkill.StartCooldown(activeSkill.Cooldown);
             var spendMana = (unitSkill.Skill as ActiveSkill).ManaCost;
             _unitEventManager.OnManaUsed(spendMana);

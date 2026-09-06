@@ -1,8 +1,9 @@
 using System;
-using UnityEngine;
 
+/// <summary>
+/// An impact that lands on a unit.
+/// </summary>
 [Serializable]
 public abstract class SkillUnitImpact : SkillImpact
 {
-    public abstract void ImpactToUnit(GameObject target, GameObject skillOwner);
 }

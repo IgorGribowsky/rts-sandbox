@@ -1,7 +1,5 @@
-
 using Assets.Scripts.Infrastructure.Enums;
 using System;
-using UnityEngine;
 
 [Serializable]
 public class PoisonDamageImpact : SkillUnitImpact
@@ -12,8 +10,5 @@ public class PoisonDamageImpact : SkillUnitImpact
 
     public float duration;
 
-    public override void ImpactToUnit(GameObject target, GameObject skillOwner)
-    {
-        throw new NotImplementedException();
-    }
+    public override SkillImpactType Type => SkillImpactType.PoisonDamage;
 }
