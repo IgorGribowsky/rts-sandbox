@@ -8,7 +8,4 @@ using System;
 public abstract partial class SkillImpact
 {
     public abstract SkillImpactType Type { get; }
-
-    //Navigation property
-    public SkillAction SkillAction { get; set; }
 }

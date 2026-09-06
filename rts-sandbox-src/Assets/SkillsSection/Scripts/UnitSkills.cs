@@ -1,4 +1,4 @@
-﻿using Assets.Scripts;
+using Assets.Scripts;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.SkillsSection.Scripts.Events;
 using System;
@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace Assets.SkillsSection.Scripts
 {
-    //There are a lot of architecture problems in this file. So it sholud be reworked in future.
     public class UnitSkills : MonoBehaviour
     {
-        public List<UnitSkill> Skills;
+        /// <summary>What this unit is able to cast. Setup only, no combat state.</summary>
+        public List<SkillSlot> Skills;
 
         private PlayerEventController _playerEventController;
 
@@ -21,34 +21,33 @@ namespace Assets.SkillsSection.Scripts
 
         private CursorMovedEventArgs _cursorMovedEventArgs;
 
+        /// <summary>Cooldowns and everything else that only makes sense while playing.</summary>
+        private readonly List<UnitSkill> _castable = new List<UnitSkill>();
+
+        void Awake()
+        {
+            BuildCastableSkills();
+        }
+
         void Start()
         {
             _playerEventController = GameServices.PlayerEventController;
             _unitValues = GetComponent<UnitValues>();
             _unitEventManager = GetComponent<UnitEventManager>();
             _playerEventController.CursorMoved += CursorMovedHandler;
-
-            SetupNavigationProperties();
         }
 
         void Update()
         {
-            if (Skills == null)
+            foreach (var skill in _castable)
             {
-                return;
-            }
-
-            foreach (var skill in Skills)
-            {
-                if (skill == null) continue;
-
                 skill.Tick(Time.deltaTime);
             }
         }
 
         public SkillCastCommandReceivedEventArgs CreateCommandArgs(UnitSkill unitSkill, bool addToCommandsQueue = false)
         {
-            if (Skills == null || !Skills.Contains(unitSkill))
+            if (!_castable.Contains(unitSkill))
             {
                 throw new ArgumentException();
             }
@@ -74,18 +73,14 @@ namespace Assets.SkillsSection.Scripts
             var activeSkill = unitSkill.Skill as ActiveSkill;
             SkillActionExecutorFactory.Create(activeSkill.Action)?.Act(skillParams);
             unitSkill.StartCooldown(activeSkill.Cooldown);
-            var spendMana = (unitSkill.Skill as ActiveSkill).ManaCost;
+            var spendMana = activeSkill.ManaCost;
             _unitEventManager.OnManaUsed(spendMana);
         }
 
         public bool CheckIfCanCast(UnitSkill unitSkill)
         {
-            if (Skills == null || !Skills.Contains(unitSkill))
-            {
-                return false;
-            }
-
             if (unitSkill == null) return false;
+            if (!_castable.Contains(unitSkill)) return false;
             if (unitSkill.CurrentCooldown > 0) return false;
             if (unitSkill.Skill is not ActiveSkill) return false;
             if (_unitValues.CurrentMana < (unitSkill.Skill as ActiveSkill).ManaCost) return false;
@@ -95,38 +90,26 @@ namespace Assets.SkillsSection.Scripts
 
         public UnitSkill GetSkillByKeycode(KeyCode keycode)
         {
-            if (Skills == null)
-            {
-                return null;
-            }
-
-            return Skills.FirstOrDefault(x => x.Keycode == keycode);
+            return _castable.FirstOrDefault(x => x.Keycode == keycode);
         }
 
-        private void SetupNavigationProperties()
+        private void BuildCastableSkills()
         {
-            foreach (var unitSkill in Skills)
+            _castable.Clear();
+
+            if (Skills == null)
             {
-                if (unitSkill.Skill is ActiveSkill)
-                {
-                    var activeSkill = (ActiveSkill)unitSkill.Skill;
-                    activeSkill.Action.Skill = activeSkill;
+                return;
+            }
 
-                    foreach (var impact in activeSkill.Action.Impacts)
-                    {
-                        impact.SkillAction = activeSkill.Action;
-                    }
-                }
-                else if (unitSkill.Skill is PassiveSkill)
+            foreach (var slot in Skills)
+            {
+                if (slot == null || slot.Skill == null)
                 {
-                    var passiveSkill = (PassiveSkill)unitSkill.Skill;
-                    passiveSkill.Action.Skill = passiveSkill;
-
-                    foreach (var impact in passiveSkill.Action.Impacts)
-                    {
-                        impact.SkillAction = passiveSkill.Action;
-                    }
+                    continue;
                 }
+
+                _castable.Add(new UnitSkill(slot));
             }
         }
 
@@ -137,12 +120,12 @@ namespace Assets.SkillsSection.Scripts
                 return;
             }
 
-            foreach (var skill in Skills)
+            foreach (var slot in Skills)
             {
-                if (skill == null) continue;
+                if (slot == null) continue;
 
-                if (skill != null && skill.IsBanned())
-                    skill.Keycode = KeyCode.None;
+                if (slot.IsBanned())
+                    slot.Keycode = KeyCode.None;
             }
         }
 
@@ -151,14 +134,42 @@ namespace Assets.SkillsSection.Scripts
             _cursorMovedEventArgs = args;
         }
 
+        /// <summary>
+        /// One line of the setup on the prefab: which skill sits on which key.
+        /// Serialized, so its field names must not change lightly.
+        /// </summary>
         [Serializable]
-        public class UnitSkill
+        public class SkillSlot
         {
             public Skill Skill;
 
             public KeyCode Keycode;
 
-            #region Skill logic
+            #region Banned keys
+            private KeyCode[] banned = { KeyCode.Space, KeyCode.Escape, KeyCode.Mouse0, KeyCode.Mouse1, KeyCode.Mouse2, KeyCode.A, KeyCode.LeftShift };
+
+            public bool IsBanned() => System.Array.IndexOf(banned, Keycode) >= 0;
+            #endregion
+        }
+
+        /// <summary>
+        /// A skill of one particular unit while the game runs: the setup it came
+        /// from plus the state of casting it. Never serialized — it is built in
+        /// Awake and dies with the unit.
+        /// </summary>
+        public class UnitSkill
+        {
+            public UnitSkill(SkillSlot slot)
+            {
+                Slot = slot;
+            }
+
+            public SkillSlot Slot { get; }
+
+            public Skill Skill => Slot.Skill;
+
+            public KeyCode Keycode => Slot.Keycode;
+
             public float CurrentCooldown { get; private set; }
 
             internal void StartCooldown(float cd)
@@ -171,13 +182,6 @@ namespace Assets.SkillsSection.Scripts
                 if (CurrentCooldown > 0)
                     CurrentCooldown = Mathf.Max(0, CurrentCooldown - deltaTime);
             }
-            #endregion
-
-            #region Banned keys
-            private KeyCode[] banned = { KeyCode.Space, KeyCode.Escape, KeyCode.Mouse0, KeyCode.Mouse1, KeyCode.Mouse2, KeyCode.A, KeyCode.LeftShift };
-
-            public bool IsBanned() => System.Array.IndexOf(banned, Keycode) >= 0;
-            #endregion
         }
 
         private void OnDestroy()

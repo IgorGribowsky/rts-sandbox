@@ -11,7 +11,4 @@ public abstract partial class SkillAction : ScriptableObject
     public List<SkillImpact> Impacts;
 
     public abstract SkillActionType Type { get; }
-
-    //Navigation property
-    public Skill Skill { get; set; }
 }
