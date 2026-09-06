@@ -16,7 +16,9 @@ public class BuildingBehaviour : UnitBehaviourBase
     private BuildActionStartedEventArgs actionArgs;
     private int _buildingSize = 0;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.Build;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();

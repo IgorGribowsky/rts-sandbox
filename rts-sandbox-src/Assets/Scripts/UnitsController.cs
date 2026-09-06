@@ -1,3 +1,4 @@
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -178,7 +179,7 @@ public class UnitsController : MonoBehaviour
                 GameObject unitToBuild = null;
                 foreach (var builder in allBuilders)
                 {
-                    var isNotActive = !builder.GetComponent<BuildingBehaviour>()?.IsActive;
+                    var isNotActive = !builder.GetComponent<UnitBehaviourManager>()?.IsBehaviourActive<BuildingBehaviour>();
                     var isReady = isNotActive ?? false;
                     if (isReady)
                     {
@@ -348,13 +349,16 @@ public class UnitsController : MonoBehaviour
                     continue;
                 }
 
+                var harvesting = unit.GetComponent<UnitBehaviourManager>()?.Get<HarvestingBehaviour>();
+
                 if (targetTeamId == playerTeamId
                     && unit.GetComponent<UnitValues>().IsHarvestor
-                    && unit.GetComponent<HarvestingBehaviour>().CurrentResourceValues > 0
-                    && unit.GetComponent<HarvestingBehaviour>().CurrentResource != null
+                    && harvesting != null
+                    && harvesting.CurrentResourceValues > 0
+                    && harvesting.CurrentResource != null
                     && target.GetComponent<HarvestedResourcesStorage>() != null
                     && target.GetComponent<HarvestedResourcesStorage>().isActiveAndEnabled
-                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(unit.GetComponent<HarvestingBehaviour>().CurrentResource.Value))
+                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(harvesting.CurrentResource.Value))
                 {
                     unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(null, target, true, addToCommandsQueue);
                     continue;
@@ -636,7 +640,7 @@ public class UnitsController : MonoBehaviour
     private List<GameObject> GetMovableSelectedUnits()
     {
         return SelectedUnits
-            .Where(x => x.GetComponent<MovementBehaviour>() != null)
+            .Where(x => x.GetComponent<UnitBehaviourManager>()?.Has<MovementBehaviour>() == true)
             .ToList();
     }
 

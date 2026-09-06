@@ -15,7 +15,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
     private float attackAnimation = 0;
     private bool attackIsProcessing = false;
 
-    public void Awake()
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
@@ -57,7 +57,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
                 _unitEventManager.OnAttackActionEnded();
             }
             return;
-        } 
+        }
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
 

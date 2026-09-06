@@ -18,7 +18,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
     protected GameObject _currentTarget = null;
     protected Vector3 _movePoint;
 
-    public virtual void Awake()
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
@@ -26,28 +26,52 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
         _teamMember = GetComponent<TeamMember>();
         _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
-        _unitBehaviourManager = gameObject.GetComponent<UnitBehaviourManager>();
+        _unitBehaviourManager = Context.Manager;
 
-        _attackBehaviour = gameObject.GetComponent<RangeAttackingBehaviour>();
-        if (_attackBehaviour == null)
-        {
-            _attackBehaviour = gameObject.GetComponent<MeleeAttackingBehaviour>();
-        }
+        // The very same behaviour the explicit attack order runs, on purpose:
+        // auto attack drives it while staying active itself.
+        _attackBehaviour = _unitBehaviourManager.GetForAction(UnitActionType.Attack) as AttackingBehaviourBase;
 
-        AdditionalAwake();
+        AdditionalInitialize();
     }
 
     public override void StartAction(EventArgs args)
     {
-        var actionArgs = args as MoveActionStartedEventArgs;
-        if (actionArgs != null && _navmeshMovement != null)
+        var movePoint = GetMovePoint(args);
+        if (movePoint.HasValue && _navmeshMovement != null)
         {
-            _movePoint = actionArgs.MovePoint;
+            _movePoint = movePoint.Value;
             _navmeshMovement.Go(_movePoint);
         }
 
         _triggeredOnEnemy = false;
         _currentTarget = null;
+    }
+
+    /// <summary>
+    /// Going to a point comes either from an A-move order or from going idle.
+    /// </summary>
+    private Vector3? GetMovePoint(EventArgs args)
+    {
+        if (args is MoveActionStartedEventArgs moveArgs)
+        {
+            return moveArgs.MovePoint;
+        }
+
+        if (args is AutoAttackIdleStartedEventArgs idleArgs)
+        {
+            return idleArgs.MovePoint;
+        }
+
+        return null;
+    }
+
+    protected override void OnDeactivated()
+    {
+        if (_attackBehaviour != null)
+        {
+            _attackBehaviour.Deactivate();
+        }
     }
 
     protected abstract override void UpdateAction();
@@ -56,7 +80,7 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
 
     protected abstract void IfTargetExistsUpdate();
 
-    protected virtual void AdditionalAwake() { }
+    protected virtual void AdditionalInitialize() { }
 
     protected virtual void FindNearestTargetAndAct()
     {

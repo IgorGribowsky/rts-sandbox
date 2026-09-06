@@ -11,7 +11,9 @@ public class FollowingBehaviour : UnitBehaviourBase
 
     private GameObject target = null;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.Follow;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();

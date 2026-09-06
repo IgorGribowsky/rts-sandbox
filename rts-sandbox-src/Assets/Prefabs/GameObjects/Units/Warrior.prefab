@@ -123,12 +123,6 @@ GameObject:
   - component: {fileID: 4984237045111512419}
   - component: {fileID: 2033459207637562773}
   - component: {fileID: 3486580126305913895}
-  - component: {fileID: -6879038389709202324}
-  - component: {fileID: -1946789511484751996}
-  - component: {fileID: -8353055866858728281}
-  - component: {fileID: 4867899262287332417}
-  - component: {fileID: 8833634646208351774}
-  - component: {fileID: -7551129065762226784}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 8363517768491279335}
   - component: {fileID: -8076983816588526718}
@@ -184,6 +178,7 @@ MonoBehaviour:
   IsInvulnerable: 0
   CurrentHp: 140
   MaximumHp: 140
+  BaseHpRegen: 1
   MovementSpeed: 5
   Rang: 50
   ProducingTime: 12
@@ -211,10 +206,14 @@ MonoBehaviour:
   BuildingsToProduce: []
   IsMiner: 0
   IsHarvestor: 0
+  CanCastSkills: 0
   ResourcesCanBeHarvested: 
   HarvestingRate: 1
   HarvestingValuePerTick: 1
   HarvestingMaxValue: 10
+  CurrentMana: 0
+  MaximumMana: 0
+  BaseManaRegen: 1
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,6 +307,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -329,6 +331,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -400,78 +403,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-6879038389709202324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e307b420d49b3c840b7056fe3204a290, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-1946789511484751996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e202f4a0614a1a24c822b15986cd8319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-8353055866858728281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab40a66ffb95ca46a74a021fb9ed1f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4867899262287332417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8833634646208351774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-7551129065762226784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  Behaviours: 000000000100000002000000030000000400000006000000
+  CurrentBehaviourInfo: 
 --- !u!114 &6873323525821280569
 MonoBehaviour:
   m_ObjectHideFlags: 0

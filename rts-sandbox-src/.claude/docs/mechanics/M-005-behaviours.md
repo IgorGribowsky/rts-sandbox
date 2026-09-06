@@ -3,38 +3,75 @@ id: M-005
 title: Поведения юнита
 status: implemented
 source:
-tasks: []
+tasks: [T-021]
 ---
 
 # M-005 · Поведения юнита
-
-> **Переписывается.** Система переводится на паттерн Strategy в T-021 —
-> первой задаче версии 0.1.1-alpha. Эта дока описывает, как всё устроено
-> сейчас; после T-021 она переписывается целиком.
 
 ## Зачем она в игре
 Юнит в каждый момент делает ровно одно: идёт, бьёт, строит, рубит. Это
 правило и держит всю систему простой.
 
 ## Как работает
-`UnitBehaviourBase` — общий предок. У него `IsActive`, единый `Update`,
-разбитый на `PreUpdate`, затем `UpdateAction` (только если `IsActive`),
-затем `PostUpdate`, и метод `StartAction(EventArgs)`.
 
-`UnitBehaviourManager` при `Awake` смотрит, какие поведения реально висят на
-префабе, и подписывает только их. Набор поведений на префабе и определяет,
-что юнит умеет: у стены нет ни одного, у строителя есть строительство,
-добыча и рубка. При старте любого поведения все остальные гасятся
-(`UnitBehaviourCases.ForEach(x => x.IsActive = false)`).
+Поведение — обычный C# класс за интерфейсом `IUnitBehaviour`, а не
+компонент. На префабе висит один `UnitBehaviourManager`, и его список
+`Behaviours` — это и есть ответ на вопрос «что юнит умеет».
 
-Список поведений:
+### Три части
+
+`UnitBehaviourBase` — общий предок. Даёт `IsActive`, `StartAction(EventArgs)`
+и `Tick()`, разбитый на `PreUpdate`, затем `UpdateAction` (только если
+`IsActive`), затем `PostUpdate`. Вместо `Awake` у поведения `OnInitialize`,
+вместо `OnDestroy` — `Dispose`. Обёртки `gameObject`, `transform` и
+`GetComponent<T>()` берут своё из `UnitBehaviourContext` — там владелец и сам
+менеджер.
+
+`UnitBehaviourFactory` — единственное место, где тип поведения превращается
+в класс. Явный `switch`, а не рефлексия: code stripping в билде выбрасывает
+классы, на которые никто не ссылается по имени.
+
+`UnitBehaviourManager` — создаёт поведения по списку с префаба, инициализирует
+их вторым проходом (поведение может искать соседей), подписывается на все
+события приказов один раз и держит одно текущее поведение. Смена — это
+`_current.Deactivate()` и новая ссылка, без перебора списка. Строка
+`CurrentBehaviourInfo` показывает текущее поведение в инспекторе, как
+`CurrentRunningCommandInfo` у `UnitCommandManager`.
+
+### Как приказ находит поведение
+
+Поведение объявляет `Trigger` — приказ, на который отвечает
+(`UnitActionType`), и при необходимости `CanHandle(args)`, если на один приказ
+претендует несколько поведений. Менеджер по приказу берёт первое подходящее.
+Поэтому новое поведение — это новый класс, значение в `UnitBehaviourType` и
+строка в фабрике; менеджер не трогается.
+
+Каст в точку пользуется `CanHandle`: он берётся за приказ только если пришли
+аргументы каста в точку и действие способности — `CastToPointAction`. Каст в
+цель (T-002) встанет рядом тем же способом.
+
+### Тикают все, работает одно
+
+`Tick()` менеджер зовёт у ВСЕХ поведений юнита каждый кадр, `UpdateAction` —
+только у активного. На `PreUpdate`/`PostUpdate` неактивных держится
+существенное: сброс кулдауна атаки, выход шахтёра из ячейки при смене
+приказа, таймер агрессии автоатаки.
+
+### Автоатака держит боевое поведение
+
+Автоатака остаётся активной сама и параллельно включает боевое поведение
+своего же юнита — тот самый экземпляр, который работает по явному приказу
+Attack, взятый у менеджера через `GetForAction(UnitActionType.Attack)`.
+`Deactivate()` автоатаки гасит и его.
+
+### Список поведений
 
 | Поведение | Приказ | Что делает |
 |---|---|---|
 | `MovementBehaviour` | Move | идёт в точку, завершается по `StoppingDistance` |
-| `AMovementBehaviour` | A-move | идёт в точку, по дороге атакует враждебное |
-| `AutoAttackIdleBehaviour` | Idle | стоит и бьёт подошедших, возвращается |
-| `AutoAttackBuildingBehaviour` | Idle зданий | башня: бьёт, но никуда не идёт |
+| `AMovementBehaviour` | AMove | идёт в точку, по дороге атакует враждебное |
+| `AutoAttackIdleBehaviour` | AutoAttackIdle | стоит и бьёт подошедших, возвращается |
+| `AutoAttackBuildingBehaviour` | AutoAttackIdle | башня: бьёт, но никуда не идёт |
 | `FollowingBehaviour` | Follow | держится в `FollowingDistance` 1.2 от цели |
 | `MeleeAttackingBehaviour` | Attack | ближний бой |
 | `RangeAttackingBehaviour` | Attack | стрельба снарядом |
@@ -44,15 +81,31 @@ tasks: []
 | `HarvestingBehaviour` | Harvest | рубит и носит на склад |
 | `SkillCastingToPointBehaviour` | SkillCast | подходит на дальность и кастует |
 
+Набор на префабах:
+
+| Префаб | Behaviours |
+|---|---|
+| Warrior, Giant Unit | Movement, AMovement, Following, Holding, MeleeAttacking, AutoAttackIdle |
+| Range Unit | Movement, AMovement, Following, Holding, RangeAttacking, AutoAttackIdle |
+| Caster Unit | то же, что Range Unit, плюс SkillCastingToPoint |
+| Builder | Movement, AMovement, Following, Holding, MeleeAttacking, Building, Mining, Harvesting |
+| Tower | RangeAttacking, AutoAttackBuilding |
+
+У Castle, Barracks, Farm, Wall и mine_held `UnitBehaviourManager` нет вовсе.
+
+### Конец действия
+
 `TriggerEndEventFlag` управляет тем, шлёт ли поведение своё `ActionEnded`.
 Автоатака вызывает `DisableTriggerEndEvent()` на боевом поведении, чтобы
 конец боя не сдвинул очередь команд юнита — это её внутренний бой, а не
 приказ игрока.
 
-Автоатака (`AutoAttackingBehaviourBase`) каждый кадр ищет ближайшего врага
-в радиусе `AutoAttackDistance` через `GetNearestUnitInRadius`, который
-делает `FindGameObjectsWithTag("Unit")` — то есть перебор всех юнитов сцены
-каждый кадр на каждом юните.
+### Автоатака подробнее
+
+`AutoAttackingBehaviourBase` каждый кадр ищет ближайшего врага в радиусе
+`AutoAttackDistance` через `GetNearestUnitInRadius`, который делает
+`FindGameObjectsWithTag("Unit")` — то есть перебор всех юнитов сцены каждый
+кадр на каждом юните.
 
 `AutoAttackIdleBehaviour` дополнительно помнит точку, где стоял: если
 преследование увело дальше `PersecutionDistance` = 50, юнит бросает цель и
@@ -63,13 +116,16 @@ tasks: []
 Поведение не решает, когда его включить, — это `UnitBehaviourManager` по
 событию. Поведение не знает про очередь, только шлёт `ActionEnded`.
 
+Снаружи в поведения ходит только `UnitsController` и только через менеджер:
+`Has<T>()`, `IsBehaviourActive<T>()`, `Get<T>()`.
+
 ## Открытые места
 - Оглушение (M-019) добавит поведение, которое включается эффектом и
   снимается вместе с ним, при этом приказы во время него продолжают
   приниматься в очередь.
-- Каст в цель (`SkillCastingToTargetBehaviour`) закомментирован в менеджере,
-  класса нет.
-- `SkillCastActionStarted` подписывается всегда, а отписывается только если
-  на объекте есть `SkillCastingToPointBehaviour`.
+- Каст в цель (`SkillCastingToTargetBehaviour`) не реализован — T-002.
+- Каст в точку завершается чужим событием `OnMoveActionEnded` — T-004.
 - Пустые `IfNoTargetUpdate` и `IfTargetExistsUpdate` у
   `AutoAttackBuildingBehaviour` — башня никуда не идёт, это осознанно.
+- Приказ, на который у юнита нет поведения, теперь просто игнорируется.
+  Раньше он гасил текущее поведение и не включал ничего.

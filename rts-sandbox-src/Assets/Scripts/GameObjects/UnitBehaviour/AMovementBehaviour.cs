@@ -1,5 +1,9 @@
+using Assets.Scripts.GameObjects.UnitBehaviour;
+
 public class AMovementBehaviour : AutoAttackingBehaviourBase
 {
+    public override UnitActionType Trigger => UnitActionType.AMove;
+
     protected override void UpdateAction()
     {
         FindNearestTargetAndAct();

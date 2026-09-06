@@ -123,12 +123,6 @@ GameObject:
   - component: {fileID: -1402505468938611163}
   - component: {fileID: 2033459207637562773}
   - component: {fileID: -2101537987341820748}
-  - component: {fileID: -8586992162838238738}
-  - component: {fileID: 8528306610205741671}
-  - component: {fileID: 4654563010407232930}
-  - component: {fileID: 933093067559752482}
-  - component: {fileID: -7151313057212292012}
-  - component: {fileID: 912157603705236216}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 2144446756044836221}
   - component: {fileID: 3768760872745874438}
@@ -184,6 +178,7 @@ MonoBehaviour:
   IsInvulnerable: 0
   CurrentHp: 400
   MaximumHp: 400
+  BaseHpRegen: 1
   MovementSpeed: 5
   Rang: 100
   ProducingTime: 20
@@ -211,10 +206,14 @@ MonoBehaviour:
   BuildingsToProduce: []
   IsMiner: 0
   IsHarvestor: 0
+  CanCastSkills: 0
   ResourcesCanBeHarvested: 
   HarvestingRate: 1
   HarvestingValuePerTick: 1
   HarvestingMaxValue: 10
+  CurrentMana: 0
+  MaximumMana: 0
+  BaseManaRegen: 1
 --- !u!114 &8194165234619379714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,6 +307,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -329,6 +331,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -400,78 +403,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-8586992162838238738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e307b420d49b3c840b7056fe3204a290, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8528306610205741671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e202f4a0614a1a24c822b15986cd8319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4654563010407232930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab40a66ffb95ca46a74a021fb9ed1f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &933093067559752482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-7151313057212292012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &912157603705236216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  Behaviours: 000000000100000002000000030000000400000006000000
+  CurrentBehaviourInfo: 
 --- !u!114 &6873323525821280569
 MonoBehaviour:
   m_ObjectHideFlags: 0

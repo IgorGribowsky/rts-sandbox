@@ -1,9 +1,9 @@
-using Assets.Scripts.Infrastructure.Constants;
-using Assets.Scripts.Infrastructure.Events;
-using UnityEngine;
+using Assets.Scripts.GameObjects.UnitBehaviour;
 
 public class AutoAttackBuildingBehaviour : AutoAttackingBehaviourBase
 {
+    public override UnitActionType Trigger => UnitActionType.AutoAttackIdle;
+
     protected override void IfNoTargetUpdate()
     {
     }

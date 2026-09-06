@@ -7,7 +7,9 @@ public class MovementBehaviour : UnitBehaviourBase
     private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.Move;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();

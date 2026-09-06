@@ -22,17 +22,10 @@ GameObject:
   - component: {fileID: 109585168192012673}
   - component: {fileID: 2033459207637562773}
   - component: {fileID: -1792162204064371508}
-  - component: {fileID: -8931676146731694340}
-  - component: {fileID: 3831384198711147387}
-  - component: {fileID: -1106711602923391255}
-  - component: {fileID: 1727071549760718108}
-  - component: {fileID: 2220636496326991835}
-  - component: {fileID: -8713228520699853420}
   - component: {fileID: 6873323525821280569}
   - component: {fileID: -8509892739303012159}
   - component: {fileID: 3167370730915436853}
   - component: {fileID: -7525311254702379038}
-  - component: {fileID: 5195221929972069443}
   - component: {fileID: 435798081054461035}
   - component: {fileID: 899375386225429777}
   m_Layer: 7
@@ -312,78 +305,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-8931676146731694340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e307b420d49b3c840b7056fe3204a290, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3831384198711147387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e202f4a0614a1a24c822b15986cd8319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-1106711602923391255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8118ff96a6979d458e4f2c56eecbbf5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1727071549760718108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d22989b67702e14484eccdfa7e9274b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2220636496326991835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1614881833bd35146b3a8ab495ff3b23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-8713228520699853420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bbba581d14ce9644a5a7b1f74f15b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  Behaviours: 0000000001000000020000000300000005000000060000000b000000
+  CurrentBehaviourInfo: 
 --- !u!114 &6873323525821280569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,18 +364,6 @@ MonoBehaviour:
     Keycode: 119
   - Skill: {fileID: 11400000, guid: 2e536d2e273f45f408424a36681ece91, type: 2}
     Keycode: 101
---- !u!114 &5195221929972069443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7849110260153872687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49be877a4a5e98a4998d4ae4f607a75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillCastingToPointBehaviour
 --- !u!114 &435798081054461035
 MonoBehaviour:
   m_ObjectHideFlags: 0

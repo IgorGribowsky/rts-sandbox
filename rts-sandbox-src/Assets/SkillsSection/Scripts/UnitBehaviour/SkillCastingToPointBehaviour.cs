@@ -16,15 +16,27 @@ public class SkillCastingToPointBehaviour : UnitBehaviourBase
     private CastToPointAction castAction;
     private Vector3 castPoint;
 
-    private bool castIsProcessing = false; 
+    private bool castIsProcessing = false;
     private bool isMoving = false;
     private float castAnimation = 0;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.SkillCast;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
         _unitSkills = gameObject.GetComponent<UnitSkills>();
+    }
+
+    /// <summary>
+    /// Only a cast aimed at a point. Casting into a target is a behaviour of its
+    /// own and will answer the same order with its own arguments.
+    /// </summary>
+    public override bool CanHandle(EventArgs args)
+    {
+        return args is SkillCastToPointActionStartedEventArgs pointArgs
+            && (pointArgs.UnitSkill.Skill as ActiveSkill)?.Action is CastToPointAction;
     }
 
     public override void StartAction(EventArgs args)
