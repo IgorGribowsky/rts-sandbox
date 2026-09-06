@@ -1,7 +1,7 @@
 ---
 id: T-019
 title: bundleVersion отстал от рабочей ветки
-status: todo
+status: review
 milestone: v0.1.1
 parent:
 origin: ai
@@ -9,9 +9,9 @@ needs-design: false
 blocked-by: []
 mechanics: []
 handoff: []
-checkpoint:
+checkpoint: a705d53
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # T-019 · bundleVersion отстал от рабочей ветки
@@ -29,7 +29,35 @@ Edit > Project Settings > Player: Version показывает `0.1.1-alpha`.
 
 ## План
 
+Дерево на момент взятия задачи чистое, отдельный чекпоинт-коммит не нужен:
+точка отката — `a705d53`, коммит заведения T-038.
+
+1. Убедиться, что редактор не в Play mode.
+2. Поставить `PlayerSettings.bundleVersion = "0.1.1-alpha"` и сохранить
+   ассеты. Штатного MCP-инструмента для настроек плеера нет, поэтому вызов
+   идёт через исполнение кода в редакторе — это тот самый API, который дёргает
+   инспектор, и ровно то, что предписывает CLAUDE.md для номера версии.
+   Текст `ProjectSettings.asset` руками не правлю.
+3. Прочитать фактическое значение `bundleVersion` с диска и показать его.
+4. Больше ничего в настройках проекта не трогаю: ни Force Text, ни
+   Recompile After Finished Playing.
+
+Меняется один файл: `ProjectSettings/ProjectSettings.asset`.
+
 ## Ход работы
+
+- 2026-09-06 дерево чистое, точка отката `a705d53`. Редактор проверен: не в
+  Play mode, простаивает.
+- `PlayerSettings.bundleVersion` переведён с `0.0.5-alpha` на `0.1.1-alpha`,
+  `AssetDatabase.SaveAssets()`. API вызван исполнением кода в редакторе:
+  штатного MCP-инструмента для настроек плеера нет, а текст ассета руками
+  править нельзя.
+- Прочитано с диска: `ProjectSettings/ProjectSettings.asset:146`
+  `bundleVersion: 0.1.1-alpha`. В дифе ровно одна строка, ничего другого в
+  настройках проекта не задето.
+- В консоли одна ошибка — та самая `UnitProducing.OnDestroy` с плейтеста
+  T-021, заведена как T-038. К этой задаче отношения не имеет и новой не
+  является.
 
 ## Решения
 
@@ -43,3 +71,5 @@ Edit > Project Settings > Player: Version показывает `0.1.1-alpha`.
   Project Settings > Player.
 
 ## Итог
+
+Версия проекта равна версии, над которой идёт работа: `0.1.1-alpha`.
