@@ -3,7 +3,7 @@ id: M-015
 title: Способности
 status: accepted
 source: concept/processed/начало работы и основные идеи по проекту.md
-tasks: [T-016]
+tasks: [T-016, T-001, T-002, T-003, T-004, T-022, T-023, T-024, T-025, T-026, T-033]
 ---
 
 # M-015 · Способности

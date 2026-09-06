@@ -25,5 +25,5 @@ MonoBehaviour:
       type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
       data:
         _impactType: InstantDamageImpact
-        damage: 60
+        damage: 160
         type: 2
