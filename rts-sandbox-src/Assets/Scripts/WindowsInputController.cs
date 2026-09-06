@@ -23,6 +23,7 @@ public class WindowsInputController : MonoBehaviour
     private SelectionBoxController _selectionBoxController;
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
+    private SkillController _skillController;
 
     private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
@@ -57,7 +58,10 @@ public class WindowsInputController : MonoBehaviour
     {
         allKeyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
 
-        usedKeys = new List<KeyCode>
+        // The reserved set is the single list; the fields below are added on top
+        // so that rebinding a key in the inspector still takes it out of skills.
+        usedKeys = new List<KeyCode>(ReservedKeys.All);
+        usedKeys.AddRange(new[]
         {
             AClickKey,
             FixScreenKey,
@@ -66,7 +70,7 @@ public class WindowsInputController : MonoBehaviour
             CancelKey,
             ReturnCameraKey,
             AddToQueueKey,
-        };
+        });
         usedKeys.AddRange(keypadCodes);
     }
 
@@ -85,6 +89,7 @@ public class WindowsInputController : MonoBehaviour
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
         _playerEventController = Controller.GetComponent<PlayerEventController>();
+        _skillController = Controller.GetComponent<SkillController>();
     }
 
     void Update()
@@ -274,7 +279,7 @@ public class WindowsInputController : MonoBehaviour
         {
             if (Input.GetKeyUp(currentKeyPressed))
             {
-                _unitController.CommandSkillCast(currentKeyPressed, isShiftButtonPressed);
+                _skillController.CommandSkillCast(currentKeyPressed, isShiftButtonPressed);
                 currentKeyPressed = KeyCode.None;
             }
 
@@ -283,7 +288,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (currentKeyPressed == KeyCode.None && GetAllowedKeyDown(out var keyCode))
         {
-            var isSkillExists = _unitController.PrepareSkillCast(keyCode);
+            var isSkillExists = _skillController.PrepareSkillCast(keyCode);
             if (isSkillExists)
             {
                 currentKeyPressed = keyCode;

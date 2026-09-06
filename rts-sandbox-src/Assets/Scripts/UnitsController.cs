@@ -4,11 +4,9 @@ using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
-using Assets.SkillsSection.Scripts;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Assets.SkillsSection.Scripts.UnitSkills;
 
 public class UnitsController : MonoBehaviour
 {
@@ -50,73 +48,6 @@ public class UnitsController : MonoBehaviour
     {
 
     }
-
-    #region Skill cast logic
-    //Maybe it could be moved in new separate class SkillController
-    private UnitSkill prepearedSkill = null;
-
-    private bool TryGetSkillCaster(KeyCode keyCode, out GameObject unitToCast, out UnitSkill unitSkill, out UnitSkills unitSkillsScript)
-    {
-        unitToCast = null;
-        unitSkill = null;
-        unitSkillsScript = null;
-
-        if (SelectedUnitsTeamId != playerTeamId || !SelectedUnits.Any())
-            return false;
-
-        var firstUnit = SelectedUnits.First();
-        var firstValues = firstUnit.GetComponent<UnitValues>();
-
-        if (firstValues == null || !firstValues.CanCastSkills)
-            return false;
-
-        var firstSkillsScript = firstUnit.GetComponent<UnitSkills>();
-        var firstSkill = firstSkillsScript?.GetSkillByKeycode(keyCode);
-
-        if (firstSkill == null)
-            return false;
-
-        var unitId = firstValues.Id;
-
-        foreach (var caster in SelectedUnits.Where(x => x.GetComponent<UnitValues>().Id == unitId))
-        {
-            var skillsScript = caster.GetComponent<UnitSkills>();
-            var skill = skillsScript.GetSkillByKeycode(keyCode);
-
-            if (skillsScript.CheckIfCanCast(skill))
-            {
-                unitToCast = caster;
-                unitSkill = skill;
-                unitSkillsScript = skillsScript;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public bool PrepareSkillCast(KeyCode keyCode)
-    {
-        if (!TryGetSkillCaster(keyCode, out _, out var unitSkill, out _))
-            return false;
-
-        prepearedSkill = unitSkill;
-        return true;
-    }
-
-    public void CommandSkillCast(KeyCode keyCode, bool addToCommandsQueue = false)
-    {
-        if (!TryGetSkillCaster(keyCode, out var unitToCast, out var unitSkill, out var unitSkillsScript))
-            return;
-
-        if (prepearedSkill != unitSkill)
-            return;
-
-        var skillCastArgs = unitSkillsScript.CreateCommandArgs(unitSkill, addToCommandsQueue);
-        unitToCast.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
-    }
-
-    #endregion
 
     public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
     {

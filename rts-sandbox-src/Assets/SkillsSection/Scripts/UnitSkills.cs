@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.SkillsSection.Scripts.Events;
 using System;
@@ -145,11 +146,8 @@ namespace Assets.SkillsSection.Scripts
 
             public KeyCode Keycode;
 
-            #region Banned keys
-            private KeyCode[] banned = { KeyCode.Space, KeyCode.Escape, KeyCode.Mouse0, KeyCode.Mouse1, KeyCode.Mouse2, KeyCode.A, KeyCode.LeftShift };
-
-            public bool IsBanned() => System.Array.IndexOf(banned, Keycode) >= 0;
-            #endregion
+            /// <summary>The game itself took this key, see ReservedKeys.</summary>
+            public bool IsBanned() => ReservedKeys.IsReserved(Keycode);
         }
 
         /// <summary>
