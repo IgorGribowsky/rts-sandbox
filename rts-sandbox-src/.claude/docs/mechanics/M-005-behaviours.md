@@ -3,7 +3,7 @@ id: M-005
 title: Поведения юнита
 status: implemented
 source:
-tasks: [T-021]
+tasks: [T-021, T-002, T-004]
 ---
 
 # M-005 · Поведения юнита
@@ -46,9 +46,12 @@ tasks: [T-021]
 Поэтому новое поведение — это новый класс, значение в `UnitBehaviourType` и
 строка в фабрике; менеджер не трогается.
 
-Каст в точку пользуется `CanHandle`: он берётся за приказ только если пришли
-аргументы каста в точку и действие способности — `CastToPointAction`. Каст в
-цель (T-002) встанет рядом тем же способом.
+Каст пользуется `CanHandle`: точечный берётся за приказ только если пришли
+аргументы каста в точку и действие способности — `CastToPointAction`, а каст
+в цель — только на своих аргументах и `CastToTargetAction`. Оба отвечают на
+один приказ `SkillCast` и делят общую базу `SkillCastingBehaviourBase`:
+таймер каста, проверка возможности каста и завершение там, различаются
+только прицелом (T-002).
 
 ### Тикают все, работает одно
 
@@ -79,7 +82,8 @@ Attack, взятый у менеджера через `GetForAction(UnitActionTy
 | `BuildingBehaviour` | Build | доходит и ставит здание |
 | `MiningBehaviour` | Mine | встаёт в ячейку шахты |
 | `HarvestingBehaviour` | Harvest | рубит и носит на склад |
-| `SkillCastingToPointBehaviour` | SkillCast | подходит на дальность и кастует |
+| `SkillCastingToPointBehaviour` | SkillCast | подходит к точке и кастует |
+| `SkillCastingToTargetBehaviour` | SkillCast | подходит к юниту и кастует в него |
 
 Набор на префабах:
 
@@ -87,7 +91,7 @@ Attack, взятый у менеджера через `GetForAction(UnitActionTy
 |---|---|
 | Warrior, Giant Unit | Movement, AMovement, Following, Holding, MeleeAttacking, AutoAttackIdle |
 | Range Unit | Movement, AMovement, Following, Holding, RangeAttacking, AutoAttackIdle |
-| Caster Unit | то же, что Range Unit, плюс SkillCastingToPoint |
+| Caster Unit | то же, что Range Unit, плюс SkillCastingToPoint и SkillCastingToTarget |
 | Builder | Movement, AMovement, Following, Holding, MeleeAttacking, Building, Mining, Harvesting |
 | Tower | RangeAttacking, AutoAttackBuilding |
 
@@ -116,16 +120,19 @@ Attack, взятый у менеджера через `GetForAction(UnitActionTy
 Поведение не решает, когда его включить, — это `UnitBehaviourManager` по
 событию. Поведение не знает про очередь, только шлёт `ActionEnded`.
 
-Снаружи в поведения ходит только `UnitsController` и только через менеджер:
-`Has<T>()`, `IsBehaviourActive<T>()`, `Get<T>()`.
+Снаружи в поведения ходят только `UnitsController` и `UnitCommandManager`, и
+только через менеджер: `Has<T>()`, `IsBehaviourActive<T>()`, `Get<T>()`,
+`CanHandle(action, args)`. Последний нужен очереди приказов, чтобы не
+запускать команду, которую на этом юните исполнить нечем (T-004).
 
 ## Открытые места
 - Оглушение (M-019) добавит поведение, которое включается эффектом и
   снимается вместе с ним, при этом приказы во время него продолжают
   приниматься в очередь.
-- Каст в цель (`SkillCastingToTargetBehaviour`) не реализован — T-002.
-- Каст в точку завершается чужим событием `OnMoveActionEnded` — T-004.
 - Пустые `IfNoTargetUpdate` и `IfTargetExistsUpdate` у
   `AutoAttackBuildingBehaviour` — башня никуда не идёт, это осознанно.
-- Приказ, на который у юнита нет поведения, теперь просто игнорируется.
-  Раньше он гасил текущее поведение и не включал ничего.
+- Приказ, на который у юнита нет поведения, просто игнорируется. Раньше он
+  гасил текущее поведение и не включал ничего. Для приказа каста это
+  отдельно закрыто в T-004: очередь спрашивает `CanHandle` заранее и
+  выбрасывает команду, вместо того чтобы ждать `ActionEnded` навсегда.
+  Для остальных приказов дыра остаётся.
