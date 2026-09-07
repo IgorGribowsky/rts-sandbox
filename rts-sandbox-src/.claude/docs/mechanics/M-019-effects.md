@@ -3,7 +3,7 @@ id: M-019
 title: Эффекты на юните
 status: accepted
 source: concept/processed/начало работы и основные идеи по проекту.md
-tasks: []
+tasks: [T-001]
 ---
 
 # M-019 · Эффекты на юните

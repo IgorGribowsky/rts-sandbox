@@ -1,3 +1,4 @@
+using Assets.Scripts.Infrastructure.Constants;
 using UnityEngine;
 
 public abstract partial class SkillAction : ScriptableObject
@@ -15,7 +16,7 @@ public abstract partial class SkillAction : ScriptableObject
     void AddPoisonDamage()
     {
         Impacts ??= new();
-        var impact = new PoisonDamageImpact { dps = default, type = default, duration = default };
+        var impact = new PoisonDamageImpact { dps = default, type = default, duration = default, tickInterval = GameConstants.DefaultEffectTickRate };
         impact.Initialize();
         Impacts.Add(impact);
     }

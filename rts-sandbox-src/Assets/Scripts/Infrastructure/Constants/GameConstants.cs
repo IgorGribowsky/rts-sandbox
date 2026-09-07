@@ -28,5 +28,7 @@
 
         public const float HpRegenRate = 1f;
         public const float ManaRegenRate = 1f;
+
+        public const float DefaultEffectTickRate = 0.5f;
     }
 }

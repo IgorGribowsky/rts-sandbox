@@ -10,5 +10,8 @@ public class PoisonDamageImpact : SkillUnitImpact
 
     public float duration;
 
+    /// <summary>How often the damage lands. 0 means GameConstants.DefaultEffectTickRate.</summary>
+    public float tickInterval;
+
     public override SkillImpactType Type => SkillImpactType.PoisonDamage;
 }
