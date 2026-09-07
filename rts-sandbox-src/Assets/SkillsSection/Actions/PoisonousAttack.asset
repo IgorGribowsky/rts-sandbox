@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a2be0b4d855fb74caaad7b3d4dfc0ae, type: 3}
   m_Name: PoisonousAttack
   m_EditorClassIdentifier: Assembly-CSharp::ApplyImpactsOnDamageDealtAction
-  Impacts: []
+  Impacts:
+  - rid: 5405108387445473340
   _targetType: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5405108387445473340
+      type: {class: PoisonDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: PoisonDamageImpact
+        dps: 6
+        type: 0
+        duration: 5
+        tickInterval: 0.5
