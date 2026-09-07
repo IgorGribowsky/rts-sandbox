@@ -6,7 +6,7 @@ namespace Assets.SkillsSection.Scripts.Aiming
 {
     /// <summary>
     /// Draws the aiming hints while a skill key is held (M-020): a thin circle of
-    /// CastRange around the caster plus one hint picked by the action asset.
+    /// the reach around the caster plus one hint picked by the action asset.
     ///
     /// It only draws. Whether the cast is possible, how far it reaches and what it
     /// costs is decided by the skill system (M-015): SkillController turns this on
@@ -121,19 +121,19 @@ namespace Assets.SkillsSection.Scripts.Aiming
             }
 
             var casterPosition = OnGround(_caster.transform.position);
+            var action = _skill.Action;
+            var range = GetAimRange(action);
 
-            DrawCircle(_rangeCircle, casterPosition, _skill.CastRange, RangeColor);
+            DrawCircle(_rangeCircle, casterPosition, range, RangeColor);
 
             HideHintLines();
-
-            var action = _skill.Action;
 
             if (action == null)
             {
                 return;
             }
 
-            var aimPoint = ClampToRange(GetAimPoint(action), casterPosition, _skill.CastRange);
+            var aimPoint = ClampToRange(GetAimPoint(action), casterPosition, range);
 
             switch (action.AimHint)
             {
@@ -148,6 +148,20 @@ namespace Assets.SkillsSection.Scripts.Aiming
                     DrawCircle(_areaCircle, aimPoint, GetAreaRadius(action), HintColor);
                     break;
             }
+        }
+
+        /// <summary>
+        /// How far the hint is allowed to reach: the range the action really has,
+        /// and the CastRange of the skill only when the action sets no limit of its
+        /// own (decision of the user, answer in chat 2026-09-07). Blink is why:
+        /// its CastRange is 50 because the caster never walks for it, while the jump
+        /// stops at 8.
+        /// </summary>
+        private float GetAimRange(ActiveSkillAction action)
+        {
+            var ownRange = action == null ? 0f : action.MaxRange;
+
+            return ownRange > 0f ? ownRange : _skill.CastRange;
         }
 
         /// <summary>

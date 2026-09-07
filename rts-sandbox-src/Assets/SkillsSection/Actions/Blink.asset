@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InstantMovementToPointAction
   Impacts: []
   AimHint: 2
-  MaxRange: 8
+  _maxRange: 8
   references:
     version: 2
     RefIds: []
