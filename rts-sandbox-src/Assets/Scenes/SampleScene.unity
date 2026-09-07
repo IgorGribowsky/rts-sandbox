@@ -6690,6 +6690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AllEnemiesAttackUsKeyCode: 257
   WeAttackAllEnemiesKeyCode: 258
+  EnemyStunsSelectedKeyCode: 259
 --- !u!4 &1744815804
 Transform:
   m_ObjectHideFlags: 0
