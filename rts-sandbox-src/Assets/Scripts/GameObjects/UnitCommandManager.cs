@@ -24,11 +24,13 @@ namespace Assets.Scripts.GameObjects
         private Queue<ICommand> CommandsQueue = new Queue<ICommand>();
         private PlayerEventController _playerEventController;
         private UnitSkills _unitSkills;
+        private UnitBehaviour.UnitBehaviourManager _behaviourManager;
 
         void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();
             _unitSkills = GetComponent<UnitSkills>();
+            _behaviourManager = GetComponent<UnitBehaviour.UnitBehaviourManager>();
             _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
                 .GetComponent<PlayerEventController>();
 
@@ -118,7 +120,7 @@ namespace Assets.Scripts.GameObjects
 
         protected void StartSkillCastCommand(SkillCastCommandReceivedEventArgs args)
         {
-            var skillCastCommand = new SkillCastCommand(_unitEventManager, _unitSkills, args);
+            var skillCastCommand = new SkillCastCommand(_unitEventManager, _unitSkills, _behaviourManager, args);
 
             StartCommand(skillCastCommand, args.AddToCommandsQueue);
         }
@@ -396,11 +398,15 @@ namespace Assets.Scripts.GameObjects
 
             private UnitSkills _unitSkills;
 
-            public SkillCastCommand(UnitEventManager unitEventManager, UnitSkills unitSkills, SkillCastCommandReceivedEventArgs args)
+            private UnitBehaviour.UnitBehaviourManager _behaviourManager;
+
+            public SkillCastCommand(UnitEventManager unitEventManager, UnitSkills unitSkills,
+                UnitBehaviour.UnitBehaviourManager behaviourManager, SkillCastCommandReceivedEventArgs args)
             {
                 this.args = args;
                 _unitEventManager = unitEventManager;
                 _unitSkills = unitSkills;
+                _behaviourManager = behaviourManager;
             }
 
             public bool Check()
@@ -410,7 +416,16 @@ namespace Assets.Scripts.GameObjects
                     return false;
                 }
 
-                return _unitSkills.CheckIfCanCast(args.UnitSkill);
+                if (!_unitSkills.CheckIfCanCast(args.UnitSkill))
+                {
+                    return false;
+                }
+
+                // Nobody on this unit can take this cast — drop the command the
+                // same way a dead target or missing mana drops one. Started, it
+                // would never send ActionEnded and the queue would hang forever.
+                return _behaviourManager != null
+                    && _behaviourManager.CanHandle(UnitBehaviour.UnitActionType.SkillCast, args.ToActionArgs());
             }
 
             public void Start()
@@ -432,6 +447,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.BuildCommandReceived -= StartBuildCommand;
             _unitEventManager.MineCommandReceived -= StartMineCommand;
             _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
+            _unitEventManager.SkillCastCommandReceived -= StartSkillCastCommand;
 
             _unitEventManager.MoveActionEnded -= RunNextCommand;
             _unitEventManager.AttackActionEnded -= RunNextCommand;
@@ -440,6 +456,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.BuildActionEnded -= RunNextCommand;
             _unitEventManager.MineActionEnded -= RunNextCommand;
             _unitEventManager.HarvestingActionEnded -= RunNextCommand;
+            _unitEventManager.SkillCastActionEnded -= RunNextCommand;
         }
     }
 }

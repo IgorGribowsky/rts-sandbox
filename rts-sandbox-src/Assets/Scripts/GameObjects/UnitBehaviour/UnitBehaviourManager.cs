@@ -65,6 +65,13 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
 
         public bool IsBehaviourActive<T>() where T : UnitBehaviourBase => Get<T>()?.IsActive ?? false;
 
+        /// <summary>
+        /// Is there a behaviour on this unit able to take this order? Asked by
+        /// UnitCommandManager before it starts a command: an order nobody can take
+        /// never sends ActionEnded, and the queue would wait for it forever.
+        /// </summary>
+        public bool CanHandle(UnitActionType action, EventArgs args) => Select(action, args) != null;
+
         /// <summary>Used by auto attack to reach the attack behaviour of its own unit.</summary>
         public UnitBehaviourBase GetForAction(UnitActionType action)
         {

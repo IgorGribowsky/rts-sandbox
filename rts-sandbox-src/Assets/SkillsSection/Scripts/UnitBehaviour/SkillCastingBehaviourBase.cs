@@ -118,9 +118,7 @@ public abstract class SkillCastingBehaviourBase : UnitBehaviourBase
 
         if (TriggerEndEventFlag)
         {
-            // TODO(T-004): a cast ends with somebody else's event, OnMoveActionEnded.
-            // Kept as it was on purpose — fixing it is T-004, and now it is one place.
-            UnitEvents.OnMoveActionEnded();
+            UnitEvents.OnSkillCastActionEnded();
         }
     }
 }
