@@ -3,7 +3,7 @@ id: M-011
 title: Производство юнитов
 status: implemented
 source:
-tasks: []
+tasks: [T-042, T-043]
 ---
 
 # M-011 · Производство юнитов

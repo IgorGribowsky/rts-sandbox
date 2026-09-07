@@ -3,7 +3,7 @@ id: M-016
 title: Мана
 status: implemented
 source:
-tasks: []
+tasks: [T-043]
 ---
 
 # M-016 · Мана

@@ -3,7 +3,7 @@ id: M-013
 title: Шахта и добыча золота
 status: implemented
 source:
-tasks: []
+tasks: [T-043]
 ---
 
 # M-013 · Шахта и добыча золота

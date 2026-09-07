@@ -3,7 +3,7 @@ id: M-008
 title: Здоровье, смерть и зов на помощь
 status: implemented
 source:
-tasks: []
+tasks: [T-043]
 ---
 
 # M-008 · Здоровье, смерть и зов на помощь

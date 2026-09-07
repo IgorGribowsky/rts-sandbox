@@ -3,7 +3,7 @@ id: M-017
 title: Полоски над юнитами
 status: implemented
 source:
-tasks: []
+tasks: [T-043]
 ---
 
 # M-017 · Полоски над юнитами

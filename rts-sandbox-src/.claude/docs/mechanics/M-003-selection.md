@@ -3,7 +3,7 @@ id: M-003
 title: Выделение юнитов
 status: implemented
 source:
-tasks: []
+tasks: [T-040, T-043]
 ---
 
 # M-003 · Выделение юнитов

@@ -1,7 +1,7 @@
 ---
 id: T-040
 title: MissingReferenceException — в выделении остаётся уничтоженный юнит
-status: review
+status: done
 milestone: v0.1.1
 parent:
 origin: user
@@ -121,6 +121,8 @@ WindowsInputController.Update ()                          at WindowsInputControl
   НЕ добавлял: заглушить симптом до выяснения причины — ровно то, что
   запрещает скилл `bugfix`. Общий инвариант «в выделении только живые»
   вынесен в бэклог, T-041.
+
+- 2026-09-07 (ответ в чате) приёмка пройдена: «окей, закрывай».
 
 ## Итог
 

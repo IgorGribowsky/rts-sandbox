@@ -3,7 +3,7 @@ id: M-010
 title: Строительство и сетка застройки
 status: implemented
 source:
-tasks: []
+tasks: [T-043]
 ---
 
 # M-010 · Строительство и сетка застройки
