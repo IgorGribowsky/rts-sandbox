@@ -374,6 +374,7 @@ public class UnitsController : MonoBehaviour
         var selectableUnits = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
+            .Where(o => IsAlive(o))
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 
@@ -427,7 +428,8 @@ public class UnitsController : MonoBehaviour
             var unitValues = unit.GetComponent<UnitValues>();
             return teamMember != null && unitValues != null
                 && teamMember.TeamId == targetTeamId
-                && unitValues.Id == unitId;
+                && unitValues.Id == unitId
+                && IsAlive(unit);
         }).ToList();
 
         ApplySelection(unitsToSelect, addToPreviousSelection);
@@ -566,6 +568,21 @@ public class UnitsController : MonoBehaviour
     protected void CursorMovedHandler(CursorMovedEventArgs args)
     {
         _unitUnderCursor = args.UnitUnderCursor;
+    }
+
+    /// <summary>
+    /// Is this unit still alive? Destroy() only marks an object: it dies at the
+    /// end of the frame, and until then FindGameObjectsWithTag keeps returning it
+    /// with its tag, collider and components in place. Without this check a unit
+    /// that died earlier in the same frame gets selected again right after it was
+    /// correctly dropped from the selection, and the selection is left holding a
+    /// destroyed object for good (T-040).
+    /// </summary>
+    private static bool IsAlive(GameObject unit)
+    {
+        var unitValues = unit.GetComponent<UnitValues>();
+
+        return unitValues == null || unitValues.CurrentHp > 0;
     }
 
     private List<GameObject> GetMovableSelectedUnits()
