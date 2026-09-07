@@ -9,12 +9,22 @@ public static class SkillTargetFilter
 {
     public static bool CanHit(GameObject target, GameObject skillOwner, TargetType targetType)
     {
-        if (target == skillOwner)
+        return CanHit(target, skillOwner.GetComponent<TeamMember>().TeamId, skillOwner, targetType);
+    }
+
+    /// <summary>
+    /// The same check for something that outlives its caster — a zone on the
+    /// ground, for instance. The team is passed as a number because the owner's
+    /// TeamMember may already be gone; skillOwner is then only used to keep the
+    /// caster out of his own area, and may be null.
+    /// </summary>
+    public static bool CanHit(GameObject target, int skillOwnerTeam, GameObject skillOwner, TargetType targetType)
+    {
+        if (skillOwner != null && target == skillOwner)
         {
             return false;
         }
 
-        var skillOwnerTeam = skillOwner.GetComponent<TeamMember>().TeamId;
         var targetTeamScript = target.GetComponent<TeamMember>();
         if (targetTeamScript == null)
         {

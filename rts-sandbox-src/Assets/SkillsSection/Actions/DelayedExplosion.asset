@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2232484bd0cf7d54ebfc5dbae24d0cea, type: 3}
+  m_Name: DelayedExplosion
+  m_EditorClassIdentifier: Assembly-CSharp::DelayedExplosionAction
+  Impacts:
+  - rid: 5405108387445473343
+  AreaRadius: 4
+  Delay: 0.5
+  ZoneDuration: 2.5
+  ZoneDamageRate: 0.4
+  ZoneImpacts:
+  - rid: 5405108387445473344
+  Zone: {fileID: 5299498088337126097, guid: d9a6c7f3f1789bc448090e60909ee2b4, type: 3}
+  _targetType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 5405108387445473343
+      type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: InstantDamageImpact
+        damage: 70
+        type: 2
+    - rid: 5405108387445473344
+      type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: InstantDamageImpact
+        damage: 12
+        type: 2

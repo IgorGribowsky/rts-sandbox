@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -23,12 +24,21 @@ public static class SkillImpactExecutorFactory
     /// <summary>Applies every impact of an action that lands on a unit.</summary>
     public static void ApplyUnitImpacts(SkillAction action, GameObject target, GameObject skillOwner)
     {
-        if (action.Impacts == null)
+        ApplyUnitImpacts(action.Impacts, target, skillOwner);
+    }
+
+    /// <summary>
+    /// The same for a list given explicitly: an action may carry more than one
+    /// set of impacts, like the blast and the zone tick of a delayed explosion.
+    /// </summary>
+    public static void ApplyUnitImpacts(IEnumerable<SkillImpact> impacts, GameObject target, GameObject skillOwner)
+    {
+        if (impacts == null)
         {
             return;
         }
 
-        foreach (var impact in action.Impacts)
+        foreach (var impact in impacts)
         {
             if (impact is not SkillUnitImpact)
             {

@@ -10,4 +10,5 @@ public enum SkillActionType
     ApplyImpactsOnDamageDealt,
     ApplyImpactsToTarget,
     ThrowProjectileToTarget,
+    DelayedExplosion,
 }

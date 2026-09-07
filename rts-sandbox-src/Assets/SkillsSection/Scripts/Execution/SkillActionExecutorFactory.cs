@@ -22,6 +22,8 @@ public static class SkillActionExecutorFactory
                 return new ApplyImpactsToTargetExecutor((ApplyImpactsToTargetAction)action);
             case SkillActionType.ThrowProjectileToTarget:
                 return new ThrowProjectileToTargetExecutor((ThrowProjectileToTargetAction)action);
+            case SkillActionType.DelayedExplosion:
+                return new DelayedExplosionExecutor((DelayedExplosionAction)action);
             default:
                 Debug.LogError("No executor for skill action " + action.Type + ".");
                 return null;
