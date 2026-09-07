@@ -366,6 +366,8 @@ MonoBehaviour:
     Keycode: 101
   - Skill: {fileID: 11400000, guid: 688ba1f0437aafc458d4ae3a95573a89, type: 2}
     Keycode: 114
+  - Skill: {fileID: 11400000, guid: 2db0905863bc3ae43ad21fe9c83cdc6f, type: 2}
+    Keycode: 116
 --- !u!114 &435798081054461035
 MonoBehaviour:
   m_ObjectHideFlags: 0

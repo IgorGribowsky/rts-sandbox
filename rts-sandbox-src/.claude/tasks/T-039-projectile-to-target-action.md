@@ -1,7 +1,7 @@
 ---
 id: T-039
 title: Действие с целью, урон доносит летящий в неё снаряд
-status: todo
+status: review
 milestone: v0.1.1
 parent:
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-015]
 handoff: []
-checkpoint:
+checkpoint: d6a1c84
 created: 2026-09-07
 updated: 2026-09-07
 ---
@@ -43,7 +43,57 @@ updated: 2026-09-07
 
 ## План
 
+Третий вид действия для каста в цель, рядом с `ApplyImpactsToTarget`.
+Каст, подход, фильтр целей и отмена над неподходящей целью уже сделаны в
+T-002 и не трогаются: меняется только то, что происходит в момент, когда
+каст досчитал.
+
+- `Projectiles/ThrownTargetedProjectile.cs` — снаряд, ведущий цель.
+  Отдельный класс, а не наследник `ThrownProjectile`: тот летит по
+  направлению до `ProjectileRange` и бьёт того, в кого влетел, у него
+  другая механика попадания. Здесь — по образцу `ProjectileBehavior`
+  обычной дальней атаки: каждый кадр цель пересчитывается, попадание — по
+  сближению на шаг движения.
+- `SkillActions/ThrowProjectileToTargetAction.cs` — данные: скорость и
+  префаб снаряда. `ProjectileRange` нет намеренно: снаряд ведёт цель
+  сколько нужно.
+- `Execution/ThrowProjectileToTargetExecutor.cs` — создаёт снаряд у
+  кастера и отдаёт ему колбэк попадания; фильтр целей проверяется ПОВТОРНО
+  в момент попадания, а не только при выдаче приказа.
+- `SkillActionType.ThrowProjectileToTarget` + строка в фабрике.
+- Префаб снаряда `MagicBoltProjectile` — копия `LightOrbProjectile` со
+  заменённым компонентом.
+- Ассеты `Actions/ThrowMagicBolt.asset` + `Skills/MagicBolt.asset`, слот
+  на клавише `T` у `Caster Unit.prefab`.
+
 ## Ход работы
+
+- 2026-09-07 код: `ThrownTargetedProjectile`, `ThrowProjectileToTargetAction`,
+  `ThrowProjectileToTargetExecutor`, значение enum и строка в
+  `SkillActionExecutorFactory`. Консоль после перекомпиляции **0 ошибок,
+  0 предупреждений**, в живой сборке `ThrownTargetedProjectile : MonoBehaviour`
+  с методом `StartThrow`.
+- 2026-09-07 префаб снаряда: `LightOrbProjectile.prefab` скопирован БЕЗ
+  своего `.meta`, чтобы Unity выдал новый GUID, переименован корень, затем
+  штатным инструментом снят компонент `ThrownProjectile` и добавлен
+  `ThrownTargetedProjectile`. С диска после правки: новый GUID
+  `b57df2d5...`, скрипта `d82b9793...` (старого) в файле больше нет, есть
+  `d1ef9373...` (нового), Rigidbody кинематический и без гравитации —
+  снаряд двигается трансформом и с физикой не спорит.
+- 2026-09-07 ассеты и префаб, значения с диска:
+  `Actions/ThrowMagicBolt.asset` — скорость 16, `Projectile` ->
+  `MagicBoltProjectile` (fileID компонента разрешился верно), импакт
+  `InstantDamageImpact` 80 урона Magic, `_targetType: 0`;
+  `Skills/MagicBolt.asset` — кулдаун 4, каст 0.3, дальность 6, мана 40;
+  `Caster Unit.prefab` — пятый слот, `Keycode: 116` (`T`), прежние четыре
+  на месте, `Behaviours` не менялся (поведение каста в цель уже стоит с
+  T-002).
+- 2026-09-07 числа Magic Bolt намеренно совпадают с Shock (80 Magic,
+  кулдаун 4, дальность 6, мана 40): так на плейтесте единственная разница
+  между `R` и `T` — задержка на полёт снаряда.
+- 2026-09-07 Unity подтвердил живой импакт в ассете:
+  `Impacts.Array.data[0].damage` опознаётся как Float, `Projectile` — как
+  ObjectReference.
 
 ## Решения
 
@@ -53,5 +103,21 @@ updated: 2026-09-07
 - 2026-09-07 этот вид действия нужен T-026 («оглушающий снаряд» — каст в
   юнита плюс оглушение). После T-039 у T-026 остаётся только эффект
   оглушения и ассет.
+- 2026-09-07 цель погибла в полёте — снаряд долетает до последнего
+  известного места и исчезает, никого не задев. Это поведение пули
+  дальнобойного юнита (`ProjectileBehavior`), и оно сохранено сознательно:
+  пользователь просил «примерно как пуля».
+- 2026-09-07 `ThrownTargetedProjectile` не наследуется от
+  `ThrownProjectile`: у того попадание через `OnTriggerEnter` и полёт по
+  направлению до `ProjectileRange`, общего кода почти нет.
 
 ## Итог
+
+У каста в юнита появился второй вид действия: урон доносит снаряд, который
+ведёт цель до попадания. У кастера на `T` — Magic Bolt с теми же числами,
+что у Shock на `R`, поэтому разница в ощущении ровно одна: задержка на
+полёт. Заглушек не осталось, handoff не потребовался.
+
+Тронуто общее: только `SkillActionType` и `SkillActionExecutorFactory`
+(добавлено по строке) плюс пятый слот в `Caster Unit.prefab`. Каст, подход
+и фильтр целей из T-002 не менялись.

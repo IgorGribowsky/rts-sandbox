@@ -9,4 +9,5 @@ public enum SkillActionType
     InstantMovementToPoint,
     ApplyImpactsOnDamageDealt,
     ApplyImpactsToTarget,
+    ThrowProjectileToTarget,
 }
