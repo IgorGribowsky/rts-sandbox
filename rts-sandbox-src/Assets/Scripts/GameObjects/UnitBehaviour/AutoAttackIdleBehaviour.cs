@@ -1,3 +1,4 @@
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using UnityEngine;
@@ -8,7 +9,9 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
     private float _damageReceivedAgressionTimer = 0f;
     private bool _returningBackFlag = false;
 
-    protected override void AdditionalAwake()
+    public override UnitActionType Trigger => UnitActionType.AutoAttackIdle;
+
+    protected override void AdditionalInitialize()
     {
         _unitEventManager.CalledToAttack += OnCalledToAttackHandler;
     }
@@ -68,7 +71,7 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
 
     protected override void IfTargetExistsUpdate()
     {
-        var distanceToPath = (gameObject.transform.position - _movePoint).magnitude;
+        var distanceToPath = (transform.position - _movePoint).magnitude;
 
         if (distanceToPath > GameConstants.PersecutionDistance)
         {
@@ -93,7 +96,7 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
         }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
         _unitEventManager.CalledToAttack -= OnCalledToAttackHandler;
     }

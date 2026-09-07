@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93110bfed79ac354e81bc73ee3a39396, type: 3}
+  m_Name: ThrowWaterWave
+  m_EditorClassIdentifier: Assembly-CSharp::ThrowWaveProjectileAction
+  Impacts:
+  - rid: 5405108411566129204
+  AimHint: 1
+  ProjectileSpeed: 13
+  ProjectileRange: 10
+  Projectile: {fileID: -562909159190699271, guid: 23c77659c224f2e4fac38791d2032e86, type: 3}
+  _targetType: 0
+  WaveWidthScale: 2.4
+  references:
+    version: 2
+    RefIds:
+    - rid: 5405108411566129204
+      type: {class: InstantDamageImpact, ns: , asm: Assembly-CSharp}
+      data:
+        _impactType: InstantDamageImpact
+        damage: 40
+        type: 2

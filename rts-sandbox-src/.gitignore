@@ -70,3 +70,18 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# --- Дополнено пайплайном ---
+.idea/
+.vscode/
+.vsconfig
+*.unitypackage.meta
+
+# ОС
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Пайплайн: всё содержимое .claude/ едет в репозиторий намеренно,
+# история решений должна лежать вместе с кодом. Игнорируем только мусор.
+.claude/**/*.tmp

@@ -2,8 +2,12 @@ using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
+using System.Drawing;
+using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.UI.Image;
 
 public class NavMeshMovement : MonoBehaviour
 {
@@ -66,6 +70,24 @@ public class NavMeshMovement : MonoBehaviour
             AdjustDestination();
         }
     }
+
+    public void Warp(Vector3 destination)
+    {
+        _goToObjectFlag = false;
+
+        Vector3 correctedTarget = destination;
+        Collider hitCollider = Physics.OverlapSphere(destination, 0.01f)
+                          .FirstOrDefault(c => c.gameObject.isStatic);
+        if (hitCollider)
+        {
+            var point = hitCollider.ClosestPoint(transform.position);
+            point.y = transform.position.y;
+            var dir = (transform.position - point).normalized;
+            correctedTarget = point + dir * _navmeshAgent.radius;
+        }
+        _navmeshAgent.Warp(correctedTarget);
+    }
+
 
     // Update is called once per frame
     void Update()

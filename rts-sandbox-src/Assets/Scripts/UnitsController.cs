@@ -1,3 +1,4 @@
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -45,6 +46,7 @@ public class UnitsController : MonoBehaviour
 
     private void Update()
     {
+
     }
 
     public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
@@ -92,8 +94,10 @@ public class UnitsController : MonoBehaviour
                 ? _unitUnderCursor.transform.position 
                 : point.GetGridPoint(buildingSize);
 
-            var mineToHeld = buildingValues.IsHeldMine ? _unitUnderCursor : null;
-            mineToHeld = mineToHeld != null && mineToHeld.GetComponent<BuildingValues>().IsMine ? mineToHeld : null;
+            var mineToHeld = buildingValues.IsHeldMine
+                && _unitUnderCursor?.GetComponent<BuildingValues>()?.IsMine == true
+                    ? _unitUnderCursor
+                    : null;
 
             if (addToCommandsQueue)
             {
@@ -106,7 +110,7 @@ public class UnitsController : MonoBehaviour
                 GameObject unitToBuild = null;
                 foreach (var builder in allBuilders)
                 {
-                    var isNotActive = !builder.GetComponent<BuildingBehaviour>()?.IsActive;
+                    var isNotActive = !builder.GetComponent<UnitBehaviourManager>()?.IsBehaviourActive<BuildingBehaviour>();
                     var isReady = isNotActive ?? false;
                     if (isReady)
                     {
@@ -145,15 +149,7 @@ public class UnitsController : MonoBehaviour
     }
 
 
-    public bool CheckBuilderSelected()
-    {
-        if (SelectedUnitsTeamId != playerTeamId)
-        {
-            return false;
-        }
-
-        return SelectedUnits.FirstOrDefault()?.GetComponent<UnitValues>()?.IsBuilder ?? false;
-    }
+    public bool CheckBuilderSelected() => CheckBuilderSelected(out _);
 
     public bool CheckBuilderSelected(out GameObject builder)
     {
@@ -284,13 +280,16 @@ public class UnitsController : MonoBehaviour
                     continue;
                 }
 
+                var harvesting = unit.GetComponent<UnitBehaviourManager>()?.Get<HarvestingBehaviour>();
+
                 if (targetTeamId == playerTeamId
                     && unit.GetComponent<UnitValues>().IsHarvestor
-                    && unit.GetComponent<HarvestingBehaviour>().CurrentResourceValues > 0
-                    && unit.GetComponent<HarvestingBehaviour>().CurrentResource != null
+                    && harvesting != null
+                    && harvesting.CurrentResourceValues > 0
+                    && harvesting.CurrentResource != null
                     && target.GetComponent<HarvestedResourcesStorage>() != null
                     && target.GetComponent<HarvestedResourcesStorage>().isActiveAndEnabled
-                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(unit.GetComponent<HarvestingBehaviour>().CurrentResource.Value))
+                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(harvesting.CurrentResource.Value))
                 {
                     unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(null, target, true, addToCommandsQueue);
                     continue;
@@ -375,6 +374,7 @@ public class UnitsController : MonoBehaviour
         var selectableUnits = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString())
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
+            .Where(o => IsAlive(o))
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 
@@ -428,7 +428,8 @@ public class UnitsController : MonoBehaviour
             var unitValues = unit.GetComponent<UnitValues>();
             return teamMember != null && unitValues != null
                 && teamMember.TeamId == targetTeamId
-                && unitValues.Id == unitId;
+                && unitValues.Id == unitId
+                && IsAlive(unit);
         }).ToList();
 
         ApplySelection(unitsToSelect, addToPreviousSelection);
@@ -569,10 +570,25 @@ public class UnitsController : MonoBehaviour
         _unitUnderCursor = args.UnitUnderCursor;
     }
 
+    /// <summary>
+    /// Is this unit still alive? Destroy() only marks an object: it dies at the
+    /// end of the frame, and until then FindGameObjectsWithTag keeps returning it
+    /// with its tag, collider and components in place. Without this check a unit
+    /// that died earlier in the same frame gets selected again right after it was
+    /// correctly dropped from the selection, and the selection is left holding a
+    /// destroyed object for good (T-040).
+    /// </summary>
+    private static bool IsAlive(GameObject unit)
+    {
+        var unitValues = unit.GetComponent<UnitValues>();
+
+        return unitValues == null || unitValues.CurrentHp > 0;
+    }
+
     private List<GameObject> GetMovableSelectedUnits()
     {
         return SelectedUnits
-            .Where(x => x.GetComponent<MovementBehaviour>() != null)
+            .Where(x => x.GetComponent<UnitBehaviourManager>()?.Has<MovementBehaviour>() == true)
             .ToList();
     }
 
@@ -589,6 +605,14 @@ public class UnitsController : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Start may never have run: an object destroyed in the frame it
+        // appeared, or one never activated, reaches OnDestroy with this
+        // still null.
+        if (_playerEventController == null)
+        {
+            return;
+        }
+
         _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
         _playerEventController.CursorMoved -= CursorMovedHandler;
     }

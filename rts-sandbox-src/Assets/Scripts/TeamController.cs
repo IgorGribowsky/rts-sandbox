@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,11 @@ public class TeamController : MonoBehaviour
     public List<Team> Teams;
 
     public List<Alliance> Alliances;
+
+    void Awake()
+    {
+        GameServices.TeamController = this;
+    }
 
     public List<int> GetAllyTeams(int targetTeamId)
     {

@@ -16,7 +16,7 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
     private float attackAnimation = 0;
     private bool attackIsProcessing = false;
 
-    public void Awake()
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();

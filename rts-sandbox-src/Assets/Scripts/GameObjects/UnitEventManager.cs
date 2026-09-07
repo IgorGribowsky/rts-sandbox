@@ -1,5 +1,6 @@
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
+using Assets.SkillsSection.Scripts.Events;
 using System;
 using UnityEngine;
 
@@ -10,6 +11,25 @@ public class UnitEventManager : MonoBehaviour
     public void OnDamageReceived(GameObject attacker, float damageAmount, DamageType damageType)
     {
         DamageReceived?.Invoke(new DamageReceivedEventArgs(attacker, damageAmount, damageType));
+    }
+
+    public event DamageDealtHandler DamageDealt;
+
+    /// <summary>
+    /// This unit landed an ordinary attack. Called by whoever deals the damage —
+    /// melee behaviour and arriving projectile — and deliberately NOT from
+    /// OnDamageReceived: poison and skills must not read as attacks.
+    /// </summary>
+    public void OnDamageDealt(GameObject victim, float damageAmount, DamageType damageType)
+    {
+        DamageDealt?.Invoke(new DamageDealtEventArgs(victim, damageAmount, damageType));
+    }
+
+    public event ManaUsedHandler ManaUsed;
+
+    public void OnManaUsed(float manaUsed)
+    {
+        ManaUsed?.Invoke(new ManaUsedEventArgs(manaUsed));
     }
 
     public event DiedHandler UnitDied;
@@ -30,6 +50,13 @@ public class UnitEventManager : MonoBehaviour
     public void OnHealthPointsChanged(float currentHp)
     {
         HealthPointsChanged?.Invoke(new HealthPointsChangedEventArgs(currentHp));
+    }
+
+    public event ManaPointsChangedHandler ManaPointsChanged;
+
+    public void OnManaPointsChanged(float currentMana)
+    {
+        ManaPointsChanged?.Invoke(new ManaPointsChangedEventArgs(currentMana));
     }
 
     public event MoveCommandReceivedHandler MoveCommandReceived;
@@ -158,6 +185,26 @@ public class UnitEventManager : MonoBehaviour
         HoldActionStarted?.Invoke(new HoldActionStartedEventArgs());
     }
 
+    public event StunStartedHandler StunStarted;
+
+    /// <summary>
+    /// A stun landed on this unit. Raised by StunEffect and by nothing else:
+    /// the effect owns the duration, so it is the one that knows when the unit
+    /// is out of the fight and when it is back (M-019).
+    /// </summary>
+    public void OnStunStarted()
+    {
+        StunStarted?.Invoke(new StunStartedEventArgs());
+    }
+
+    public event StunEndedHandler StunEnded;
+
+    /// <summary>The last stun on the unit is gone: expired, removed, whatever.</summary>
+    public void OnStunEnded()
+    {
+        StunEnded?.Invoke(new StunEndedEventArgs());
+    }
+
     public event CalledToAttackHandler CalledToAttack;
     public void OnCalledToAttack(GameObject caller, GameObject target)
     {
@@ -198,5 +245,23 @@ public class UnitEventManager : MonoBehaviour
     public void OnHarvestingActionEnded()
     {
         HarvestingActionEnded?.Invoke(new EventArgs());
+    }
+
+    public event SkillCastCommandReceivedHandler SkillCastCommandReceived;
+    public void OnSkillCastCommandReceived(SkillCastCommandReceivedEventArgs args)
+    {
+        SkillCastCommandReceived?.Invoke(args);
+    }
+
+    public event SkillCastActionStartedHandler SkillCastActionStarted;
+    public void OnSkillCastActionStarted(SkillCastActionStartedEventArgs args)
+    {
+        SkillCastActionStarted?.Invoke(args);
+    }
+
+    public event SkillCastActionEndedHandler SkillCastActionEnded;
+    public void OnSkillCastActionEnded()
+    {
+        SkillCastActionEnded?.Invoke(new EventArgs());
     }
 }

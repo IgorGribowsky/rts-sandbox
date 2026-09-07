@@ -158,7 +158,18 @@ public class UnitProducing : MonoBehaviour
 
     private void OnDestroy()
     {
-        _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
-        _playerEventController.ResourceChanged -= OnSupplyChanged;
+        // OnDestroy runs even when Start never did — an object destroyed in the
+        // same frame it was created, or one that was never activated. Then these
+        // fields are still null. Checked with != null and not with ?., because
+        // ?. does not know about Unity's fake-null for destroyed objects.
+        if (_unitEventManager != null)
+        {
+            _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
+        }
+
+        if (_playerEventController != null)
+        {
+            _playerEventController.ResourceChanged -= OnSupplyChanged;
+        }
     }
 }

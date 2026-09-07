@@ -1,6 +1,7 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WindowsInputController : MonoBehaviour
@@ -13,6 +14,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode OpenBuildingMenuKey = KeyCode.B;
     public KeyCode CancelKey = KeyCode.Escape;
     public KeyCode ReturnCameraKey = KeyCode.Space;
+    public KeyCode AddToQueueKey = KeyCode.LeftShift;
 
     public bool AClickPressed { get => aClickPressed; }
 
@@ -21,6 +23,7 @@ public class WindowsInputController : MonoBehaviour
     private SelectionBoxController _selectionBoxController;
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
+    private SkillController _skillController;
 
     private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
@@ -31,6 +34,18 @@ public class WindowsInputController : MonoBehaviour
     private Vector3 lastSnappedPosition;
 
     private float lastClickTime = -1f;
+
+    private KeyCode[] allKeyCodes;
+    private List<KeyCode> usedKeys;
+    private KeyCode currentKeyPressed = KeyCode.None;
+
+    /// <summary>
+    /// A skill key held down while the skill is not castable yet. Kept apart
+    /// from currentKeyPressed on purpose: that one means "aiming", this one
+    /// means "waiting for the cooldown" (T-023).
+    /// </summary>
+    private KeyCode heldSkillKey = KeyCode.None;
+
 
     KeyCode[] keypadCodes = new KeyCode[]
         {
@@ -45,6 +60,26 @@ public class WindowsInputController : MonoBehaviour
           KeyCode.Alpha9,
           KeyCode.Alpha0,
         };
+
+    void Awake()
+    {
+        allKeyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
+
+        // The reserved set is the single list; the fields below are added on top
+        // so that rebinding a key in the inspector still takes it out of skills.
+        usedKeys = new List<KeyCode>(ReservedKeys.All);
+        usedKeys.AddRange(new[]
+        {
+            AClickKey,
+            FixScreenKey,
+            HoldKey,
+            OpenBuildingMenuKey,
+            CancelKey,
+            ReturnCameraKey,
+            AddToQueueKey,
+        });
+        usedKeys.AddRange(keypadCodes);
+    }
 
     void Start()
     {
@@ -61,6 +96,7 @@ public class WindowsInputController : MonoBehaviour
         _cameraController = Controller.GetComponent<CameraController>();
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
         _playerEventController = Controller.GetComponent<PlayerEventController>();
+        _skillController = Controller.GetComponent<SkillController>();
     }
 
     void Update()
@@ -102,6 +138,8 @@ public class WindowsInputController : MonoBehaviour
             _cameraController.SetCamera(center);
         }
 
+        var isShiftButtonPressed = Input.GetKey(AddToQueueKey);
+
         if (aClickPressed)
         {
             if (Input.GetMouseButtonDown(1))
@@ -122,7 +160,6 @@ public class WindowsInputController : MonoBehaviour
                 {
                     aClickPressed = false;
 
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                     var gameObject = hit.transform.gameObject;
                     if (gameObject.layer == (int)Layer.MovementSurface)
                     {
@@ -156,7 +193,6 @@ public class WindowsInputController : MonoBehaviour
 
                 if (Physics.Raycast(ray, out var hit, 100f, buildLayerMask))
                 {
-                    var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                     _unitController.Build(hit.point, isShiftButtonPressed);
                 }
             }
@@ -203,7 +239,7 @@ public class WindowsInputController : MonoBehaviour
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
                 {
-                    _unitController.EndSelection(hit.point, Input.GetKey(KeyCode.LeftShift));
+                    _unitController.EndSelection(hit.point, isShiftButtonPressed);
                     _selectionBoxController.EndDrawSelection();
 
                     var targetGameObject = hit.transform.gameObject;
@@ -212,7 +248,7 @@ public class WindowsInputController : MonoBehaviour
                         float timeSinceLastClick = Time.time - lastClickTime;
                         if (timeSinceLastClick <= GameConstants.DoubleClickTime)
                         {
-                            _unitController.OnDoubleClick(targetGameObject, Input.GetKey(KeyCode.LeftShift));
+                            _unitController.OnDoubleClick(targetGameObject, isShiftButtonPressed);
                             lastClickTime = -1f;
                         }
                         else
@@ -230,7 +266,6 @@ public class WindowsInputController : MonoBehaviour
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
             {
-                var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
                 var targetGameObject = hit.transform.gameObject;
                 if (targetGameObject.layer == (int)Layer.MovementSurface)
                 {
@@ -247,8 +282,37 @@ public class WindowsInputController : MonoBehaviour
             }
         }
 
+        if (currentKeyPressed != KeyCode.None)
+        {
+            if (!Input.GetKey(currentKeyPressed))
+            {
+                _skillController.CommandSkillCast(currentKeyPressed, isShiftButtonPressed);
+                currentKeyPressed = KeyCode.None;
+            }
+
+            return;
+        }
+
+        HandleHeldSkillKey();
+
+        if (currentKeyPressed == KeyCode.None && heldSkillKey == KeyCode.None
+            && GetAllowedKeyDown(out var keyCode))
+        {
+            var isSkillExists = _skillController.PrepareSkillCast(keyCode);
+            if (isSkillExists)
+            {
+                currentKeyPressed = keyCode;
+            }
+            else if (_skillController.HasSkillOnKey(keyCode))
+            {
+                // The skill is there but not ready: remember the key and wait.
+                heldSkillKey = keyCode;
+            }
+        }
+
         if (Input.GetKeyDown(CancelKey))
         {
+            heldSkillKey = KeyCode.None;
             _unitController.OnCancelClick();
         }
 
@@ -274,10 +338,58 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetKeyDown(HoldKey))
         {
-            var isShiftButtonPressed = Input.GetKey(KeyCode.LeftShift);
-
             _unitController.OnHoldKeyDown(isShiftButtonPressed);
         }
+    }
+
+    /// <summary>
+    /// A skill key held down through its own cooldown counts as a press the
+    /// moment the skill becomes castable, so the player does not have to release
+    /// and press again (T-023). It is the START of the cast: aiming begins, and
+    /// the cast itself still goes out on the key coming up.
+    /// </summary>
+    private void HandleHeldSkillKey()
+    {
+        if (heldSkillKey == KeyCode.None)
+        {
+            return;
+        }
+
+        if (!Input.GetKey(heldSkillKey))
+        {
+            heldSkillKey = KeyCode.None;
+            return;
+        }
+
+        if (!_skillController.PrepareSkillCast(heldSkillKey))
+        {
+            // Not castable yet. Mana can be the reason too, so keep waiting.
+            return;
+        }
+
+        // Counts as the press and nothing more: aiming starts now, and the cast
+        // goes out when the key comes up, like any other cast. Firing here would
+        // take the aiming away from the player (answer in chat 2026-09-07).
+        currentKeyPressed = heldSkillKey;
+        heldSkillKey = KeyCode.None;
+    }
+
+    private bool GetAllowedKeyDown(out KeyCode keyCode)
+    {
+        foreach (KeyCode key in allKeyCodes)
+        {
+            if (usedKeys.Contains(key))
+                continue;
+
+            if (Input.GetKeyDown(key))
+            {
+                keyCode = key;
+                return true;
+            }
+        }
+
+        keyCode = KeyCode.None;
+        return false;
     }
 
     bool KeypadCodeDown(out KeyCode keypadCodeDown, out int num)

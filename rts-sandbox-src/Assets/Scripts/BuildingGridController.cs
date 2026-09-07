@@ -403,6 +403,14 @@ public class BuildingGridController : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Start may never have run: an object destroyed in the frame it
+        // appeared, or one never activated, reaches OnDestroy with this
+        // still null.
+        if (_playerEventController == null)
+        {
+            return;
+        }
+
         _playerEventController.BuildingStarted -= AddToGrid;
         _playerEventController.BuildingRemoved -= RemoveFromGrid;
         _playerEventController.BuildingModChanged -= BuildingModChangedHandler;

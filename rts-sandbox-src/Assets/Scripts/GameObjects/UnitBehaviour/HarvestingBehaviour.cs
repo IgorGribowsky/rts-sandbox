@@ -33,7 +33,9 @@ public class HarvestingBehaviour : UnitBehaviourBase
 
     private float harvestTimer = 0;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.Harvest;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
@@ -207,7 +209,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
         }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
         _navmeshMovement.NavMeshMovementArrive -= HandleArrival;
     }

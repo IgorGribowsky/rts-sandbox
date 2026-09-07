@@ -15,7 +15,9 @@ public class MiningBehaviour : UnitBehaviourBase
     private GameObject _mine = null;
     private bool _miningIsProcessing = false;
 
-    public void Awake()
+    public override UnitActionType Trigger => UnitActionType.Mine;
+
+    protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
@@ -76,7 +78,7 @@ public class MiningBehaviour : UnitBehaviourBase
         if (canAdd)
         {
             var pointToMine = _heldMineScript.GetMiningPoint();
-            gameObject.transform.position = new Vector3(pointToMine.x, gameObject.transform.position.y, pointToMine.z);
+            transform.position = new Vector3(pointToMine.x, transform.position.y, pointToMine.z);
             _heldMineScript.AddMiner(gameObject);
             _miningIsProcessing = true;
         }
@@ -104,7 +106,7 @@ public class MiningBehaviour : UnitBehaviourBase
         }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
         _unitEventManager.UnitDied -= UnitDiedHandler;
         _navmeshMovement.NavMeshMovementArrive -= HandleArrival;

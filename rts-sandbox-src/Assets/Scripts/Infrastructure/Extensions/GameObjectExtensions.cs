@@ -176,7 +176,7 @@ namespace Assets.Scripts.Infrastructure.Helpers
         {
             GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString());
 
-            return units.Where(u => gameObject.GetDistanceTo(u) <= radius && filter(u));
+            return units.Where(u => gameObject.GetDistanceTo(u) <= radius && (filter == null || filter(u)));
         }
 
         public static bool CanBeAttacked(this GameObject unit, DamageType damageType)

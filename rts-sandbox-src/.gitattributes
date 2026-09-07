@@ -1,0 +1,88 @@
+# ============================================================
+#  Нормализация переводов строк и пометка бинарников.
+#  Без этого Windows натащит CRLF, файлы попадут в дифф целиком,
+#  и ревью изменений перестанет что-либо показывать.
+# ============================================================
+
+* text=auto eol=lf
+
+# --- Текст Unity: при Force Text это диффабельные YAML ---
+*.cs         text diff=csharp
+*.shader     text
+*.hlsl       text
+*.cginc      text
+*.compute    text
+*.uss        text
+*.uxml       text
+*.asmdef     text
+*.json       text
+*.md         text
+*.txt        text
+*.yml        text
+*.yaml       text
+*.meta       text
+*.unity      text
+*.prefab     text
+*.asset      text
+*.mat        text
+*.anim       text
+*.controller text
+*.physicMaterial   text
+*.overrideController text
+*.playable   text
+*.mask       text
+*.terrainlayer text
+*.signal     text
+*.guiskin    text
+*.fontsettings text
+*.mixer      text
+*.preset     text
+*.spriteatlas text
+*.inputactions text
+
+# --- Скрипты по платформам ---
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# --- Бинарники: в дифф не лезем ---
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.psd  binary
+*.tga  binary
+*.tif  binary
+*.tiff binary
+*.exr  binary
+*.hdr  binary
+*.bmp  binary
+*.ico  binary
+*.fbx  binary
+*.obj  binary
+*.blend binary
+*.dae  binary
+*.3ds  binary
+*.ttf  binary
+*.otf  binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+*.aif  binary
+*.aiff binary
+*.mp4  binary
+*.mov  binary
+*.webm binary
+*.dll  binary
+*.so   binary
+*.dylib binary
+*.pdb  binary
+*.a    binary
+*.cubemap binary
+*.unitypackage binary
+
+# Git LFS намеренно не включён: на аркадном объёме арта смысла нет.
+# Начнёшь возить тяжёлые модели и текстуры — заводим отдельной задачей.
+#
+# Мержилка сцен не настроена: работа в одной ветке, мержей нет.

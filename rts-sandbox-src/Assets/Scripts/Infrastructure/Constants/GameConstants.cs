@@ -26,5 +26,9 @@
 
         public const float ResourcesReturnedWhenBuildingCanceled = 0.7f;
 
+        public const float HpRegenRate = 1f;
+        public const float ManaRegenRate = 1f;
+
+        public const float DefaultEffectTickRate = 0.5f;
     }
 }
