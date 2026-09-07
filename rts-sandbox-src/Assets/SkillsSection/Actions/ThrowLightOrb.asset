@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Impacts:
   - rid: 5405108387445473339
+  AimHint: 1
   ProjectileSpeed: 20
   ProjectileRange: 13
   Projectile: {fileID: 671119673789793273, guid: 0bbc23daeed6c47429fec01dc7686d59, type: 3}

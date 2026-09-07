@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThrowProjectileToTargetAction
   Impacts:
   - rid: 5405108387445473342
+  AimHint: 3
   ProjectileSpeed: 16
   Projectile: {fileID: 218784513408287512, guid: b57df2d5d18d6c746a2b36a553c21db6, type: 3}
   _targetType: 0

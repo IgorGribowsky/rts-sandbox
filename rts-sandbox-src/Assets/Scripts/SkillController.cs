@@ -1,4 +1,5 @@
 using Assets.SkillsSection.Scripts;
+using Assets.SkillsSection.Scripts.Aiming;
 using System.Linq;
 using UnityEngine;
 using static Assets.SkillsSection.Scripts.UnitSkills;
@@ -16,25 +17,37 @@ public class SkillController : MonoBehaviour
 
     private UnitSkill _preparedSkill = null;
 
+    /// <summary>Optional: without it aiming simply shows nothing (M-020).</summary>
+    private SkillAimHintController _aimHints;
+
     void Start()
     {
         _unitsController = GetComponent<UnitsController>();
         _playerTeamId = GetComponent<PlayerTeamMember>().TeamId;
+        _aimHints = GetComponent<SkillAimHintController>();
     }
 
     /// <summary>Key pressed: remember which skill of which caster is being aimed.</summary>
     public bool PrepareSkillCast(KeyCode keyCode)
     {
-        if (!TryGetSkillCaster(keyCode, out _, out var unitSkill, out _))
+        if (!TryGetSkillCaster(keyCode, out var unitToCast, out var unitSkill, out _))
             return false;
 
         _preparedSkill = unitSkill;
+
+        // Getting here at all means the cast is possible right now, which is
+        // exactly when the hints are allowed to show (M-020).
+        _aimHints?.Show(unitToCast, unitSkill.Skill as ActiveSkill);
+
         return true;
     }
 
     /// <summary>Key released: send the cast order for the skill that was aimed.</summary>
     public void CommandSkillCast(KeyCode keyCode, bool addToCommandsQueue = false)
     {
+        // The key is up, so the aiming is over whatever comes of the cast itself.
+        _aimHints?.Hide();
+
         if (!TryGetSkillCaster(keyCode, out var unitToCast, out var unitSkill, out var unitSkillsScript))
             return;
 

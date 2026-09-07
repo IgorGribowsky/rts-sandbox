@@ -1389,6 +1389,7 @@ GameObject:
   - component: {fileID: 1332743807}
   - component: {fileID: 1332743808}
   - component: {fileID: 1332743809}
+  - component: {fileID: 1332743810}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: PlayerController
@@ -1549,6 +1550,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e42f9b8ca30c700458716ac8cefde754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillController
+--- !u!114 &1332743810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332743797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ebc18d3939e6441a8b957f25daf391, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.SkillsSection.Scripts.Aiming.SkillAimHintController
+  LineMaterial: {fileID: 2100000, guid: 10bb80fad01d8104c8e7a438a25eb4a1, type: 2}
+  RangeColor: {r: 1, g: 1, b: 1, a: 0.35}
+  HintColor: {r: 0.35, g: 0.8, b: 1, a: 0.9}
+  LineWidth: 0.08
+  GroundHeight: 0.05
+  CircleSegments: 64
+  CrossSize: 0.5
+  ArrowHeadLength: 0.8
+  ArrowHeadAngle: 25
 --- !u!1 &1415072602
 GameObject:
   m_ObjectHideFlags: 0

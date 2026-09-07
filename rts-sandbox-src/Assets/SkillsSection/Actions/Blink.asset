@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Blink
   m_EditorClassIdentifier: Assembly-CSharp::InstantMovementToPointAction
   Impacts: []
+  AimHint: 2
   MaxRange: 8
   references:
     version: 2

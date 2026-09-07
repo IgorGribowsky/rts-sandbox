@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThrowWaveProjectileAction
   Impacts:
   - rid: 5405108411566129204
+  AimHint: 1
   ProjectileSpeed: 13
   ProjectileRange: 10
   Projectile: {fileID: -562909159190699271, guid: 23c77659c224f2e4fac38791d2032e86, type: 3}
