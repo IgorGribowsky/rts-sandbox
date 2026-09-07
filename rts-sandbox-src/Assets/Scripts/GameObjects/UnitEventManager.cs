@@ -13,6 +13,18 @@ public class UnitEventManager : MonoBehaviour
         DamageReceived?.Invoke(new DamageReceivedEventArgs(attacker, damageAmount, damageType));
     }
 
+    public event DamageDealtHandler DamageDealt;
+
+    /// <summary>
+    /// This unit landed an ordinary attack. Called by whoever deals the damage —
+    /// melee behaviour and arriving projectile — and deliberately NOT from
+    /// OnDamageReceived: poison and skills must not read as attacks.
+    /// </summary>
+    public void OnDamageDealt(GameObject victim, float damageAmount, DamageType damageType)
+    {
+        DamageDealt?.Invoke(new DamageDealtEventArgs(victim, damageAmount, damageType));
+    }
+
     public event ManaUsedHandler ManaUsed;
 
     public void OnManaUsed(float manaUsed)

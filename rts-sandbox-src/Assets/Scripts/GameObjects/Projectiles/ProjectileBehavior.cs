@@ -48,6 +48,13 @@ namespace Assets.Scripts.GameObjects.Projectiles
                     if (Target != null)
                     {
                         _targetEventManager.OnDamageReceived(Owner, Damage, DamageType);
+
+                        // The shooter may already be dead by the time the arrow
+                        // lands, then there is nobody to tell.
+                        if (Owner != null)
+                        {
+                            Owner.GetComponent<UnitEventManager>()?.OnDamageDealt(Target, Damage, DamageType);
+                        }
                     }
 
                     Destroy(gameObject);

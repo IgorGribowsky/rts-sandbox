@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f3055d8d99b16945ba2ae30a1fb0f7d, type: 3}
+  m_Name: PoisonousAttack
+  m_EditorClassIdentifier: Assembly-CSharp::PassiveSkill
+  Name: Poisonous Attack
+  Cooldown: 0
+  Action: {fileID: 11400000, guid: e5893d5f4036c2e44b0e17e33f126ea5, type: 2}

@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 6873323525821280569}
   - component: {fileID: 8363517768491279335}
   - component: {fileID: -8076983816588526718}
+  - component: {fileID: 5709056645447923582}
   m_Layer: 7
   m_Name: Warrior
   m_TagString: Unit
@@ -443,3 +444,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a601245bbad59784f8977df8a387ffcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5709056645447923582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7849110260153872687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d4be05ea793234baf64d2bbac1a546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.SkillsSection.Scripts.UnitSkills
+  Skills:
+  - Skill: {fileID: 11400000, guid: 44ad9a8b4fc9bbe42a079b5f070189d7, type: 2}
+    Keycode: 0
