@@ -22,12 +22,15 @@ namespace Assets.SkillsSection.Scripts
 
         private CursorMovedEventArgs _cursorMovedEventArgs;
 
-        /// <summary>Cooldowns and everything else that only makes sense while playing.</summary>
-        private readonly List<UnitSkill> _castable = new List<UnitSkill>();
+        /// <summary>
+        /// Cooldowns, passive executors and everything else that only makes sense
+        /// while playing. Holds passives too, though those are never castable.
+        /// </summary>
+        private readonly List<UnitSkill> _runtimeSkills = new List<UnitSkill>();
 
         void Awake()
         {
-            BuildCastableSkills();
+            BuildRuntimeSkills();
         }
 
         void Start()
@@ -36,11 +39,15 @@ namespace Assets.SkillsSection.Scripts
             _unitValues = GetComponent<UnitValues>();
             _unitEventManager = GetComponent<UnitEventManager>();
             _playerEventController.CursorMoved += CursorMovedHandler;
+
+            // Not in Awake: a passive may reach for other components of the unit,
+            // and by Start they have all woken up.
+            ActivatePassives();
         }
 
         void Update()
         {
-            foreach (var skill in _castable)
+            foreach (var skill in _runtimeSkills)
             {
                 skill.Tick(Time.deltaTime);
             }
@@ -48,7 +55,7 @@ namespace Assets.SkillsSection.Scripts
 
         public SkillCastCommandReceivedEventArgs CreateCommandArgs(UnitSkill unitSkill, bool addToCommandsQueue = false)
         {
-            if (!_castable.Contains(unitSkill))
+            if (!_runtimeSkills.Contains(unitSkill))
             {
                 throw new ArgumentException();
             }
@@ -81,7 +88,7 @@ namespace Assets.SkillsSection.Scripts
         public bool CheckIfCanCast(UnitSkill unitSkill)
         {
             if (unitSkill == null) return false;
-            if (!_castable.Contains(unitSkill)) return false;
+            if (!_runtimeSkills.Contains(unitSkill)) return false;
             if (unitSkill.CurrentCooldown > 0) return false;
             if (unitSkill.Skill is not ActiveSkill) return false;
             if (_unitValues.CurrentMana < (unitSkill.Skill as ActiveSkill).ManaCost) return false;
@@ -91,12 +98,19 @@ namespace Assets.SkillsSection.Scripts
 
         public UnitSkill GetSkillByKeycode(KeyCode keycode)
         {
-            return _castable.FirstOrDefault(x => x.Keycode == keycode);
+            // None is "no key at all", not a key: a passive sits on it, and
+            // asking for None must not hand a passive back to the caster.
+            if (keycode == KeyCode.None)
+            {
+                return null;
+            }
+
+            return _runtimeSkills.FirstOrDefault(x => x.Keycode == keycode);
         }
 
-        private void BuildCastableSkills()
+        private void BuildRuntimeSkills()
         {
-            _castable.Clear();
+            _runtimeSkills.Clear();
 
             if (Skills == null)
             {
@@ -110,7 +124,41 @@ namespace Assets.SkillsSection.Scripts
                     continue;
                 }
 
-                _castable.Add(new UnitSkill(slot));
+                _runtimeSkills.Add(new UnitSkill(slot));
+            }
+        }
+
+        /// <summary>
+        /// Turns on every passive of the unit. A passive cannot be cast by a key,
+        /// so this is the only moment it ever starts (M-015).
+        /// </summary>
+        private void ActivatePassives()
+        {
+            foreach (var unitSkill in _runtimeSkills)
+            {
+                if (unitSkill.Skill is not PassiveSkill passiveSkill)
+                {
+                    continue;
+                }
+
+                var executor = PassiveSkillExecutorFactory.Create(passiveSkill.Action);
+
+                if (executor == null)
+                {
+                    continue;
+                }
+
+                unitSkill.AttachPassive(executor);
+                executor.Activate(gameObject);
+            }
+        }
+
+        /// <summary>Everything a passive subscribed to is released here.</summary>
+        private void DeactivatePassives()
+        {
+            foreach (var unitSkill in _runtimeSkills)
+            {
+                unitSkill.DetachPassive(gameObject);
             }
         }
 
@@ -126,6 +174,12 @@ namespace Assets.SkillsSection.Scripts
                 if (slot == null) continue;
 
                 if (slot.IsBanned())
+                    slot.Keycode = KeyCode.None;
+
+                // A passive cannot be cast by a key. Left on one it would eat the
+                // press silently: CheckIfCanCast turns it down and SkillController
+                // then finds nobody to cast with.
+                if (slot.Skill is PassiveSkill)
                     slot.Keycode = KeyCode.None;
             }
         }
@@ -170,9 +224,31 @@ namespace Assets.SkillsSection.Scripts
 
             public float CurrentCooldown { get; private set; }
 
+            /// <summary>
+            /// Set for a passive only: it works the whole time, so its executor
+            /// lives here, in the unit's own state, and dies with the unit.
+            /// </summary>
+            public PassiveSkillExecutor Passive { get; private set; }
+
             internal void StartCooldown(float cd)
             {
                 CurrentCooldown = cd;
+            }
+
+            internal void AttachPassive(PassiveSkillExecutor executor)
+            {
+                Passive = executor;
+            }
+
+            internal void DetachPassive(GameObject owner)
+            {
+                if (Passive == null)
+                {
+                    return;
+                }
+
+                Passive.Deactivate(owner);
+                Passive = null;
             }
 
             public void Tick(float deltaTime)
@@ -188,6 +264,8 @@ namespace Assets.SkillsSection.Scripts
             {
                 _playerEventController.CursorMoved -= CursorMovedHandler;
             }
+
+            DeactivatePassives();
         }
     }
 }
