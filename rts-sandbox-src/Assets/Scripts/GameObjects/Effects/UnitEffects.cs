@@ -51,6 +51,25 @@ public class UnitEffects : MonoBehaviour
         return Find(key) != null;
     }
 
+    /// <summary>
+    /// Is any effect of this kind hanging on the unit? Asked by an effect that
+    /// switches something on for the whole time it lasts: a stun must not lift
+    /// while a second stun, from another skill and under another key, is still
+    /// running (M-019).
+    /// </summary>
+    public bool HasAny<T>() where T : UnitEffect
+    {
+        foreach (var effect in _effects)
+        {
+            if (effect is T)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void Remove(object key)
     {
         var effect = Find(key);
@@ -97,12 +116,14 @@ public class UnitEffects : MonoBehaviour
     private void OnDestroy()
     {
         // The unit died: effects go away for that reason too, and something like
-        // a stun has to take its behaviour off with it (M-019).
-        foreach (var effect in _effects)
+        // a stun has to take its behaviour off with it (M-019). Each one is
+        // dropped from the list BEFORE it is told, so an effect that asks whether
+        // another of its kind is still there gets an honest answer.
+        for (var i = _effects.Count - 1; i >= 0; i--)
         {
+            var effect = _effects[i];
+            _effects.RemoveAt(i);
             effect.OnRemoved(gameObject);
         }
-
-        _effects.Clear();
     }
 }

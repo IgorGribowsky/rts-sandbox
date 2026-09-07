@@ -19,5 +19,6 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         Harvesting = 10,
         SkillCastingToPoint = 11,
         SkillCastingToTarget = 12,
+        Stunned = 13,
     }
 }

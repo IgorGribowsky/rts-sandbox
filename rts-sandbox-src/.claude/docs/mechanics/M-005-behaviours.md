@@ -3,7 +3,7 @@ id: M-005
 title: Поведения юнита
 status: implemented
 source:
-tasks: [T-021, T-002, T-004]
+tasks: [T-021, T-002, T-004, T-026]
 ---
 
 # M-005 · Поведения юнита
@@ -84,16 +84,20 @@ Attack, взятый у менеджера через `GetForAction(UnitActionTy
 | `HarvestingBehaviour` | Harvest | рубит и носит на склад |
 | `SkillCastingToPointBehaviour` | SkillCast | подходит к точке и кастует |
 | `SkillCastingToTargetBehaviour` | SkillCast | подходит к юниту и кастует в него |
+| `StunnedBehaviour` | Stun | юнит оглушён и не делает ничего |
 
 Набор на префабах:
 
 | Префаб | Behaviours |
 |---|---|
-| Warrior, Giant Unit | Movement, AMovement, Following, Holding, MeleeAttacking, AutoAttackIdle |
-| Range Unit | Movement, AMovement, Following, Holding, RangeAttacking, AutoAttackIdle |
-| Caster Unit | то же, что Range Unit, плюс SkillCastingToPoint и SkillCastingToTarget |
-| Builder | Movement, AMovement, Following, Holding, MeleeAttacking, Building, Mining, Harvesting |
+| Warrior, Giant Unit | Movement, AMovement, Following, Holding, MeleeAttacking, AutoAttackIdle, Stunned |
+| Range Unit | Movement, AMovement, Following, Holding, RangeAttacking, AutoAttackIdle, Stunned |
+| Caster Unit | то же, что Range Unit, плюс SkillCastingToPoint, SkillCastingToTarget и Stunned |
+| Builder | Movement, AMovement, Following, Holding, MeleeAttacking, Building, Mining, Harvesting, Stunned |
 | Tower | RangeAttacking, AutoAttackBuilding |
+
+`Stunned` есть у всех, кого можно оглушить, и нет у башни: здания отсекает
+фильтр целей (M-019).
 
 У Castle, Barracks, Farm, Wall и mine_held `UnitBehaviourManager` нет вовсе.
 
@@ -126,9 +130,10 @@ Attack, взятый у менеджера через `GetForAction(UnitActionTy
 запускать команду, которую на этом юните исполнить нечем (T-004).
 
 ## Открытые места
-- Оглушение (M-019) добавит поведение, которое включается эффектом и
-  снимается вместе с ним, при этом приказы во время него продолжают
-  приниматься в очередь.
+- Оглушение единственное поведение, которое включается не приказом, а
+  эффектом (`StunStarted` от `StunEffect`), и снимается вместе с ним.
+  Приказы во время него доходят до очереди, но не запускаются: заслонка
+  живёт в `UnitCommandManager`, не здесь (M-019).
 - Пустые `IfNoTargetUpdate` и `IfTargetExistsUpdate` у
   `AutoAttackBuildingBehaviour` — башня никуда не идёт, это осознанно.
 - Приказ, на который у юнита нет поведения, просто игнорируется. Раньше он

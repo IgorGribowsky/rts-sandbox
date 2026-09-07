@@ -44,6 +44,8 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _unitEventManager.MineActionStarted += StartMine;
             _unitEventManager.HarvestingActionStarted += StartHarvest;
             _unitEventManager.SkillCastActionStarted += StartSkillCast;
+            _unitEventManager.StunStarted += StartStun;
+            _unitEventManager.StunEnded += EndStun;
         }
 
         public void Update()
@@ -173,6 +175,42 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
 
         private void StartSkillCast(SkillCastActionStartedEventArgs args) => Activate(UnitActionType.SkillCast, args);
 
+        /// <summary>
+        /// A stun landed. It goes through the ordinary Activate, so it smothers
+        /// whatever was running the way any behaviour does — that is what breaks a
+        /// cast and stops a walk (M-019).
+        /// </summary>
+        private void StartStun(StunStartedEventArgs args)
+        {
+            if (Select(UnitActionType.Stun, args) == null)
+            {
+                // Loud on purpose: without the behaviour the unit would keep acting
+                // while its command queue is held shut by the stun, and that would
+                // look like a frozen unit with no reason on screen.
+                Debug.LogError("Stunned while " + name + " has no Stunned behaviour in its list.", this);
+                return;
+            }
+
+            Activate(UnitActionType.Stun, args);
+        }
+
+        /// <summary>
+        /// The stun is over. Only the behaviour is dropped here; what the unit does
+        /// next is the business of the command queue, which resumes on the same
+        /// event (M-004).
+        /// </summary>
+        private void EndStun(StunEndedEventArgs args)
+        {
+            if (_current is not StunnedBehaviour)
+            {
+                return;
+            }
+
+            _current.Deactivate();
+            _current = null;
+            CurrentBehaviourInfo = string.Empty;
+        }
+
         private void OnDestroy()
         {
             _unitEventManager.MoveActionStarted -= StartMove;
@@ -185,6 +223,8 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _unitEventManager.MineActionStarted -= StartMine;
             _unitEventManager.HarvestingActionStarted -= StartHarvest;
             _unitEventManager.SkillCastActionStarted -= StartSkillCast;
+            _unitEventManager.StunStarted -= StartStun;
+            _unitEventManager.StunEnded -= EndStun;
 
             foreach (var behaviour in _all)
             {

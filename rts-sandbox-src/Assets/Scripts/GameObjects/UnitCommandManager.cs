@@ -26,6 +26,13 @@ namespace Assets.Scripts.GameObjects
         private UnitSkills _unitSkills;
         private UnitBehaviour.UnitBehaviourManager _behaviourManager;
 
+        /// <summary>
+        /// Stunned units still take orders — the order lands in the queue and runs
+        /// the moment the stun is over (M-019, decision of the user). So the queue
+        /// is not closed here, only held: nothing is started while this is up.
+        /// </summary>
+        private bool _isStunned;
+
         void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();
@@ -52,6 +59,9 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.MineActionEnded += RunNextCommand;
             _unitEventManager.HarvestingActionEnded += RunNextCommand;
             _unitEventManager.SkillCastActionEnded += RunNextCommand;
+
+            _unitEventManager.StunStarted += OnStunStarted;
+            _unitEventManager.StunEnded += OnStunEnded;
         }
 
         private void Start()
@@ -127,6 +137,15 @@ namespace Assets.Scripts.GameObjects
 
         protected void RunNextCommand(EventArgs args)
         {
+            // Held, not closed: whatever is in the queue stays there and the unit
+            // picks it up when the stun is over. Every ActionStarted of the game
+            // goes out from this class, so this one gate is enough to keep a
+            // stunned unit from doing anything.
+            if (_isStunned)
+            {
+                return;
+            }
+
             if (CommandsQueue.Count > 0)
             {
                 CommandListInfo.RemoveAt(0);
@@ -146,6 +165,33 @@ namespace Assets.Scripts.GameObjects
             {
                 SetIdleState();
             }
+        }
+
+        private void OnStunStarted(StunStartedEventArgs args)
+        {
+            _isStunned = true;
+        }
+
+        /// <summary>
+        /// Out of the stun: the unit goes on with what it was told. The command it
+        /// was running is started over — a walk simply continues, a cast that the
+        /// stun broke is cast again from the beginning, because the order is still
+        /// the order (M-019).
+        /// </summary>
+        private void OnStunEnded(StunEndedEventArgs args)
+        {
+            _isStunned = false;
+
+            if (CurrentRunningCommand != null && CurrentRunningCommand.Check())
+            {
+                CurrentRunningCommand.Start();
+                return;
+            }
+
+            // Nothing to go back to, or it stopped making sense while the unit
+            // stood there: take the next one, or go idle.
+            CurrentRunningCommand = null;
+            RunNextCommand(new EventArgs());
         }
 
         private void SetIdleState()
@@ -465,6 +511,9 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.MineActionEnded -= RunNextCommand;
             _unitEventManager.HarvestingActionEnded -= RunNextCommand;
             _unitEventManager.SkillCastActionEnded -= RunNextCommand;
+
+            _unitEventManager.StunStarted -= OnStunStarted;
+            _unitEventManager.StunEnded -= OnStunEnded;
         }
     }
 }

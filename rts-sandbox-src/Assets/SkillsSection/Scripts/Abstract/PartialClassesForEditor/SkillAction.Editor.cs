@@ -12,6 +12,15 @@ public abstract partial class SkillAction : ScriptableObject
         Impacts.Add(impact);
     }
 
+    [ContextMenu("Add Stun Impact")]
+    void AddStun()
+    {
+        Impacts ??= new();
+        var impact = new StunImpact { duration = default };
+        impact.Initialize();
+        Impacts.Add(impact);
+    }
+
     [ContextMenu("Add Poison Damage Impact")]
     void AddPoisonDamage()
     {

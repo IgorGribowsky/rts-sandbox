@@ -403,7 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Behaviours: 000000000100000002000000030000000400000006000000
+  Behaviours: 0000000001000000020000000300000004000000060000000d000000
   CurrentBehaviourInfo: 
 --- !u!114 &6873323525821280569
 MonoBehaviour:

@@ -185,6 +185,26 @@ public class UnitEventManager : MonoBehaviour
         HoldActionStarted?.Invoke(new HoldActionStartedEventArgs());
     }
 
+    public event StunStartedHandler StunStarted;
+
+    /// <summary>
+    /// A stun landed on this unit. Raised by StunEffect and by nothing else:
+    /// the effect owns the duration, so it is the one that knows when the unit
+    /// is out of the fight and when it is back (M-019).
+    /// </summary>
+    public void OnStunStarted()
+    {
+        StunStarted?.Invoke(new StunStartedEventArgs());
+    }
+
+    public event StunEndedHandler StunEnded;
+
+    /// <summary>The last stun on the unit is gone: expired, removed, whatever.</summary>
+    public void OnStunEnded()
+    {
+        StunEnded?.Invoke(new StunEndedEventArgs());
+    }
+
     public event CalledToAttackHandler CalledToAttack;
     public void OnCalledToAttack(GameObject caller, GameObject target)
     {

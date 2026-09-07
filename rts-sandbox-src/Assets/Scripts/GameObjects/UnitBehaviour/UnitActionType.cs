@@ -16,5 +16,6 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         Mine,
         Harvest,
         SkillCast,
+        Stun,
     }
 }

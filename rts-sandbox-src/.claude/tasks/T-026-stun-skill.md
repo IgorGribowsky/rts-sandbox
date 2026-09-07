@@ -1,7 +1,7 @@
 ---
 id: T-026
 title: Активная способность с оглушением и эффект оглушения
-status: todo
+status: review
 milestone: v0.1.1
 parent:
 origin: user
@@ -9,9 +9,9 @@ needs-design: false
 blocked-by: []
 mechanics: [M-019, M-015, M-004, M-005]
 handoff: []
-checkpoint:
+checkpoint: 7655438
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-09-07
 ---
 
 # T-026 · Активная способность с оглушением и эффект оглушения
@@ -56,7 +56,116 @@ T-001 (эффекты с длительностью).
 
 ## План
 
+Разложено на четыре слоя, снизу вверх. Ничего из этого не трогает уже
+работающие поведения — только добавляет.
+
+1. **Эффект.** `StunEffect : UnitEffect` в
+   `Assets/Scripts/GameObjects/Effects/`. `OnApplied` поднимает на цели
+   событие `StunStarted`, `OnRemoved` — `StunEnded`, но только если на юните
+   не висит ДРУГОЕ оглушение с другим ключом (два стана от разных
+   способностей параллельны, снятие одного не должно снимать оглушение).
+   Для этого `UnitEffects` получает `HasAny<T>()`.
+2. **События.** `StunStartedHandler` + `StunEndedHandler` с аргументами в
+   `Infrastructure/Events/`, поля и `On...` в `UnitEventManager` — по образцу
+   `HoldActionStarted`.
+3. **Поведение.** `UnitActionType.Stun`, `UnitBehaviourType.Stunned = 13`,
+   класс `StunnedBehaviour` и строка в `UnitBehaviourFactory`.
+   `StartAction` останавливает движение, `UpdateAction` пустой.
+   `UnitBehaviourManager` подписывается на `StunStarted` и активирует его
+   обычным `Activate` — гашение текущего поведения и сбитый каст получаются
+   даром: `Deactivate` каста сбрасывает таймер в `PreUpdate`.
+   На `StunEnded` менеджер снимает поведение, если текущее — оно.
+   Оглушение пришло, а поведения на юните нет — `Debug.LogError`: иначе
+   очередь встанет молча.
+4. **Очередь приказов.** `UnitCommandManager` подписывается на ту же пару
+   событий и держит флаг `_isStunned`. Пока он поднят, `RunNextCommand`
+   выходит сразу: приказ доходит до очереди штатным `StartCommand`, но
+   `ActionStarted` не летит, значит и поведение не стартует — это и есть
+   главная тонкость из описания задачи. На `StunEnded` очередь продолжает:
+   текущая команда перезапускается, а если её нет — берётся следующая.
+   Все `ActionStarted` поднимаются только отсюда, проверено грепом, так что
+   одной этой заслонки достаточно.
+5. **Импакт и ассеты.** `SkillImpactType.Stun`, `StunImpact` (одно поле
+   `duration`), `StunExecutor`, строка в фабрике, пункт контекстного меню
+   в `SkillAction.Editor.cs` рядом с ядом.
+   Новая способность на клавише `G`: ассеты `Actions/ThrowStunBolt.asset`
+   (`ThrowProjectileToTargetAction`, импакты — мгновенный урон + оглушение)
+   и `Skills/StunBolt.asset` (`ActiveSkill`), слот в `UnitSkills` Caster Unit.
+   Снаряд — существующий `MagicBoltProjectile`, отдельной модели нет:
+   заглушка, видимая как заглушка.
+6. **Префабы.** `Stunned` в список `Behaviours` у всех, у кого есть
+   `UnitBehaviourManager`: Warrior, Range Unit, Giant Unit, Caster Unit,
+   Builder, Tower. Через MCP, не текстом: список сериализован блобом.
+7. Проверка: чистая консоль, фактические значения из префабов и ассетов
+   с диска, `Behaviours` содержит новый тип.
+
+### Числа-заглушки
+В доке их нет, ставлю и называю: кулдаун 8 с, каст 0.3 с, дальность 6,
+мана 50, урон 40 Magic, оглушение 2 с, скорость снаряда как у Magic Bolt.
+
+### Что меняю
+- новые: `Effects/StunEffect.cs`, `Events/StunStartedHandler.cs`,
+  `Events/StunEndedHandler.cs`, `UnitBehaviour/StunnedBehaviour.cs`,
+  `SkillsSection/Scripts/Impacts/StunImpact.cs`,
+  `SkillsSection/Scripts/Execution/StunExecutor.cs`,
+  `Actions/ThrowStunBolt.asset`, `Skills/StunBolt.asset`;
+- правлю: `UnitEffects.cs`, `UnitEventManager.cs`, `UnitActionType.cs`,
+  `UnitBehaviourType.cs`, `UnitBehaviourFactory.cs`, `UnitBehaviourManager.cs`,
+  `UnitCommandManager.cs`, `SkillImpactType.cs`,
+  `SkillImpactExecutorFactory.cs`, `SkillAction.Editor.cs`;
+- префабы: Warrior, Range Unit, Giant Unit, Caster Unit, Builder, Tower.
+
+Сцены не трогаю.
+
 ## Ход работы
+
+- 2026-09-07 чекпоинт `7655438`, дерево было чистым.
+- Сначала прогнал грепом, откуда вообще поднимаются `ActionStarted`:
+  ВСЕ до единого из `UnitCommandManager`. Это и решило устройство заслонки —
+  её достаточно поставить в одном месте, `RunNextCommand`.
+- `StunEffect` в `Effects/`: `OnApplied` поднимает `StunStarted`,
+  `OnRemoved` — `StunEnded`. Перед тем как разбудить юнита, спрашивает
+  `UnitEffects.HasAny<StunEffect>()`: два стана от разных способностей
+  висят параллельно, снятие одного не должно снимать оглушение.
+- `UnitEffects.OnDestroy` переписан так, чтобы эффект убирался из списка ДО
+  вызова `OnRemoved`. Иначе `HasAny` при смерти юнита видел бы сам
+  снимаемый эффект и врал. В `Update` и `Remove` этот порядок уже был.
+- События `StunStarted`/`StunEnded` по образцу `HoldActionStarted`,
+  поля в `UnitEventManager`.
+- `StunnedBehaviour`: `Trigger = UnitActionType.Stun`, `StartAction`
+  останавливает движение и гасит свой end-event, `UpdateAction` пустой.
+  `UnitBehaviourType.Stunned = 13`, строка в фабрике.
+- `UnitBehaviourManager` активирует его обычным `Activate`, поэтому сбитый
+  каст и остановка получились даром: `Deactivate` каста сбрасывает
+  `_castIsProcessing` и таймер в `PreUpdate`. Если поведения в списке нет —
+  `Debug.LogError`, иначе очередь встала бы молча.
+- Заслонка: флаг `_isStunned` в `UnitCommandManager`, ранний выход из
+  `RunNextCommand`. Приказ доходит до очереди штатным `StartCommand`,
+  просто `ActionStarted` не летит. На `StunEnded` текущая команда
+  перезапускается, а если её нет или `Check()` не прошёл — берётся
+  следующая или юнит уходит в idle.
+- `StunImpact` + `StunExecutor` + `SkillImpactType.Stun` + строка в фабрике
+  + пункт контекстного меню `Add Stun Impact` рядом с ядом.
+- Ассеты: `Actions/ThrowStunBolt.asset` (`ThrowProjectileToTargetAction`,
+  AimHint TargetUnit, скорость 16, снаряд `MagicBoltProjectile`,
+  импакты 40 Magic + оглушение 2 с) и `Skills/StunBolt.asset`
+  (кулдаун 8, каст 0.3, дальность 6, мана 50). Прочитано с диска.
+  Импакты добавлены вызовом тех же методов, что и пункты контекстного меню
+  в инспекторе, числа — через `manage_scriptable_object`.
+- Слот в `UnitSkills` Caster Unit: StunBolt на `G` (103), седьмым.
+  Прочитано с диска.
+- `Stunned` добавлен в `Behaviours`: Warrior, Range Unit, Giant Unit
+  (0,1,2,3,4,6,13 / 0,1,2,3,5,6,13), Caster Unit (…,11,12,13),
+  Builder (0,1,2,3,4,8,9,10,13). Прочитано с диска после правки.
+- Башне `Stunned` СНАЧАЛА добавил, потом убрал: `SkillTargetFilter`
+  отсекает здания у любой способности, значит оглушить башню нечем и
+  строчка была бы мёртвой настройкой, обещающей то, чего нет. Понадобится —
+  это правка фильтра, а не списка поведений.
+- Компиляция прошла, консоль пустая (0 ошибок, 0 предупреждений).
+- Доки: M-019 дополнена разделом про устройство и настроенные числа,
+  M-005 — строкой поведения, набором на префабах и переписанным
+  «открытым местом», M-015 — строкой `G` в таблице; «запланированные
+  способности» опустели, оглушающий снаряд был последним.
 
 ## Решения
 
@@ -67,3 +176,7 @@ T-001 (эффекты с длительностью).
   принимаются и применяются после выхода из него.
 
 ## Итог
+
+Оглушение работает как эффект, включающий поведение. Приказы во время
+оглушения принимаются в очередь и исполняются после выхода из него.
+Ждёт плейтеста.

@@ -25,6 +25,7 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 case UnitBehaviourType.Harvesting: return new HarvestingBehaviour();
                 case UnitBehaviourType.SkillCastingToPoint: return new SkillCastingToPointBehaviour();
                 case UnitBehaviourType.SkillCastingToTarget: return new SkillCastingToTargetBehaviour();
+                case UnitBehaviourType.Stunned: return new StunnedBehaviour();
                 default: return null;
             }
         }

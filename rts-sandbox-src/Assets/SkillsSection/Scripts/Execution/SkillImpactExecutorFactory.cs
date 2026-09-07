@@ -15,6 +15,8 @@ public static class SkillImpactExecutorFactory
                 return new InstantDamageExecutor((InstantDamageImpact)impact);
             case SkillImpactType.PoisonDamage:
                 return new PoisonDamageExecutor((PoisonDamageImpact)impact);
+            case SkillImpactType.Stun:
+                return new StunExecutor((StunImpact)impact);
             default:
                 Debug.LogError("No executor for impact " + impact.Type + ".");
                 return null;

@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e29107c6caf6c648bf85771e7e78d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Behaviours: 0000000001000000020000000300000005000000060000000b0000000c000000
+  Behaviours: 0000000001000000020000000300000005000000060000000b0000000c0000000d000000
   CurrentBehaviourInfo: 
 --- !u!114 &6873323525821280569
 MonoBehaviour:
@@ -370,6 +370,8 @@ MonoBehaviour:
     Keycode: 116
   - Skill: {fileID: 11400000, guid: cb00a513062d3b84e8f4001cb3ef5bdc, type: 2}
     Keycode: 102
+  - Skill: {fileID: 11400000, guid: 96f90a8ded8c0ca4194f0f298d3a7fd7, type: 2}
+    Keycode: 103
 --- !u!114 &435798081054461035
 MonoBehaviour:
   m_ObjectHideFlags: 0
