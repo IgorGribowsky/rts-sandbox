@@ -42,6 +42,16 @@ public class SkillController : MonoBehaviour
             return;
 
         var skillCastArgs = unitSkillsScript.CreateCommandArgs(unitSkill, addToCommandsQueue);
+
+        // The aiming is over either way, so the skill stops being the prepared one.
+        _preparedSkill = null;
+
+        // Nothing to cast at — the cast is cancelled and no order is given.
+        if (skillCastArgs == null)
+        {
+            return;
+        }
+
         unitToCast.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
     }
 

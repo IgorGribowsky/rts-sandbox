@@ -53,6 +53,10 @@ namespace Assets.SkillsSection.Scripts
             }
         }
 
+        /// <summary>
+        /// Arguments of the cast order for this skill, or null when there is
+        /// nothing to cast at — a cast aimed at a unit released over the wrong one.
+        /// </summary>
         public SkillCastCommandReceivedEventArgs CreateCommandArgs(UnitSkill unitSkill, bool addToCommandsQueue = false)
         {
             if (!_runtimeSkills.Contains(unitSkill))
@@ -63,6 +67,22 @@ namespace Assets.SkillsSection.Scripts
             SkillCastCommandReceivedEventArgs args;
 
             var activeSkill = unitSkill.Skill as ActiveSkill;
+
+            if (activeSkill.Action is CastToTargetAction targetAction)
+            {
+                var target = _cursorMovedEventArgs?.UnitUnderCursor;
+
+                // The key was released not over a suitable target: the cast is
+                // cancelled outright — no order, no mana, no cooldown (decision
+                // of the user, answer in chat 2026-09-07). null means "there is
+                // nothing to give an order about".
+                if (target == null || !SkillTargetFilter.CanHit(target, gameObject, targetAction.TargetType))
+                {
+                    return null;
+                }
+
+                return new SkillCastToTargetCommandReceivedEventArgs(unitSkill, target, addToCommandsQueue);
+            }
 
             if (activeSkill.Action is CastToPointAction)
             {

@@ -18,5 +18,6 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
         Mining = 9,
         Harvesting = 10,
         SkillCastingToPoint = 11,
+        SkillCastingToTarget = 12,
     }
 }

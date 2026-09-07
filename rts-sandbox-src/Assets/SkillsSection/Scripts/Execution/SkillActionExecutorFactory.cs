@@ -18,6 +18,8 @@ public static class SkillActionExecutorFactory
                 return new ThrowWaveProjectileExecutor((ThrowWaveProjectileAction)action);
             case SkillActionType.InstantMovementToPoint:
                 return new InstantMovementToPointExecutor((InstantMovementToPointAction)action);
+            case SkillActionType.ApplyImpactsToTarget:
+                return new ApplyImpactsToTargetExecutor((ApplyImpactsToTargetAction)action);
             default:
                 Debug.LogError("No executor for skill action " + action.Type + ".");
                 return null;

@@ -8,4 +8,5 @@ public enum SkillActionType
     ThrowWaveProjectile,
     InstantMovementToPoint,
     ApplyImpactsOnDamageDealt,
+    ApplyImpactsToTarget,
 }

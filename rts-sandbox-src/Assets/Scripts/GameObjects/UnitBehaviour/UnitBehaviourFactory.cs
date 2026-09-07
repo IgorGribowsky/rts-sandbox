@@ -24,6 +24,7 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
                 case UnitBehaviourType.Mining: return new MiningBehaviour();
                 case UnitBehaviourType.Harvesting: return new HarvestingBehaviour();
                 case UnitBehaviourType.SkillCastingToPoint: return new SkillCastingToPointBehaviour();
+                case UnitBehaviourType.SkillCastingToTarget: return new SkillCastingToTargetBehaviour();
                 default: return null;
             }
         }
