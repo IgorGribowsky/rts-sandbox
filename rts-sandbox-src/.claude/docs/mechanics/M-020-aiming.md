@@ -1,7 +1,7 @@
 ---
 id: M-020
 title: Прицеливание и подсказки
-status: accepted
+status: implemented
 source: concept/processed/начало работы и основные идеи по проекту.md
 tasks: [T-024]
 ---

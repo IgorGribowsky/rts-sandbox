@@ -17,7 +17,7 @@ MonoBehaviour:
   AimHint: 4
   AreaRadius: 4
   Delay: 0.5
-  ZoneDuration: 2.5
+  ZoneDuration: 3
   ZoneDamageRate: 0.4
   ZoneImpacts:
   - rid: 5405108387445473344
