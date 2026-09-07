@@ -284,7 +284,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (currentKeyPressed != KeyCode.None)
         {
-            if (Input.GetKeyUp(currentKeyPressed))
+            if (!Input.GetKey(currentKeyPressed))
             {
                 _skillController.CommandSkillCast(currentKeyPressed, isShiftButtonPressed);
                 currentKeyPressed = KeyCode.None;
@@ -293,7 +293,7 @@ public class WindowsInputController : MonoBehaviour
             return;
         }
 
-        HandleHeldSkillKey(isShiftButtonPressed);
+        HandleHeldSkillKey();
 
         if (currentKeyPressed == KeyCode.None && heldSkillKey == KeyCode.None
             && GetAllowedKeyDown(out var keyCode))
@@ -343,12 +343,12 @@ public class WindowsInputController : MonoBehaviour
     }
 
     /// <summary>
-    /// A skill key held down through its own cooldown counts as a press: the
-    /// moment the skill becomes castable the cast goes out by itself, without
-    /// releasing and pressing again (T-023). The aim is whatever is under the
-    /// cursor at that moment.
+    /// A skill key held down through its own cooldown counts as a press the
+    /// moment the skill becomes castable, so the player does not have to release
+    /// and press again (T-023). It is the START of the cast: aiming begins, and
+    /// the cast itself still goes out on the key coming up.
     /// </summary>
-    private void HandleHeldSkillKey(bool isShiftButtonPressed)
+    private void HandleHeldSkillKey()
     {
         if (heldSkillKey == KeyCode.None)
         {
@@ -367,12 +367,10 @@ public class WindowsInputController : MonoBehaviour
             return;
         }
 
-        // Fires at once instead of waiting for the key to come up: that is the
-        // whole point of the feature. If the aim turns out to be no good the
-        // cast is cancelled inside, and the key stops being held. Otherwise it
-        // would sit there as a loaded gun, firing the moment the cursor happens
-        // to cross an enemy.
-        _skillController.CommandSkillCast(heldSkillKey, isShiftButtonPressed);
+        // Counts as the press and nothing more: aiming starts now, and the cast
+        // goes out when the key comes up, like any other cast. Firing here would
+        // take the aiming away from the player (answer in chat 2026-09-07).
+        currentKeyPressed = heldSkillKey;
         heldSkillKey = KeyCode.None;
     }
 
