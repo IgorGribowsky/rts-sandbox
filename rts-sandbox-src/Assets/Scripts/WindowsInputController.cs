@@ -39,6 +39,13 @@ public class WindowsInputController : MonoBehaviour
     private List<KeyCode> usedKeys;
     private KeyCode currentKeyPressed = KeyCode.None;
 
+    /// <summary>
+    /// A skill key held down while the skill is not castable yet. Kept apart
+    /// from currentKeyPressed on purpose: that one means "aiming", this one
+    /// means "waiting for the cooldown" (T-023).
+    /// </summary>
+    private KeyCode heldSkillKey = KeyCode.None;
+
 
     KeyCode[] keypadCodes = new KeyCode[]
         {
@@ -286,17 +293,26 @@ public class WindowsInputController : MonoBehaviour
             return;
         }
 
-        if (currentKeyPressed == KeyCode.None && GetAllowedKeyDown(out var keyCode))
+        HandleHeldSkillKey(isShiftButtonPressed);
+
+        if (currentKeyPressed == KeyCode.None && heldSkillKey == KeyCode.None
+            && GetAllowedKeyDown(out var keyCode))
         {
             var isSkillExists = _skillController.PrepareSkillCast(keyCode);
             if (isSkillExists)
             {
                 currentKeyPressed = keyCode;
             }
+            else if (_skillController.HasSkillOnKey(keyCode))
+            {
+                // The skill is there but not ready: remember the key and wait.
+                heldSkillKey = keyCode;
+            }
         }
 
         if (Input.GetKeyDown(CancelKey))
         {
+            heldSkillKey = KeyCode.None;
             _unitController.OnCancelClick();
         }
 
@@ -324,6 +340,40 @@ public class WindowsInputController : MonoBehaviour
         {
             _unitController.OnHoldKeyDown(isShiftButtonPressed);
         }
+    }
+
+    /// <summary>
+    /// A skill key held down through its own cooldown counts as a press: the
+    /// moment the skill becomes castable the cast goes out by itself, without
+    /// releasing and pressing again (T-023). The aim is whatever is under the
+    /// cursor at that moment.
+    /// </summary>
+    private void HandleHeldSkillKey(bool isShiftButtonPressed)
+    {
+        if (heldSkillKey == KeyCode.None)
+        {
+            return;
+        }
+
+        if (!Input.GetKey(heldSkillKey))
+        {
+            heldSkillKey = KeyCode.None;
+            return;
+        }
+
+        if (!_skillController.PrepareSkillCast(heldSkillKey))
+        {
+            // Not castable yet. Mana can be the reason too, so keep waiting.
+            return;
+        }
+
+        // Fires at once instead of waiting for the key to come up: that is the
+        // whole point of the feature. If the aim turns out to be no good the
+        // cast is cancelled inside, and the key stops being held. Otherwise it
+        // would sit there as a loaded gun, firing the moment the cursor happens
+        // to cross an enemy.
+        _skillController.CommandSkillCast(heldSkillKey, isShiftButtonPressed);
+        heldSkillKey = KeyCode.None;
     }
 
     private bool GetAllowedKeyDown(out KeyCode keyCode)

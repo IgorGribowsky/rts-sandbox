@@ -56,6 +56,28 @@ public class SkillController : MonoBehaviour
     }
 
     /// <summary>
+    /// Is there a skill on this key at all, never mind whether it can be cast
+    /// right now? Asked by the input to tell a held skill key from a held key
+    /// that means nothing, so that a cast can fire the moment its cooldown ends
+    /// (T-023).
+    /// </summary>
+    public bool HasSkillOnKey(KeyCode keyCode)
+    {
+        var selectedUnits = _unitsController.SelectedUnits;
+
+        if (_unitsController.SelectedUnitsTeamId != _playerTeamId || !selectedUnits.Any())
+            return false;
+
+        var firstUnit = selectedUnits.First();
+        var firstValues = firstUnit.GetComponent<UnitValues>();
+
+        if (firstValues == null || !firstValues.CanCastSkills)
+            return false;
+
+        return firstUnit.GetComponent<UnitSkills>()?.GetSkillByKeycode(keyCode) != null;
+    }
+
+    /// <summary>
     /// Of the selected casters of the same kind, the first one that can cast
     /// this key right now.
     /// </summary>
