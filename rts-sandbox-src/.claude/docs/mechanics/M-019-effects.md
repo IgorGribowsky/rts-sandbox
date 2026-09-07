@@ -1,7 +1,7 @@
 ---
 id: M-019
 title: Эффекты на юните
-status: accepted
+status: implemented
 source: concept/processed/начало работы и основные идеи по проекту.md
 tasks: [T-001, T-022, T-025, T-026]
 ---
