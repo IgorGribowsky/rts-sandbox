@@ -33,6 +33,14 @@ public class ManaPointsBar : BarBase
 
     private void OnDestroy()
     {
+        // Start may never have run: an object destroyed in the frame it
+        // appeared, or one never activated, reaches OnDestroy with this
+        // still null.
+        if (_unitEventManager == null)
+        {
+            return;
+        }
+
         _unitEventManager.ManaPointsChanged -= UpdateScale;
     }
 }
