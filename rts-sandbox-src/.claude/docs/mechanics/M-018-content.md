@@ -15,13 +15,28 @@ tasks: []
 
 ## Как работает
 Все параметры — в поле `Stats` ассета типа (`UnitStats`). Один набор на
-всё: юниты, здания, ресурсы. Флаги `IsBuilding`, `IsBuilder`, `IsMiner`,
-`IsHarvestor`, `CanProduceUnits`, `CanCastSkills` включают роли; здания
-получают `BuildingValues`, ресурсы — `ResourceValues`. Кто из этого
-собирает готового юнита — M-021.
+всё: юниты, здания, ресурсы. Роли включаются флагами: `IsBuilding` и
+`CanCastSkills` в самом `Stats`, `CanProduceUnits` в блоке `Building`,
+`IsBuilder` в `Builder`, `IsMiner` и `IsHarvestor` в `Harvesting`.
+Ресурсы получают `ResourceValues`. Кто из этого собирает готового
+юнита — M-021.
 
 `UnitValues` на объекте остался, но данных своих больше не держит: в нём
 живёт копия `Stats`, снятая с ассета при сборке, и ссылка на сам тип.
+
+Роли, которые есть не у всех, вынесены из общего набора (T-015) и лежат
+рядом, каждая в своём компоненте и своём блоке ассета:
+
+| Блок в ассете | Компонент | Что там | У кого есть |
+|---|---|---|---|
+| `Stats` | `UnitValues` | HP, скорость, атака, цена | у всех |
+| `Building` | `BuildingValues` | сетка, препятствие, что производит | здания и ресурсы |
+| `Builder` | `BuilderValues` | что умеет строить | Builder |
+| `Harvesting` | `HarvestingValues` | добыча и рубка | Builder |
+| `Mana` | `ManaValues` | мана и её реген | Caster Unit |
+
+У стены больше нет ни `HarvestingRate`, ни `MaximumMana`, у дерева —
+`AttackRate`.
 
 Юниты:
 

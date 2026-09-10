@@ -70,7 +70,8 @@ configure)`:
   решать пользователю.
 - `Tree` в старом префабе имел на себе `SelectionBoxController` — скрипт
   рамки выделения игрока, попавший туда случайно. В тип он не перенесён.
-- `UnitStats` пока один на всё, как и прежний `UnitValues`: у стены есть
-  `HarvestingRate`, у дерева — `AttackRate`. Разделение — T-015.
+- Роли разделены по компонентам в T-015: `BuildingValues`,
+  `BuilderValues`, `HarvestingValues`, `ManaValues`. Фабрика вешает их по
+  тем же данным типа.
 - Тип не знает своего размера: производство считает его по мешу тела
   (`UnitFactory.GetBodyExtents`).

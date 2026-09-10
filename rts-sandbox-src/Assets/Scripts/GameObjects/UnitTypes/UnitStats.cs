@@ -4,11 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Every number and flag a unit or a building is made of. Lives in two places
-/// and only in two: inside a <see cref="UnitTypeData"/> asset, where it is the
-/// template of a type, and inside a <see cref="UnitValues"/> component, where
-/// it is the live state of one unit. The component gets its own copy through
-/// <see cref="Clone"/> — sharing it would make every warrior lose HP together.
+/// What every unit and building has: how much it can take, how fast it moves,
+/// how hard it hits, what it costs. Roles that only some objects play live in
+/// their own stats next to this one — see <see cref="BuildingStats"/>,
+/// <see cref="BuilderStats"/>, <see cref="HarvestingStats"/> and
+/// <see cref="ManaStats"/>.
+///
+/// Lives in two places and only in two: inside a <see cref="UnitTypeData"/>
+/// asset, where it is the template of a type, and inside a
+/// <see cref="UnitValues"/> component, where it is the live state of one unit.
+/// The component gets its own copy through <see cref="Clone"/> — sharing it
+/// would make every warrior lose HP together.
 /// </summary>
 [Serializable]
 public class UnitStats
@@ -25,6 +31,8 @@ public class UnitStats
     [Header("Movement and production")]
     public float MovementSpeed = 5f;
     public int Rang = 100;
+
+    [Tooltip("How long this one takes to be produced or built.")]
     public float ProducingTime = 1;
 
     [Header("Attack")]
@@ -49,26 +57,7 @@ public class UnitStats
 
     [Header("Roles")]
     public bool IsBuilding = false;
-    public bool CanProduceUnits = false;
-    public bool IsBuilder = false;
-    public bool IsMiner = false;
-    public bool IsHarvestor = false;
     public bool CanCastSkills = false;
-
-    [Header("Production")]
-    public List<UnitTypeData> UnitsToProduce = new List<UnitTypeData>();
-    public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
-
-    [Header("Harvesting")]
-    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
-    public float HarvestingRate = 1f;
-    public int HarvestingValuePerTick = 1;
-    public int HarvestingMaxValue = 10;
-
-    [Header("Mana")]
-    public float CurrentMana = 0;
-    public float MaximumMana = 0;
-    public float BaseManaRegen = 1;
 
     /// <summary>
     /// A copy for one unit to live in. Lists get their own containers: two units
@@ -80,10 +69,90 @@ public class UnitStats
         var copy = (UnitStats)MemberwiseClone();
         copy.ResourceCost = new List<ResourceAmount>(ResourceCost);
         copy.SupplyResourceProduces = new List<ResourceAmount>(SupplyResourceProduces);
+        return copy;
+    }
+}
+
+/// <summary>
+/// What a building is: how much room it takes and what it can produce. Lives on
+/// <see cref="BuildingValues"/>. A warrior has none of this, which is why it
+/// left <see cref="UnitStats"/> (T-015).
+/// </summary>
+[Serializable]
+public class BuildingStats
+{
+    [Tooltip("Cells the building takes on the build grid.")]
+    public int GridSize = 4;
+
+    [Tooltip("Size of the NavMesh obstacle under the building.")]
+    public int ObstacleSize = 4;
+
+    [Tooltip("A resource on the map rather than something the player put down.")]
+    public bool IsResource = false;
+
+    public bool CanProduceUnits = false;
+
+    public List<UnitTypeData> UnitsToProduce = new List<UnitTypeData>();
+
+    public BuildingStats Clone()
+    {
+        var copy = (BuildingStats)MemberwiseClone();
         copy.UnitsToProduce = new List<UnitTypeData>(UnitsToProduce);
+        return copy;
+    }
+}
+
+/// <summary>What a builder can put down. Lives on <see cref="BuilderValues"/>.</summary>
+[Serializable]
+public class BuilderStats
+{
+    public bool IsBuilder = false;
+
+    public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
+
+    public BuilderStats Clone()
+    {
+        var copy = (BuilderStats)MemberwiseClone();
         copy.BuildingsToProduce = new List<BuildingToProduce>(BuildingsToProduce);
+        return copy;
+    }
+}
+
+/// <summary>
+/// Mining and woodcutting. Lives on <see cref="HarvestingValues"/>: a wall has
+/// no use for a harvesting rate.
+/// </summary>
+[Serializable]
+public class HarvestingStats
+{
+    public bool IsMiner = false;
+    public bool IsHarvestor = false;
+
+    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+
+    public float HarvestingRate = 1f;
+    public int HarvestingValuePerTick = 1;
+    public int HarvestingMaxValue = 10;
+
+    public HarvestingStats Clone()
+    {
+        var copy = (HarvestingStats)MemberwiseClone();
         copy.ResourcesCanBeHarvested = new List<ResourceName>(ResourcesCanBeHarvested);
         return copy;
+    }
+}
+
+/// <summary>The mana pool. Lives on <see cref="ManaValues"/>, next to UnitManaPoints.</summary>
+[Serializable]
+public class ManaStats
+{
+    public float CurrentMana = 0;
+    public float MaximumMana = 0;
+    public float BaseManaRegen = 1;
+
+    public ManaStats Clone()
+    {
+        return (ManaStats)MemberwiseClone();
     }
 }
 

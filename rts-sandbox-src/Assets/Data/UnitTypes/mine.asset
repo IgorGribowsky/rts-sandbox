@@ -51,22 +51,27 @@ MonoBehaviour:
     ResourceCost: []
     SupplyResourceProduces: []
     IsBuilding: 0
+    CanCastSkills: 0
+  Building:
+    GridSize: 8
+    ObstacleSize: 4
+    IsResource: 1
     CanProduceUnits: 0
+    UnitsToProduce: []
+  Builder:
     IsBuilder: 0
+    BuildingsToProduce: []
+  Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    CanCastSkills: 0
-    UnitsToProduce: []
-    BuildingsToProduce: []
     ResourcesCanBeHarvested: []
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
+  Mana:
     CurrentMana: 0
     MaximumMana: 0
     BaseManaRegen: 1
-  GridSize: 8
-  ObstacleSize: 4
   IsMine: 1
   IsHeldMine: 0
   IsHarvestedResource: 0

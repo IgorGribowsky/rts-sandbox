@@ -2,7 +2,7 @@ using Assets.SkillsSection.Scripts.Events;
 
 public class ManaPointsBar : BarBase
 {
-    private UnitValues _unitValues;
+    private ManaValues _manaValues;
     private UnitEventManager _unitEventManager;
 
     // Start is called before the first frame update
@@ -11,21 +11,21 @@ public class ManaPointsBar : BarBase
         base.Start();
 
         _unitEventManager = Unit.GetComponent<UnitEventManager>();
-        _unitValues = Unit.GetComponent<UnitValues>();
+        _manaValues = Unit.GetComponent<ManaValues>();
 
-        UpdateScale(new ManaPointsChangedEventArgs(_unitValues.CurrentMana));
+        UpdateScale(new ManaPointsChangedEventArgs(_manaValues.CurrentMana));
         _unitEventManager.ManaPointsChanged += UpdateScale;
     }
 
     protected void UpdateScale(ManaPointsChangedEventArgs args)
     {
-        if (_unitValues.MaximumMana == 0)
+        if (_manaValues.MaximumMana == 0)
         {
             UpdateBar(0);
         }
         else
         {
-            var percent = args.CurrentMana / _unitValues.MaximumMana;
+            var percent = args.CurrentMana / _manaValues.MaximumMana;
 
             UpdateBar(percent);
         }

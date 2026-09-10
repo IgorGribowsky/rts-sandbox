@@ -36,7 +36,7 @@ public class BuildingBehaviour : UnitBehaviourBase
         actionArgs = args as BuildActionStartedEventArgs;
 
         var buildingType = actionArgs.Building;
-        _buildingSize = buildingType.ObstacleSize;
+        _buildingSize = buildingType.Building.ObstacleSize;
 
         if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject) && !buildingType.IsHeldMine)
         {

@@ -8,6 +8,11 @@ using UnityEngine;
 /// when <see cref="UnitFactory"/> built the unit, and the properties below are
 /// there so the rest of the code keeps reading <c>unitValues.MaximumHp</c> as
 /// before. Change a number for the whole type in the asset, not here.
+///
+/// What only some objects need is not here either (T-015): production sits on
+/// <see cref="BuildingValues"/>, the build menu on <see cref="BuilderValues"/>,
+/// mining and cutting on <see cref="HarvestingValues"/>, mana on
+/// <see cref="ManaValues"/>.
 /// </summary>
 public class UnitValues : MonoBehaviour
 {
@@ -62,31 +67,18 @@ public class UnitValues : MonoBehaviour
 
     public bool IsBuilding { get => Stats.IsBuilding; set => Stats.IsBuilding = value; }
 
-    public bool CanProduceUnits { get => Stats.CanProduceUnits; set => Stats.CanProduceUnits = value; }
 
-    public List<UnitTypeData> UnitsToProduce { get => Stats.UnitsToProduce; set => Stats.UnitsToProduce = value; }
 
-    public bool IsBuilder { get => Stats.IsBuilder; set => Stats.IsBuilder = value; }
 
-    public List<BuildingToProduce> BuildingsToProduce { get => Stats.BuildingsToProduce; set => Stats.BuildingsToProduce = value; }
 
-    public bool IsMiner { get => Stats.IsMiner; set => Stats.IsMiner = value; }
 
-    public bool IsHarvestor { get => Stats.IsHarvestor; set => Stats.IsHarvestor = value; }
 
     public bool CanCastSkills { get => Stats.CanCastSkills; set => Stats.CanCastSkills = value; }
 
-    public List<ResourceName> ResourcesCanBeHarvested { get => Stats.ResourcesCanBeHarvested; set => Stats.ResourcesCanBeHarvested = value; }
 
-    public float HarvestingRate { get => Stats.HarvestingRate; set => Stats.HarvestingRate = value; }
 
-    public int HarvestingValuePerTick { get => Stats.HarvestingValuePerTick; set => Stats.HarvestingValuePerTick = value; }
 
-    public int HarvestingMaxValue { get => Stats.HarvestingMaxValue; set => Stats.HarvestingMaxValue = value; }
 
-    public float CurrentMana { get => Stats.CurrentMana; set => Stats.CurrentMana = value; }
 
-    public float MaximumMana { get => Stats.MaximumMana; set => Stats.MaximumMana = value; }
 
-    public float BaseManaRegen { get => Stats.BaseManaRegen; set => Stats.BaseManaRegen = value; }
 }

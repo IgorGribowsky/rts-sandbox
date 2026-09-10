@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UnitManaPoints : MonoBehaviour
 {
-    private UnitValues _unitValues;
+    private ManaValues _manaValues;
     private UnitEventManager _unitEventManager;
 
     private Coroutine _manaRegenCoroutine;
@@ -28,7 +28,7 @@ public class UnitManaPoints : MonoBehaviour
 
     public void Start()
     {
-        _unitValues = GetComponent<UnitValues>();
+        _manaValues = GetComponent<ManaValues>();
         _unitEventManager = GetComponent<UnitEventManager>();
 
         _unitEventManager.ManaUsed += ManaUsedHandler;
@@ -36,9 +36,9 @@ public class UnitManaPoints : MonoBehaviour
 
     protected void ManaUsedHandler(ManaUsedEventArgs args)
     {
-        _unitValues.CurrentMana -= args.ManaUsed;
+        _manaValues.CurrentMana -= args.ManaUsed;
 
-        _unitEventManager.OnManaPointsChanged(_unitValues.CurrentMana);
+        _unitEventManager.OnManaPointsChanged(_manaValues.CurrentMana);
     }
 
     private IEnumerator ManaRegeneration()
@@ -47,12 +47,12 @@ public class UnitManaPoints : MonoBehaviour
         {
             yield return new WaitForSeconds(GameConstants.ManaRegenRate);
 
-            var manaRegenValue = _unitValues.BaseManaRegen;
-            if (_unitValues.CurrentMana < _unitValues.MaximumMana && manaRegenValue > 0)
+            var manaRegenValue = _manaValues.BaseManaRegen;
+            if (_manaValues.CurrentMana < _manaValues.MaximumMana && manaRegenValue > 0)
             {
-                _unitValues.CurrentMana = Mathf.Min(_unitValues.CurrentMana + manaRegenValue, _unitValues.MaximumMana);
+                _manaValues.CurrentMana = Mathf.Min(_manaValues.CurrentMana + manaRegenValue, _manaValues.MaximumMana);
 
-                _unitEventManager.OnManaPointsChanged(_unitValues.CurrentMana);
+                _unitEventManager.OnManaPointsChanged(_manaValues.CurrentMana);
             }
         }
     }

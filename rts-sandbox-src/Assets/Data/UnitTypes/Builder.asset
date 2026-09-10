@@ -55,12 +55,15 @@ MonoBehaviour:
       Amount: 1
     SupplyResourceProduces: []
     IsBuilding: 0
-    CanProduceUnits: 0
-    IsBuilder: 1
-    IsMiner: 1
-    IsHarvestor: 1
     CanCastSkills: 0
+  Building:
+    GridSize: 4
+    ObstacleSize: 4
+    IsResource: 0
+    CanProduceUnits: 0
     UnitsToProduce: []
+  Builder:
+    IsBuilder: 1
     BuildingsToProduce:
     - KeyCode: 98
       Building: {fileID: 11400000, guid: 9658d7b7ab794f49b48d4cb551b2d10e, type: 2}
@@ -74,15 +77,17 @@ MonoBehaviour:
       Building: {fileID: 11400000, guid: 7cb6f172e72c68ef439d3107ce48ce69, type: 2}
     - KeyCode: 102
       Building: {fileID: 11400000, guid: 1e9c93121a8f0f30be65d8cf437375cf, type: 2}
+  Harvesting:
+    IsMiner: 1
+    IsHarvestor: 1
     ResourcesCanBeHarvested: 02000000
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
+  Mana:
     CurrentMana: 0
     MaximumMana: 0
     BaseManaRegen: 1
-  GridSize: 4
-  ObstacleSize: 4
   IsMine: 0
   IsHeldMine: 0
   IsHarvestedResource: 0

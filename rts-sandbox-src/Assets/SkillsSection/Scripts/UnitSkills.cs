@@ -16,7 +16,7 @@ namespace Assets.SkillsSection.Scripts
 
         private PlayerEventController _playerEventController;
 
-        private UnitValues _unitValues;
+        private ManaValues _manaValues;
 
         private UnitEventManager _unitEventManager;
 
@@ -36,7 +36,7 @@ namespace Assets.SkillsSection.Scripts
         void Start()
         {
             _playerEventController = GameServices.PlayerEventController;
-            _unitValues = GetComponent<UnitValues>();
+            _manaValues = GetComponent<ManaValues>();
             _unitEventManager = GetComponent<UnitEventManager>();
             _playerEventController.CursorMoved += CursorMovedHandler;
 
@@ -111,7 +111,7 @@ namespace Assets.SkillsSection.Scripts
             if (!_runtimeSkills.Contains(unitSkill)) return false;
             if (unitSkill.CurrentCooldown > 0) return false;
             if (unitSkill.Skill is not ActiveSkill) return false;
-            if (_unitValues.CurrentMana < (unitSkill.Skill as ActiveSkill).ManaCost) return false;
+            if (_manaValues == null || _manaValues.CurrentMana < (unitSkill.Skill as ActiveSkill).ManaCost) return false;
 
             return true;
         }

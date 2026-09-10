@@ -49,7 +49,8 @@ public class BuildingController : MonoBehaviour
 
         if (isBuilderSelected)
         {
-            var building = builder.GetComponent<UnitValues>().BuildingsToProduce.FirstOrDefault(x => x.KeyCode == key);
+            var building = builder.GetComponent<BuilderValues>()?.BuildingsToProduce
+                .FirstOrDefault(x => x.KeyCode == key);
 
             if (building != null)
             {
@@ -92,7 +93,7 @@ public class BuildingController : MonoBehaviour
         if (building.IsHeldMine)
             return true;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(point, building.GridSize, builder))
+        if (!_buildingGridController.CheckIfCanBuildAt(point, building.Building.GridSize, builder))
         {
             Debug.Log("Can't build here!");
             return false;

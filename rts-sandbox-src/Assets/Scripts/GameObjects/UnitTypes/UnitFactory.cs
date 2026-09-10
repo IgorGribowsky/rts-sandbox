@@ -105,7 +105,7 @@ public static class UnitFactory
             unit.AddComponent<Selectable>().SelectionCirclePrefab = type.SelectionCirclePrefab;
         }
 
-        var needsBars = type.HasHealth || type.HasMana || type.Stats.CanProduceUnits;
+        var needsBars = type.HasHealth || type.HasMana || type.Building.CanProduceUnits;
         if (needsBars)
         {
             unit.AddComponent<BarsContaining>();
@@ -138,10 +138,17 @@ public static class UnitFactory
 
         if (type.IsBuildingObject || type.IsResourceObject)
         {
-            var buildingValues = unit.AddComponent<BuildingValues>();
-            buildingValues.GridSize = type.GridSize;
-            buildingValues.ObstacleSize = type.ObstacleSize;
-            buildingValues.IsResource = type.IsResourceObject;
+            unit.AddComponent<BuildingValues>().Stats = type.Building.Clone();
+        }
+
+        if (type.Builder.IsBuilder)
+        {
+            unit.AddComponent<BuilderValues>().Stats = type.Builder.Clone();
+        }
+
+        if (type.HasHarvesting)
+        {
+            unit.AddComponent<HarvestingValues>().Stats = type.Harvesting.Clone();
         }
 
         if (type.IsResourceObject)
@@ -175,7 +182,7 @@ public static class UnitFactory
             heldMine.MinersMaxCount = type.MinersMaxCount;
         }
 
-        if (type.Stats.CanProduceUnits)
+        if (type.Building.CanProduceUnits)
         {
             unit.AddComponent<UnitProducing>();
 
@@ -208,6 +215,7 @@ public static class UnitFactory
 
         if (type.HasMana)
         {
+            unit.AddComponent<ManaValues>().Stats = type.Mana.Clone();
             unit.AddComponent<UnitManaPoints>();
 
             var bar = unit.AddComponent<ManaPointsBar>();

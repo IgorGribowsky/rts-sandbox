@@ -72,12 +72,17 @@ public class UnitTypeData : ScriptableObject
     [Header("Numbers")]
     public UnitStats Stats = new UnitStats();
 
-    [Header("Building")]
-    [Tooltip("Cells the building takes on the build grid.")]
-    public int GridSize = 4;
+    [Tooltip("Footprint and unit production. Used when IsBuildingObject or IsResourceObject.")]
+    public BuildingStats Building = new BuildingStats();
 
-    [Tooltip("Size of the NavMesh obstacle under the building.")]
-    public int ObstacleSize = 4;
+    [Tooltip("What this one can put down. A component appears only when IsBuilder is on.")]
+    public BuilderStats Builder = new BuilderStats();
+
+    [Tooltip("Mining and cutting. A component appears only when IsMiner or IsHarvestor is on.")]
+    public HarvestingStats Harvesting = new HarvestingStats();
+
+    [Tooltip("Mana pool. A component appears only when HasMana is on.")]
+    public ManaStats Mana = new ManaStats();
 
     [Header("Resource")]
     public bool IsMine = false;
@@ -111,6 +116,9 @@ public class UnitTypeData : ScriptableObject
 
     [Tooltip("Mana pool and its bar. Off for a unit with skills but no mana cost.")]
     public bool HasMana = false;
+
+    /// <summary>The unit gathers, so it gets a HarvestingValues component.</summary>
+    public bool HasHarvesting => Harvesting.IsMiner || Harvesting.IsHarvestor;
 
     /// <summary>Same number as <c>UnitValues.Id</c>: what tells one type from another.</summary>
     public int Id => Stats.Id;

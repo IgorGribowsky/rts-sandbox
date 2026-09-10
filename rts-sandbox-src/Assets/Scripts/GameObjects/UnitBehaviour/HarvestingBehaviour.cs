@@ -15,7 +15,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
     private NavMeshMovement _navmeshMovement;
     private UnitEventManager _unitEventManager;
     private UnitCommandManager _unitCommandManager;
-    private UnitValues _unitValues;
+    private HarvestingValues _harvestingValues;
     private TeamMember _teamMember;
 
     private GameObject _storage = null;
@@ -39,7 +39,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         _unitEventManager = GetComponent<UnitEventManager>();
-        _unitValues = GetComponent<UnitValues>();
+        _harvestingValues = GetComponent<HarvestingValues>();
         _teamMember = GetComponent<TeamMember>();
         _unitCommandManager = GetComponent<UnitCommandManager>();
 
@@ -136,7 +136,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
     {
         if (_isHarvesting)
         {
-            if (CurrentResourceValues >= _unitValues.HarvestingMaxValue)
+            if (CurrentResourceValues >= _harvestingValues.HarvestingMaxValue)
             {
                 _isHarvesting = false;
                 _toStorage = true;
@@ -193,9 +193,9 @@ public class HarvestingBehaviour : UnitBehaviourBase
     private void HarvestResource()
     {
         harvestTimer += Time.deltaTime;
-        if (harvestTimer >= _unitValues.HarvestingRate)
+        if (harvestTimer >= _harvestingValues.HarvestingRate)
         {
-            var takenResource = _harvestedResourceScript.Take(_unitValues.HarvestingValuePerTick);
+            var takenResource = _harvestedResourceScript.Take(_harvestingValues.HarvestingValuePerTick);
             if (_resourceChanged)
             {
                 CurrentResourceValues = takenResource;

@@ -16,7 +16,7 @@ tasks: []
 Дерево — префаб `Tree` с тегом `HarvestedResource`:
 `IsHarvestedResource = 1`, `ResourceName = Wood`, `ResourcesAmount = 100`.
 
-Рабочий должен иметь `IsHarvestor` и нужный ресурс в списке
+Рабочий должен иметь `HarvestingValues.IsHarvestor` и нужный ресурс в списке
 `ResourcesCanBeHarvested` (у Builder там только Wood).
 
 Числа рабочего (Builder): `HarvestingRate` 1 с на тик,

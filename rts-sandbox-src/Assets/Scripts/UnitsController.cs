@@ -58,9 +58,11 @@ public class UnitsController : MonoBehaviour
 
         foreach (var unit in SelectedUnits)
         {
-            if (unit.GetComponent<UnitValues>().IsHarvestor
+            var harvestingValues = unit.GetComponent<HarvestingValues>();
+            if (harvestingValues != null
+                && harvestingValues.IsHarvestor
                 && resource.tag == Tag.HarvestedResource.ToString()
-                && unit.GetComponent<UnitValues>().ResourcesCanBeHarvested.Contains(resource.GetComponent<ResourceValues>().ResourceName))
+                && harvestingValues.ResourcesCanBeHarvested.Contains(resource.GetComponent<ResourceValues>().ResourceName))
             {
                 unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(resource, null, false, addToCommandsQueue);
                 continue;
@@ -82,7 +84,7 @@ public class UnitsController : MonoBehaviour
         if (CheckBuilderSelected(out var firstUnitBuilder))
         {
             var buildingType = _buildingController.Building;
-            var buildingSize = buildingType.GridSize;
+            var buildingSize = buildingType.Building.GridSize;
 
             if (buildingType.IsHeldMine && !_buildingGridController.CheckIfMineUnderCursor())
             {
@@ -159,7 +161,7 @@ public class UnitsController : MonoBehaviour
         }
 
         builder = SelectedUnits.FirstOrDefault();
-        var response = builder?.GetComponent<UnitValues>()?.IsBuilder ?? false;
+        var response = builder?.GetComponent<BuilderValues>()?.IsBuilder ?? false;
         return response;
     }
 
@@ -271,7 +273,7 @@ public class UnitsController : MonoBehaviour
                 }
 
                 if (targetTeamId == playerTeamId 
-                    && unit.GetComponent<UnitValues>().IsMiner
+                    && unit.GetComponent<HarvestingValues>()?.IsMiner == true
                     && target.GetComponent<UnitValues>().IsBuilding
                     && target.GetComponent<BuildingValues>().IsHeldMine)
                 {
@@ -282,7 +284,7 @@ public class UnitsController : MonoBehaviour
                 var harvesting = unit.GetComponent<UnitBehaviourManager>()?.Get<HarvestingBehaviour>();
 
                 if (targetTeamId == playerTeamId
-                    && unit.GetComponent<UnitValues>().IsHarvestor
+                    && unit.GetComponent<HarvestingValues>()?.IsHarvestor == true
                     && harvesting != null
                     && harvesting.CurrentResourceValues > 0
                     && harvesting.CurrentResource != null
@@ -329,13 +331,14 @@ public class UnitsController : MonoBehaviour
         }
 
         var unitValues = firstUnit.GetComponent<UnitValues>();
+        var buildingValues = firstUnit.GetComponent<BuildingValues>();
 
-        if (!unitValues.CanProduceUnits)
+        if (buildingValues == null || !buildingValues.CanProduceUnits)
         {
             return;
         }
 
-        var unitToProduce = unitValues.UnitsToProduce.ElementAtOrDefault(num);
+        var unitToProduce = buildingValues.UnitsToProduce.ElementAtOrDefault(num);
 
         if (unitToProduce == null)
         {

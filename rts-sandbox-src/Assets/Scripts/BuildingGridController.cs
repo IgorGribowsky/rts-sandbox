@@ -152,7 +152,7 @@ public class BuildingGridController : MonoBehaviour
         var buildingType = buildCommand.GetBuildingType();
         var point = buildCommand.GetPoint();
 
-        GridForBuilding gridForBuilding = GenerateGridForBuilding(null, point, buildingType.GridSize, BuildingShadowMaterial, false);
+        GridForBuilding gridForBuilding = GenerateGridForBuilding(null, point, buildingType.Building.GridSize, BuildingShadowMaterial, false);
         GridForShadow gridForShadow = ConvertBuildingGridToShadowGrid(buildCommand, gridForBuilding);
 
         _gridForShadows.Add(gridForShadow);
@@ -199,7 +199,7 @@ public class BuildingGridController : MonoBehaviour
         var buildingType = _buildingController.Building;
 
         UpdateCursorPosition();
-        GenerateGridForCursor(cursorGrid, buildingType.GridSize, buildingType.IsHeldMine);
+        GenerateGridForCursor(cursorGrid, buildingType.Building.GridSize, buildingType.IsHeldMine);
     }
 
     private void UpdateCursorPosition()
@@ -213,7 +213,7 @@ public class BuildingGridController : MonoBehaviour
         }
         else
         {
-            var gridSize = buildingType.GridSize;
+            var gridSize = buildingType.Building.GridSize;
             cursorGrid.transform.position = _mousePosition.GetGridPoint(gridSize);
         }
 

@@ -15,7 +15,7 @@ public class UnitProducing : MonoBehaviour
 
     private TeamMember _teamMemeber;
     private UnitEventManager _unitEventManager;
-    private UnitValues _unitValues;
+    private BuildingValues _buildingValues;
     private PlayerResources _playerResources;
     private PlayerEventController _playerEventController;
 
@@ -31,7 +31,7 @@ public class UnitProducing : MonoBehaviour
     {
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMemeber = GetComponent<TeamMember>();
-        _unitValues = GetComponent<UnitValues>();
+        _buildingValues = GetComponent<BuildingValues>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
@@ -43,7 +43,7 @@ public class UnitProducing : MonoBehaviour
 
     public void ProduceCommandHandler(ProduceCommandReceivedEventArgs args)
     {
-        var unitToProduce = _unitValues.UnitsToProduce.FirstOrDefault(u => u != null && u.Id == args.UnitId);
+        var unitToProduce = _buildingValues.UnitsToProduce.FirstOrDefault(u => u != null && u.Id == args.UnitId);
 
         if (unitToProduce == null)
         {
