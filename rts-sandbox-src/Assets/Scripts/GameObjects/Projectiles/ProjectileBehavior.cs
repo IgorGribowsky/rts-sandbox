@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Infrastructure.Enums;
+﻿using Assets.Scripts.Infrastructure.Constants;
+using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
 namespace Assets.Scripts.GameObjects.Projectiles
@@ -17,7 +18,13 @@ namespace Assets.Scripts.GameObjects.Projectiles
 
         private UnitEventManager _targetEventManager;
 
-        private Vector3 _targetPosition; 
+        private Vector3 _targetPosition;
+
+        /// <summary>
+        /// Seconds this one has been in the air. A projectile chasing a target
+        /// it can never catch used to fly for the rest of the game.
+        /// </summary>
+        private float _timeInFlight;
 
         public void SetProperties(GameObject target, GameObject owner, float speed, float damage, DamageType damageType)
         {
@@ -33,6 +40,13 @@ namespace Assets.Scripts.GameObjects.Projectiles
         {
             if (Speed > 0) 
             {
+                _timeInFlight += Time.deltaTime;
+                if (_timeInFlight > GameConstants.ProjectileMaxLifetime)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+
                 if (Target != null)
                 {
                     _targetPosition = Target.transform.position;
@@ -41,7 +55,14 @@ namespace Assets.Scripts.GameObjects.Projectiles
                 var moveVector = Vector3.Normalize(_targetPosition - transform.position) * Speed * Time.deltaTime;
 
                 transform.position += moveVector;
-                transform.LookAt(moveVector);
+
+                // LookAt wants a point in the world, and moveVector is the step
+                // for this frame — the projectile used to turn its nose towards
+                // a spot near the origin instead of along its flight (T-014).
+                if (moveVector.sqrMagnitude > 0f)
+                {
+                    transform.rotation = Quaternion.LookRotation(moveVector);
+                }
 
                 if (Vector3.Magnitude(_targetPosition - transform.position) < moveVector.magnitude)
                 {

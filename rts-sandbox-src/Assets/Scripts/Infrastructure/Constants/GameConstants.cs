@@ -9,6 +9,13 @@
         public const float PersecutionDistance = 50f;
 
         /// <summary>
+        /// How long an ordinary projectile may stay in the air. Without it a
+        /// shot at a target that runs faster than the arrow never lands and
+        /// never disappears (T-014).
+        /// </summary>
+        public const float ProjectileMaxLifetime = 8f;
+
+        /// <summary>
         /// Auto attack looks for a target once in this many frames, not every
         /// frame (T-011). Units are spread across the frames by instance id, so
         /// they do not all search at once. A lost target is picked up at once,
