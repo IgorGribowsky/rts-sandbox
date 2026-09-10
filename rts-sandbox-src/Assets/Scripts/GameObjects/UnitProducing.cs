@@ -10,6 +10,12 @@ public class UnitProducing : MonoBehaviour
 
     public List<UnitTypeData> ProducingQueueInfo = new List<UnitTypeData>();
 
+    /// <summary>
+    /// Production started or stopped. The progress bar listens instead of
+    /// asking every frame (T-029).
+    /// </summary>
+    public event System.Action<bool> ProducingStateChanged;
+
     public float ProductionTime { get { return productionTime; } }
     public float CurrentProducingTimer { get { return currentProducingTimer; } }
 
@@ -131,6 +137,7 @@ public class UnitProducing : MonoBehaviour
                 {
                     CurrentProducingUnit = null;
                     isProcessing = false;
+                    RaiseProducingStateChanged(false);
                 }
             }
         }
@@ -157,5 +164,15 @@ public class UnitProducing : MonoBehaviour
         CurrentProducingUnit = unit;
         productionTime = unit.Stats.ProducingTime;
         currentProducingTimer = productionTime;
+
+        RaiseProducingStateChanged(true);
+    }
+
+    private void RaiseProducingStateChanged(bool producing)
+    {
+        if (ProducingStateChanged != null)
+        {
+            ProducingStateChanged(producing);
+        }
     }
 }

@@ -112,7 +112,7 @@ public class Building : MonoBehaviour
             return;
         }
 
-        Destroy(gameObject);
+        // Destroy last, see UnitHealthPoints: it takes the subscriptions with it.
         _playerEventController.OnSelectedUnitDied(gameObject);
         _playerEventController.OnBuildingRemoved(gameObject);
         _unitEventManager.OnUnitDied(gameObject, gameObject);
@@ -122,6 +122,8 @@ public class Building : MonoBehaviour
             var valueToReturn = Mathf.RoundToInt(resourceCost.Amount * GameConstants.ResourcesReturnedWhenBuildingCanceled);
             _playerResources.AddResource(resourceCost.ResourceName, valueToReturn);
         }
+
+        Destroy(gameObject);
     }
 
     private void CompletBuilding()

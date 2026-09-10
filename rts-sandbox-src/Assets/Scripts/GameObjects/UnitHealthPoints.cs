@@ -48,7 +48,9 @@ public class UnitHealthPoints : MonoBehaviour
 
         if (_unitValues.CurrentHp <= 0)
         {
-            Destroy(gameObject);
+            // Everyone is told first and only then is the object destroyed:
+            // Destroy runs OnDisable right away, and every subscription made in
+            // OnEnable is gone by the next line (T-028).
             _unitEventManager.OnUnitDied(args.Attacker, gameObject);
             _playerEventController.OnSelectedUnitDied(gameObject);
 
@@ -56,6 +58,8 @@ public class UnitHealthPoints : MonoBehaviour
             {
                 _playerEventController.OnBuildingRemoved(gameObject);
             }
+
+            Destroy(gameObject);
         }
     }
 

@@ -57,10 +57,12 @@ public class HeldMine : MonoBehaviour
     {
         if (_resouceValues.ResourcesAmount <= 0)
         {
-            Destroy(gameObject);
+            // Destroy last, see UnitHealthPoints: it takes the subscriptions with it.
             _unitEventManager.OnMineIsFinished(gameObject);
             _playerEventController.OnSelectedUnitDied(gameObject);
             _playerEventController.OnBuildingRemoved(gameObject);
+
+            Destroy(gameObject);
         }
 
         if (_miners.Count == 0f)

@@ -10,7 +10,7 @@ public abstract class BarBase : MonoBehaviour
 
     private Transform activeBar;
 
-    private BarsContaining _barsContaining;
+    protected BarsContaining _barsContaining;
 
     /// <summary>
     /// Who the bar belongs to. Resolved in Awake, because a subclass subscribes
@@ -52,7 +52,14 @@ public abstract class BarBase : MonoBehaviour
 
         if (percent < 1)
         {
-            Bar.SetActive(true);
+            // SetActive used to be called every frame even when nothing changed;
+            // the container only needs telling when the stack actually changes
+            // (T-029).
+            if (!Bar.activeSelf)
+            {
+                Bar.SetActive(true);
+                _barsContaining.OnBarVisibilityChanged();
+            }
 
             var currentBarScale = activeBar.localScale;
             var newCurrentBarScale = new Vector3(percent, currentBarScale.y, currentBarScale.z);
@@ -61,6 +68,7 @@ public abstract class BarBase : MonoBehaviour
         else if (Bar.activeSelf)
         {
             Bar.SetActive(false);
+            _barsContaining.OnBarVisibilityChanged();
         }
     }
 }
