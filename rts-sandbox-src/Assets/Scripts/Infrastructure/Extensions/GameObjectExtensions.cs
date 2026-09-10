@@ -127,21 +127,31 @@ namespace Assets.Scripts.Infrastructure.Helpers
             return adjustedPoint;
         }
 
+        /// <summary>
+        /// The nearest unit within the radius. Walks UnitRegistry instead of
+        /// fishing the whole scene out by tag, and uses the sizes it keeps
+        /// ready; the distance is the same as before (T-011).
+        /// </summary>
         public static GameObject GetNearestUnitInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
         {
-            GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString());
+            var (fromSize, fromCenter) = gameObject.GetSizeAndCenter();
+
             GameObject closestUnit = null;
             float closestDistance = radius;
 
-            foreach (GameObject unit in units)
+            var units = UnitRegistry.All;
+            for (var i = 0; i < units.Count; i++)
             {
-                // Если фильтр задан и объект не проходит проверку, пропускаем его
-                if (filter != null && !filter(unit)) continue;
+                var candidate = units[i];
+                if (candidate.GameObject == null || candidate.Renderer == null) continue;
 
-                float distance = gameObject.GetDistanceTo(unit);
+                // Если фильтр задан и объект не проходит проверку, пропускаем его
+                if (filter != null && !filter(candidate.GameObject)) continue;
+
+                float distance = Vector3.Distance(fromCenter, candidate.GroundCenter) - (fromSize + candidate.Size);
                 if (distance < closestDistance)
                 {
-                    closestUnit = unit;
+                    closestUnit = candidate.GameObject;
                     closestDistance = distance;
                 }
             }
@@ -174,9 +184,24 @@ namespace Assets.Scripts.Infrastructure.Helpers
 
         public static IEnumerable<GameObject> GetAllUnitsInRadius(this GameObject gameObject, float radius, Func<GameObject, bool> filter = null)
         {
-            GameObject[] units = GameObject.FindGameObjectsWithTag(Tag.Unit.ToString());
+            var (fromSize, fromCenter) = gameObject.GetSizeAndCenter();
 
-            return units.Where(u => gameObject.GetDistanceTo(u) <= radius && (filter == null || filter(u)));
+            var result = new List<GameObject>();
+            var units = UnitRegistry.All;
+
+            for (var i = 0; i < units.Count; i++)
+            {
+                var candidate = units[i];
+                if (candidate.GameObject == null || candidate.Renderer == null) continue;
+
+                var distance = Vector3.Distance(fromCenter, candidate.GroundCenter) - (fromSize + candidate.Size);
+                if (distance <= radius && (filter == null || filter(candidate.GameObject)))
+                {
+                    result.Add(candidate.GameObject);
+                }
+            }
+
+            return result;
         }
 
         public static bool CanBeAttacked(this GameObject unit, DamageType damageType)

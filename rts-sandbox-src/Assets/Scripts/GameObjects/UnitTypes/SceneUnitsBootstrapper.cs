@@ -18,6 +18,10 @@ public class SceneUnitsBootstrapper : MonoBehaviour
 
     private void Awake()
     {
+        // Domain reload can be switched off in the editor, and then the static
+        // registry still holds the units of the previous run.
+        UnitRegistry.Clear();
+
         var placers = new List<UnitPlacer>(FindObjectsByType<UnitPlacer>(FindObjectsInactive.Include, FindObjectsSortMode.None));
 
         BuiltUnitsCount = 0;

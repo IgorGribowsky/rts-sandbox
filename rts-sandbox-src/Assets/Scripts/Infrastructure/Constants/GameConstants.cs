@@ -8,6 +8,14 @@
         public const float DamageReceivedCallToAttackDistance = 12f;
         public const float PersecutionDistance = 50f;
 
+        /// <summary>
+        /// Auto attack looks for a target once in this many frames, not every
+        /// frame (T-011). Units are spread across the frames by instance id, so
+        /// they do not all search at once. A lost target is picked up at once,
+        /// whatever the counter says.
+        /// </summary>
+        public const int TargetSearchFrameInterval = 5;
+
         public const float GridCellSize = 1f;
         public const float GridCellNarrowing = 0.1f;
 

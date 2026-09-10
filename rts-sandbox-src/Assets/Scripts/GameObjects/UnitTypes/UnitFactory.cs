@@ -100,6 +100,9 @@ public static class UnitFactory
             unit.AddComponent<TeamMember>().TeamId = teamId;
         }
 
+        // Goes on after TeamMember and UnitValues: the registry caches both.
+        unit.AddComponent<UnitRegistration>();
+
         if (type.IsSelectable)
         {
             unit.AddComponent<Selectable>().SelectionCirclePrefab = type.SelectionCirclePrefab;

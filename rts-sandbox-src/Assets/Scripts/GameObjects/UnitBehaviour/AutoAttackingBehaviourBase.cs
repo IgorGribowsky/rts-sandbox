@@ -1,4 +1,5 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
@@ -18,6 +19,12 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
     protected GameObject _currentTarget = null;
     protected Vector3 _movePoint;
 
+    /// <summary>This unit as the registry sees it: components and size, ready.</summary>
+    private UnitRecord _self;
+
+    /// <summary>Frames left until the next search, see GameConstants.</summary>
+    private int _framesUntilSearch;
+
     protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
@@ -31,6 +38,12 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
         // The very same behaviour the explicit attack order runs, on purpose:
         // auto attack drives it while staying active itself.
         _attackBehaviour = _unitBehaviourManager.GetForAction(UnitActionType.Attack) as AttackingBehaviourBase;
+
+        _self = UnitRegistry.Of(gameObject);
+
+        // Spread the units across frames, so a hundred of them do not all search
+        // on the same one.
+        _framesUntilSearch = Mathf.Abs(gameObject.GetInstanceID()) % GameConstants.TargetSearchFrameInterval;
 
         AdditionalInitialize();
     }
@@ -86,13 +99,35 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
     {
         if (_attackBehaviour != null)
         {
+            // The search is the most expensive thing a unit does, so it runs
+            // once in a few frames. A target that just died is the exception:
+            // that one is dropped immediately, or the unit keeps swinging at a
+            // corpse until its turn comes round.
+            var targetLost = _triggeredOnEnemy && _currentTarget == null;
+
+            if (!targetLost)
+            {
+                if (_framesUntilSearch > 0)
+                {
+                    _framesUntilSearch--;
+                    return;
+                }
+            }
+
+            _framesUntilSearch = GameConstants.TargetSearchFrameInterval;
+
+            if (_self == null || _self.GameObject == null)
+            {
+                _self = UnitRegistry.Of(gameObject);
+            }
+
             var enemyTeamIds = _teamController.GetEnemyTeams(_teamMember.TeamId);
 
-            var target = gameObject.GetNearestUnitInRadius(_unitValues.AutoAttackDistance, unit =>
-            {
-                var teamMember = unit.GetComponent<TeamMember>();
-                return teamMember != null && enemyTeamIds.Contains(teamMember.TeamId) && unit.CanBeAttacked(_unitValues.DamageType);
-            });
+            var target = UnitRegistry.FindNearestOfTeams(
+                _self,
+                _unitValues.AutoAttackDistance,
+                enemyTeamIds,
+                candidate => candidate.Values == null || !candidate.Values.IsInvulnerable);
 
             if (target == null)
             {
