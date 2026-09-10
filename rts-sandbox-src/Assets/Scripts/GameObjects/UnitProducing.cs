@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class UnitProducing : MonoBehaviour
 {
-    public GameObject CurrentProducingUnit = null;
+    public UnitTypeData CurrentProducingUnit = null;
 
-    public List<GameObject> ProducingQueueInfo = new List<GameObject>();
+    public List<UnitTypeData> ProducingQueueInfo = new List<UnitTypeData>();
 
     public float ProductionTime { get { return productionTime; } }
     public float CurrentProducingTimer { get { return currentProducingTimer; } }
@@ -22,7 +22,7 @@ public class UnitProducing : MonoBehaviour
     private bool isProcessing = false;
 
 
-    private Queue<GameObject> _producingQueue = new Queue<GameObject>();
+    private Queue<UnitTypeData> _producingQueue = new Queue<UnitTypeData>();
 
     private float productionTime = 0f;
     private float currentProducingTimer = 0f;
@@ -43,15 +43,14 @@ public class UnitProducing : MonoBehaviour
 
     public void ProduceCommandHandler(ProduceCommandReceivedEventArgs args)
     {
-        var unitToProduce = _unitValues.UnitsToProduce.FirstOrDefault(u => u.GetComponent<UnitValues>().Id == args.UnitId);
+        var unitToProduce = _unitValues.UnitsToProduce.FirstOrDefault(u => u != null && u.Id == args.UnitId);
 
         if (unitToProduce == null)
         {
             return;
         }
 
-        var unitValues = unitToProduce.GetComponent<UnitValues>();
-        var resourceCost = unitValues.ResourceCost.ToArray();
+        var resourceCost = unitToProduce.Stats.ResourceCost.ToArray();
 
         if (!_playerResources.CheckIfCanSpendResources(resourceCost))
         {
@@ -71,7 +70,7 @@ public class UnitProducing : MonoBehaviour
 
         if (CurrentProducingUnit == null)
         {
-            StartProducing(unitToProduce, unitValues);
+            StartProducing(unitToProduce);
         }
         else
         {
@@ -90,19 +89,18 @@ public class UnitProducing : MonoBehaviour
             {
                 Bounds producerBounds = gameObject.GetComponent<Renderer>().bounds;
 
-                Bounds unitBounds = CurrentProducingUnit.GetComponent<Renderer>().bounds;
-
                 var center = producerBounds.center;
 
                 var producerHalfSize = producerBounds.extents;
 
-                var unitHalfSize = unitBounds.extents;
+                var unitHalfSize = UnitFactory.GetBodyExtents(CurrentProducingUnit);
 
-                var positionToSpawn = new Vector3(center.x + producerHalfSize.x + unitHalfSize.x, CurrentProducingUnit.transform.position.y, transform.position.z);
+                var body = CurrentProducingUnit.BodyPrefab.transform;
 
-                var unit = Instantiate(CurrentProducingUnit, positionToSpawn, CurrentProducingUnit.transform.rotation);
+                var positionToSpawn = new Vector3(center.x + producerHalfSize.x + unitHalfSize.x, body.position.y, transform.position.z);
 
-                unit.GetComponent<TeamMember>().TeamId = _teamMemeber.TeamId;
+                var unit = UnitFactory.Create(CurrentProducingUnit, positionToSpawn, body.rotation, _teamMemeber.TeamId);
+
                 unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
 
                 if (_producingQueue.Any())
@@ -110,10 +108,9 @@ public class UnitProducing : MonoBehaviour
                     ProducingQueueInfo.RemoveAt(0);
                     var unitToProduce = _producingQueue.Dequeue();
 
-                    var unitValues = unitToProduce.GetComponent<UnitValues>();
-                    var resourceCost = unitValues.ResourceCost.ToArray();
+                    var resourceCost = unitToProduce.Stats.ResourceCost.ToArray();
 
-                    StartProducing(unitToProduce, unitValues);
+                    StartProducing(unitToProduce);
 
                     if (!_playerResources.CheckIfHaveSupply(resourceCost))
                     {
@@ -142,17 +139,14 @@ public class UnitProducing : MonoBehaviour
             return;
         }
 
-        var unitValues = CurrentProducingUnit.GetComponent<UnitValues>();
-        var resourceCost = unitValues.ResourceCost.ToArray();
+        var resourceCost = CurrentProducingUnit.Stats.ResourceCost.ToArray();
         isProcessing = _playerResources.CheckIfHaveSupply(resourceCost);
     }
 
-    private void StartProducing(GameObject unit, UnitValues unitValues = null)
+    private void StartProducing(UnitTypeData unit)
     {
-        unitValues ??= unit.GetComponent<UnitValues>();
-
         CurrentProducingUnit = unit;
-        productionTime = unitValues.ProducingTime;
+        productionTime = unit.Stats.ProducingTime;
         currentProducingTimer = productionTime;
     }
 

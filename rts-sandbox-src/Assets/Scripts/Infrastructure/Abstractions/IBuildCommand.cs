@@ -4,7 +4,7 @@ namespace Assets.Scripts.Infrastructure.Abstractions
 {
     public interface IBuildCommand : ICommand
     {
-        GameObject GetBuildingObject();
+        UnitTypeData GetBuildingType();
 
         Vector3 GetPoint();
     }

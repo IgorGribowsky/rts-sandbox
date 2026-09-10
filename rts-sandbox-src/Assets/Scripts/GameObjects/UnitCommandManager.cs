@@ -13,7 +13,7 @@ namespace Assets.Scripts.GameObjects
 {
     public class UnitCommandManager : MonoBehaviour
     {
-        public List<string> CommandListInfo;
+        public List<string> CommandListInfo = new List<string>();
         public string CurrentRunningCommandInfo;
 
         public bool HasCommandInQueue { get => CommandsQueue.Any(); }
@@ -356,7 +356,7 @@ namespace Assets.Scripts.GameObjects
                 _unitEventManager.OnBuildActionStarted(args.Point, args.Building, args.IsMineHeld, args.MineToHeld);
             }
 
-            public GameObject GetBuildingObject()
+            public UnitTypeData GetBuildingType()
             {
                 return args.Building;
             }

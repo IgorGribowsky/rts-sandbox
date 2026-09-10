@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef60592d271ede498a08acfa17bff3f, type: 3}
+  m_Name: Builder
+  m_EditorClassIdentifier: 
+  DisplayName: Builder
+  BodyPrefab: {fileID: 7849110260153872687, guid: a2774043cd71325328b82cb6ff251a40, type: 3}
+  HasTeam: 1
+  HasValues: 1
+  IsSelectable: 1
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: c049b7d0ae1aa874293df8fa5cbd8bd3, type: 3}
+  HasHealth: 1
+  CallsAlliesWhenAttacked: 1
+  IsMobile: 1
+  TakesCommands: 1
+  IsBuildingObject: 0
+  RequiresSupply: 1
+  ProducesSupply: 0
+  StoresHarvestedResources: 0
+  IsResourceObject: 0
+  Behaviours: 000000000100000002000000030000000400000008000000090000000a0000000d000000
+  Stats:
+    Id: 5
+    IsInvulnerable: 0
+    CurrentHp: 80
+    MaximumHp: 80
+    BaseHpRegen: 1
+    MovementSpeed: 5
+    Rang: 50
+    ProducingTime: 8
+    Damage: 6
+    AutoAttackDistance: 8
+    AttackRate: 1.8
+    AttackDurationPercent: 0.4
+    DamageType: 0
+    AttackBreakDistance: 2.2
+    MeleeAttackDistance: 0.4
+    HasRangeAttack: 0
+    RangeAttackDistance: 10
+    ProjectileSpeed: 12
+    RangeAttackProjectile: {fileID: 0}
+    ResourceCost:
+    - ResourceName: 1
+      Amount: 60
+    - ResourceName: 3
+      Amount: 1
+    SupplyResourceProduces: []
+    IsBuilding: 0
+    CanProduceUnits: 0
+    IsBuilder: 1
+    IsMiner: 1
+    IsHarvestor: 1
+    CanCastSkills: 0
+    UnitsToProduce: []
+    BuildingsToProduce:
+    - KeyCode: 98
+      Building: {fileID: 11400000, guid: 9658d7b7ab794f49b48d4cb551b2d10e, type: 2}
+    - KeyCode: 116
+      Building: {fileID: 11400000, guid: 8d07b775a8705b150160c94cf8e79822, type: 2}
+    - KeyCode: 114
+      Building: {fileID: 11400000, guid: b45382f8b70fa999164622d051824e9d, type: 2}
+    - KeyCode: 99
+      Building: {fileID: 11400000, guid: 5bfe08f1d562c778293c5c7816c520cf, type: 2}
+    - KeyCode: 103
+      Building: {fileID: 11400000, guid: 7cb6f172e72c68ef439d3107ce48ce69, type: 2}
+    - KeyCode: 102
+      Building: {fileID: 11400000, guid: 1e9c93121a8f0f30be65d8cf437375cf, type: 2}
+    ResourcesCanBeHarvested: 02000000
+    HarvestingRate: 1
+    HarvestingValuePerTick: 1
+    HarvestingMaxValue: 10
+    CurrentMana: 0
+    MaximumMana: 0
+    BaseManaRegen: 1
+  GridSize: 4
+  ObstacleSize: 4
+  IsMine: 0
+  IsHeldMine: 0
+  IsHarvestedResource: 0
+  ResourceName: 0
+  ResourcesAmount: 0
+  ParentMineType: {fileID: 0}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
+  StoredResources: []
+  HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
+  HealthBarPriority: 10
+  ManaBarTemplate: {fileID: 0}
+  ManaBarPriority: 0
+  ProducingBarTemplate: {fileID: 0}
+  ProducingBarPriority: 0
+  Skills: []
+  HasMana: 0

@@ -81,27 +81,27 @@ public class UnitsController : MonoBehaviour
 
         if (CheckBuilderSelected(out var firstUnitBuilder))
         {
-            var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
-            var buildingSize = buildingValues.GridSize;
+            var buildingType = _buildingController.Building;
+            var buildingSize = buildingType.GridSize;
 
-            if (buildingValues.IsHeldMine && !_buildingGridController.CheckIfMineUnderCursor())
+            if (buildingType.IsHeldMine && !_buildingGridController.CheckIfMineUnderCursor())
             {
                 Debug.Log("Can't build here!");
                 return;
             }
 
-            Vector3 resultPoint = buildingValues.IsHeldMine 
+            Vector3 resultPoint = buildingType.IsHeldMine 
                 ? _unitUnderCursor.transform.position 
                 : point.GetGridPoint(buildingSize);
 
-            var mineToHeld = buildingValues.IsHeldMine
+            var mineToHeld = buildingType.IsHeldMine
                 && _unitUnderCursor?.GetComponent<BuildingValues>()?.IsMine == true
                     ? _unitUnderCursor
                     : null;
 
             if (addToCommandsQueue)
             {
-                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
+                firstUnitBuilder.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, buildingType, buildingType.IsHeldMine, mineToHeld, addToCommandsQueue);
             }
             else
             {
@@ -124,14 +124,13 @@ public class UnitsController : MonoBehaviour
                     unitToBuild = firstUnitBuilder;
                 }
 
-                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild) && !buildingValues.IsHeldMine)
+                if (!_buildingGridController.CheckIfCanBuildAt(resultPoint, buildingSize, unitToBuild) && !buildingType.IsHeldMine)
                 {
                     Debug.Log("Can't build here!");
                     return;
                 }
 
-                var unitValues = _buildingController.Building.GetComponent<UnitValues>();
-                var resourceCost = unitValues.ResourceCost.ToArray();
+                var resourceCost = buildingType.Stats.ResourceCost.ToArray();
                 if (!_playerResources.CheckIfCanSpendResources(resourceCost))
                 {
                     Debug.Log("Not enough resources!");
@@ -142,7 +141,7 @@ public class UnitsController : MonoBehaviour
                     Debug.Log("Not enough supply!");
                     return;
                 }
-                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, _buildingController.Building, buildingValues.IsHeldMine, mineToHeld, addToCommandsQueue);
+                unitToBuild.GetComponent<UnitEventManager>().OnBuildCommandReceived(resultPoint, buildingType, buildingType.IsHeldMine, mineToHeld, addToCommandsQueue);
                 _buildingController.DisableBuildingMod();
             }
         }
@@ -343,7 +342,7 @@ public class UnitsController : MonoBehaviour
             return;
         }
 
-        var unitId = unitToProduce.GetComponent<UnitValues>().Id;
+        var unitId = unitToProduce.Id;
 
         var similarProducingUnits = SelectedUnits.Where(u => u.GetComponent<UnitValues>().Id == unitValues.Id);
 

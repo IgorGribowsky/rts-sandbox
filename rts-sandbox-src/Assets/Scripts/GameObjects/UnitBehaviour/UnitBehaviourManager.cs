@@ -28,6 +28,18 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
 
         private UnitBehaviourBase _current;
 
+        /// <summary>
+        /// What this unit can do, handed over by <see cref="UnitFactory"/> while
+        /// the unit is still switched off. Called after Awake it changes nothing:
+        /// the behaviours are built once, in Awake.
+        /// </summary>
+        public void SetBehaviours(IEnumerable<UnitBehaviourType> behaviours)
+        {
+            Behaviours = behaviours == null
+                ? new List<UnitBehaviourType>()
+                : new List<UnitBehaviourType>(behaviours);
+        }
+
         public void Awake()
         {
             _unitEventManager = GetComponent<UnitEventManager>();

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class HarvestedResourcesStorage : MonoBehaviour
 {
-    public List<ResourceName> StoredResources;
+    public List<ResourceName> StoredResources = new List<ResourceName>();
 
     private PlayerResources _playerResources;
 

@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class HeldMine : MonoBehaviour
 {
-    public GameObject ParentMine;
+    [Tooltip("The plain mine left on the map when this held mine dies.")]
+    public UnitTypeData ParentMine;
 
     public float MiningRate = 1f;
 
@@ -118,11 +119,15 @@ public class HeldMine : MonoBehaviour
     protected void CreateParentMine(DiedEventArgs args)
     {
         var point = gameObject.transform.position;
-        var mine = Instantiate(ParentMine, point, gameObject.transform.rotation);
-        _playerEventController.OnBuildingStarted(point, null, mine);
-        var mineResourceValues = mine.GetComponent<ResourceValues>();
+        var teamId = GetComponent<TeamMember>()?.TeamId ?? 0;
+        var leftInMine = _resouceValues.ResourcesAmount;
 
-        mineResourceValues.ResourcesAmount = _resouceValues.ResourcesAmount;
+        // The gold left over is this mine's own, not the type's, so it is set
+        // while the new mine is still switched off.
+        var mine = UnitFactory.Create(ParentMine, point, gameObject.transform.rotation, teamId,
+            created => created.GetComponent<ResourceValues>().ResourcesAmount = leftInMine);
+
+        _playerEventController.OnBuildingStarted(point, null, mine);
     }
 
 

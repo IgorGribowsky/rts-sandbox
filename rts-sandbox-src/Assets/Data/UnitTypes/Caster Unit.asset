@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef60592d271ede498a08acfa17bff3f, type: 3}
+  m_Name: Caster Unit
+  m_EditorClassIdentifier: 
+  DisplayName: Caster Unit
+  BodyPrefab: {fileID: 7849110260153872687, guid: 21026c63e0b8c701b308b052d450e4c2, type: 3}
+  HasTeam: 1
+  HasValues: 1
+  IsSelectable: 1
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: c049b7d0ae1aa874293df8fa5cbd8bd3, type: 3}
+  HasHealth: 1
+  CallsAlliesWhenAttacked: 1
+  IsMobile: 1
+  TakesCommands: 1
+  IsBuildingObject: 0
+  RequiresSupply: 1
+  ProducesSupply: 0
+  StoresHarvestedResources: 0
+  IsResourceObject: 0
+  Behaviours: 0000000001000000020000000300000005000000060000000b0000000c0000000d000000
+  Stats:
+    Id: 12
+    IsInvulnerable: 0
+    CurrentHp: 1100
+    MaximumHp: 1100
+    BaseHpRegen: 4
+    MovementSpeed: 5
+    Rang: 110
+    ProducingTime: 12
+    Damage: 23
+    AutoAttackDistance: 12
+    AttackRate: 1
+    AttackDurationPercent: 0.4
+    DamageType: 2
+    AttackBreakDistance: 2.2
+    MeleeAttackDistance: 0
+    HasRangeAttack: 1
+    RangeAttackDistance: 10
+    ProjectileSpeed: 16
+    RangeAttackProjectile: {fileID: 8957964713747606781, guid: f91ff0591897655499ec98952904e511, type: 3}
+    ResourceCost:
+    - ResourceName: 1
+      Amount: 350
+    - ResourceName: 3
+      Amount: 6
+    SupplyResourceProduces: []
+    IsBuilding: 0
+    CanProduceUnits: 0
+    IsBuilder: 0
+    IsMiner: 0
+    IsHarvestor: 0
+    CanCastSkills: 1
+    UnitsToProduce: []
+    BuildingsToProduce: []
+    ResourcesCanBeHarvested: []
+    HarvestingRate: 1
+    HarvestingValuePerTick: 1
+    HarvestingMaxValue: 10
+    CurrentMana: 330
+    MaximumMana: 330
+    BaseManaRegen: 3.5
+  GridSize: 4
+  ObstacleSize: 4
+  IsMine: 0
+  IsHeldMine: 0
+  IsHarvestedResource: 0
+  ResourceName: 0
+  ResourcesAmount: 0
+  ParentMineType: {fileID: 0}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
+  StoredResources: []
+  HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
+  HealthBarPriority: 10
+  ManaBarTemplate: {fileID: 5133334966052544803, guid: ba945503ecd709149b42ff20d80164cc, type: 3}
+  ManaBarPriority: 7
+  ProducingBarTemplate: {fileID: 0}
+  ProducingBarPriority: 0
+  Skills:
+  - Skill: {fileID: 11400000, guid: 45f2a6f87c5d8624cb3c9c56b31c6328, type: 2}
+    Keycode: 113
+  - Skill: {fileID: 11400000, guid: b247c8824ba3fc24ca3499896957987e, type: 2}
+    Keycode: 119
+  - Skill: {fileID: 11400000, guid: 2e536d2e273f45f408424a36681ece91, type: 2}
+    Keycode: 101
+  - Skill: {fileID: 11400000, guid: 688ba1f0437aafc458d4ae3a95573a89, type: 2}
+    Keycode: 114
+  - Skill: {fileID: 11400000, guid: 2db0905863bc3ae43ad21fe9c83cdc6f, type: 2}
+    Keycode: 116
+  - Skill: {fileID: 11400000, guid: cb00a513062d3b84e8f4001cb3ef5bdc, type: 2}
+    Keycode: 102
+  - Skill: {fileID: 11400000, guid: 96f90a8ded8c0ca4194f0f298d3a7fd7, type: 2}
+    Keycode: 103
+  HasMana: 1

@@ -1,90 +1,92 @@
 using Assets.Scripts.Infrastructure.Enums;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The live numbers of one unit. Since T-027 the component holds no data of its
+/// own: it carries a copy of <see cref="UnitStats"/> taken from the type asset
+/// when <see cref="UnitFactory"/> built the unit, and the properties below are
+/// there so the rest of the code keeps reading <c>unitValues.MaximumHp</c> as
+/// before. Change a number for the whole type in the asset, not here.
+/// </summary>
 public class UnitValues : MonoBehaviour
 {
-    public int Id = 0;
+    [Tooltip("The type this unit was built from. Read-only at runtime.")]
+    public UnitTypeData Type;
 
-    public bool IsInvulnerable = false;
+    [Tooltip("This unit's own copy of the type numbers. Editing it in play mode " +
+             "changes this unit only.")]
+    public UnitStats Stats = new UnitStats();
 
-    public float CurrentHp = 100;
+    public int Id { get => Stats.Id; set => Stats.Id = value; }
 
-    public float MaximumHp = 100;
+    public bool IsInvulnerable { get => Stats.IsInvulnerable; set => Stats.IsInvulnerable = value; }
 
-    public float BaseHpRegen = 1;
+    public float CurrentHp { get => Stats.CurrentHp; set => Stats.CurrentHp = value; }
 
-    public float MovementSpeed = 5f;
+    public float MaximumHp { get => Stats.MaximumHp; set => Stats.MaximumHp = value; }
 
-    public int Rang = 100;
+    public float BaseHpRegen { get => Stats.BaseHpRegen; set => Stats.BaseHpRegen = value; }
 
-    public float ProducingTime = 1;
+    public float MovementSpeed { get => Stats.MovementSpeed; set => Stats.MovementSpeed = value; }
 
-    public float Damage = 10f;
+    public int Rang { get => Stats.Rang; set => Stats.Rang = value; }
 
-    public float AutoAttackDistance = 8f;
+    public float ProducingTime { get => Stats.ProducingTime; set => Stats.ProducingTime = value; }
 
-    public float AttackRate = 1f;
+    public float Damage { get => Stats.Damage; set => Stats.Damage = value; }
 
-    //percent of AttackRate
-    public float AttackDurationPercent = 0.4f;
+    public float AutoAttackDistance { get => Stats.AutoAttackDistance; set => Stats.AutoAttackDistance = value; }
 
-    public DamageType DamageType = DamageType.Normal;
+    public float AttackRate { get => Stats.AttackRate; set => Stats.AttackRate = value; }
 
-    public float AttackBreakDistance = 2f;
+    public float AttackDurationPercent { get => Stats.AttackDurationPercent; set => Stats.AttackDurationPercent = value; }
 
-    public float MeleeAttackDistance = 2f;
+    public DamageType DamageType { get => Stats.DamageType; set => Stats.DamageType = value; }
 
-    public bool HasRangeAttack = false;
+    public float AttackBreakDistance { get => Stats.AttackBreakDistance; set => Stats.AttackBreakDistance = value; }
 
-    public float RangeAttackDistance = 10f;
+    public float MeleeAttackDistance { get => Stats.MeleeAttackDistance; set => Stats.MeleeAttackDistance = value; }
 
-    public float ProjectileSpeed = 12f;
+    public bool HasRangeAttack { get => Stats.HasRangeAttack; set => Stats.HasRangeAttack = value; }
 
-    public GameObject RangeAttackProjectile = null;
+    public float RangeAttackDistance { get => Stats.RangeAttackDistance; set => Stats.RangeAttackDistance = value; }
 
-    public List<ResourceAmount> ResourceCost = new List<ResourceAmount>();
+    public float ProjectileSpeed { get => Stats.ProjectileSpeed; set => Stats.ProjectileSpeed = value; }
 
-    public List<ResourceAmount> SupplyResourceProduces = new List<ResourceAmount>();
+    public GameObject RangeAttackProjectile { get => Stats.RangeAttackProjectile; set => Stats.RangeAttackProjectile = value; }
 
-    public bool IsBuilding = false;
+    public List<ResourceAmount> ResourceCost { get => Stats.ResourceCost; set => Stats.ResourceCost = value; }
 
-    //Move to BuildingValues
-    public bool CanProduceUnits = false;
+    public List<ResourceAmount> SupplyResourceProduces { get => Stats.SupplyResourceProduces; set => Stats.SupplyResourceProduces = value; }
 
-    public List<GameObject> UnitsToProduce = new List<GameObject>();
-    //Move to BuildingValues
+    public bool IsBuilding { get => Stats.IsBuilding; set => Stats.IsBuilding = value; }
 
-    public bool IsBuilder = false;
+    public bool CanProduceUnits { get => Stats.CanProduceUnits; set => Stats.CanProduceUnits = value; }
 
-    public List<BuildingToProduce> BuildingsToProduce = new List<BuildingToProduce>();
+    public List<UnitTypeData> UnitsToProduce { get => Stats.UnitsToProduce; set => Stats.UnitsToProduce = value; }
 
-    public bool IsMiner = false;
+    public bool IsBuilder { get => Stats.IsBuilder; set => Stats.IsBuilder = value; }
 
-    public bool IsHarvestor = false;
+    public List<BuildingToProduce> BuildingsToProduce { get => Stats.BuildingsToProduce; set => Stats.BuildingsToProduce = value; }
 
-    public bool CanCastSkills = false;
+    public bool IsMiner { get => Stats.IsMiner; set => Stats.IsMiner = value; }
 
-    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+    public bool IsHarvestor { get => Stats.IsHarvestor; set => Stats.IsHarvestor = value; }
 
-    public float HarvestingRate = 1f;
+    public bool CanCastSkills { get => Stats.CanCastSkills; set => Stats.CanCastSkills = value; }
 
-    public int HarvestingValuePerTick = 1;
+    public List<ResourceName> ResourcesCanBeHarvested { get => Stats.ResourcesCanBeHarvested; set => Stats.ResourcesCanBeHarvested = value; }
 
-    public int HarvestingMaxValue = 10;
+    public float HarvestingRate { get => Stats.HarvestingRate; set => Stats.HarvestingRate = value; }
 
-    public float CurrentMana = 0;
+    public int HarvestingValuePerTick { get => Stats.HarvestingValuePerTick; set => Stats.HarvestingValuePerTick = value; }
 
-    public float MaximumMana = 0;
+    public int HarvestingMaxValue { get => Stats.HarvestingMaxValue; set => Stats.HarvestingMaxValue = value; }
 
-    public float BaseManaRegen = 1;
-}
+    public float CurrentMana { get => Stats.CurrentMana; set => Stats.CurrentMana = value; }
 
-[Serializable]
-public class BuildingToProduce
-{
-    public KeyCode KeyCode;
+    public float MaximumMana { get => Stats.MaximumMana; set => Stats.MaximumMana = value; }
 
-    public GameObject Building;
+    public float BaseManaRegen { get => Stats.BaseManaRegen; set => Stats.BaseManaRegen = value; }
 }

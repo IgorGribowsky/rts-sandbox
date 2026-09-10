@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef60592d271ede498a08acfa17bff3f, type: 3}
+  m_Name: Tower
+  m_EditorClassIdentifier: 
+  DisplayName: Tower
+  BodyPrefab: {fileID: 2803515875022785667, guid: 29840fc4ed6de8da391300e626251dba, type: 3}
+  HasTeam: 1
+  HasValues: 1
+  IsSelectable: 1
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: 974f6d519ba850f429eceb4bf559d1e2, type: 3}
+  HasHealth: 1
+  CallsAlliesWhenAttacked: 1
+  IsMobile: 0
+  TakesCommands: 1
+  IsBuildingObject: 1
+  RequiresSupply: 0
+  ProducesSupply: 0
+  StoresHarvestedResources: 0
+  IsResourceObject: 0
+  Behaviours: 0500000007000000
+  Stats:
+    Id: 6
+    IsInvulnerable: 0
+    CurrentHp: 300
+    MaximumHp: 300
+    BaseHpRegen: 0
+    MovementSpeed: 0
+    Rang: 55
+    ProducingTime: 15
+    Damage: 18
+    AutoAttackDistance: 10
+    AttackRate: 1
+    AttackDurationPercent: 0.4
+    DamageType: 1
+    AttackBreakDistance: 2
+    MeleeAttackDistance: 2
+    HasRangeAttack: 1
+    RangeAttackDistance: 10
+    ProjectileSpeed: 15
+    RangeAttackProjectile: {fileID: 8957964713747606781, guid: f91ff0591897655499ec98952904e511, type: 3}
+    ResourceCost:
+    - ResourceName: 1
+      Amount: 150
+    SupplyResourceProduces: []
+    IsBuilding: 1
+    CanProduceUnits: 0
+    IsBuilder: 0
+    IsMiner: 0
+    IsHarvestor: 0
+    CanCastSkills: 0
+    UnitsToProduce: []
+    BuildingsToProduce: []
+    ResourcesCanBeHarvested: []
+    HarvestingRate: 1
+    HarvestingValuePerTick: 1
+    HarvestingMaxValue: 10
+    CurrentMana: 0
+    MaximumMana: 0
+    BaseManaRegen: 1
+  GridSize: 3
+  ObstacleSize: 3
+  IsMine: 0
+  IsHeldMine: 0
+  IsHarvestedResource: 0
+  ResourceName: 0
+  ResourcesAmount: 0
+  ParentMineType: {fileID: 0}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
+  StoredResources: []
+  HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
+  HealthBarPriority: 10
+  ManaBarTemplate: {fileID: 0}
+  ManaBarPriority: 0
+  ProducingBarTemplate: {fileID: 0}
+  ProducingBarPriority: 0
+  Skills: []
+  HasMana: 0

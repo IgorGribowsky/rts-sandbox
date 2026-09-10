@@ -86,7 +86,7 @@ public class BuildingGridController : MonoBehaviour
             return;
         }
 
-        var gridForBuilding = GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues, BuildingRestrictedMaterial);
+        var gridForBuilding = GenerateGridForBuilding(buildingStartedEventArgs.Building, buildingStartedEventArgs.Point, buildingValues.GridSize, BuildingRestrictedMaterial);
         _gridForBuildings.Add(gridForBuilding);
     }
 
@@ -108,15 +108,14 @@ public class BuildingGridController : MonoBehaviour
     public bool CheckIfMineUnderCursor()
     {
         var buildingValues = _unitUnderCursor?.GetComponent<BuildingValues>();
-        var currentBuildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+        var currentType = _buildingController.Building;
 
         var isMine = false;
 
-        if (buildingValues != null && currentBuildingValues != null && buildingValues.IsResource && currentBuildingValues.IsResource)
+        if (buildingValues != null && currentType != null && buildingValues.IsResource && currentType.IsResourceObject)
         {
             var resourceValues = _unitUnderCursor.GetComponent<ResourceValues>();
-            var currentResourceValues = _buildingController.Building.GetComponent<ResourceValues>();
-            isMine = resourceValues.IsMine && currentResourceValues.IsHeldMine && resourceValues.ResourceName == currentResourceValues.ResourceName;
+            isMine = resourceValues.IsMine && currentType.IsHeldMine && resourceValues.ResourceName == currentType.ResourceName;
         }
 
         return isMine;
@@ -150,11 +149,10 @@ public class BuildingGridController : MonoBehaviour
         if (args.Command is not IBuildCommand buildCommand)
             return;
 
-        var building = buildCommand.GetBuildingObject();
+        var buildingType = buildCommand.GetBuildingType();
         var point = buildCommand.GetPoint();
-        var buildingValues = building.GetComponent<BuildingValues>();
 
-        GridForBuilding gridForBuilding = GenerateGridForBuilding(building, point, buildingValues, BuildingShadowMaterial, false);
+        GridForBuilding gridForBuilding = GenerateGridForBuilding(null, point, buildingType.GridSize, BuildingShadowMaterial, false);
         GridForShadow gridForShadow = ConvertBuildingGridToShadowGrid(buildCommand, gridForBuilding);
 
         _gridForShadows.Add(gridForShadow);
@@ -198,15 +196,15 @@ public class BuildingGridController : MonoBehaviour
 
     private void HandleModEnabled()
     {
-        var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+        var buildingType = _buildingController.Building;
 
         UpdateCursorPosition();
-        GenerateGridForCursor(cursorGrid, buildingValues.GridSize, buildingValues.IsHeldMine);
+        GenerateGridForCursor(cursorGrid, buildingType.GridSize, buildingType.IsHeldMine);
     }
 
     private void UpdateCursorPosition()
     {
-        var buildingValues = _buildingController.Building.GetComponent<BuildingValues>();
+        var buildingType = _buildingController.Building;
         isMineUnderCursor = CheckIfMineUnderCursor();
 
         if (isMineUnderCursor)
@@ -215,11 +213,11 @@ public class BuildingGridController : MonoBehaviour
         }
         else
         {
-            var gridSize = buildingValues.GridSize;
+            var gridSize = buildingType.GridSize;
             cursorGrid.transform.position = _mousePosition.GetGridPoint(gridSize);
         }
 
-        if (buildingValues.IsHeldMine)
+        if (buildingType.IsHeldMine)
         {
             foreach (Transform gridSegment in cursorGrid.transform)
             {
@@ -268,7 +266,7 @@ public class BuildingGridController : MonoBehaviour
                     continue;
                 }
 
-                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues, BuildingRestrictedMaterial);
+                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues.GridSize, BuildingRestrictedMaterial);
                 _gridForBuildings.Add(gridForBuilding);
             }
         }
@@ -289,7 +287,7 @@ public class BuildingGridController : MonoBehaviour
                     continue;
                 }
 
-                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues, BuildingRestrictedMaterial);
+                var gridForBuilding = GenerateGridForBuilding(collider.gameObject, collider.transform.position, buildingValues.GridSize, BuildingRestrictedMaterial);
                 _gridForBuildings.Add(gridForBuilding);
             }
         }
@@ -325,14 +323,18 @@ public class BuildingGridController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <paramref name="building"/> is only the key the grid is remembered by,
+    /// and is null for the shadow of a queued order: there is no object yet,
+    /// only the type. The shadow is found by its command instead.
+    /// </summary>
     private GridForBuilding GenerateGridForBuilding(
         GameObject building,
         Vector3 buildingPosition,
-        BuildingValues buildingValues,
+        int buildingSize,
         Material material,
         bool isRestricted = true)
     {
-        var buildingSize = buildingValues.GridSize;
         var shift = buildingSize / 2.0f;
 
         var gridForBuilding = new GridForBuilding()

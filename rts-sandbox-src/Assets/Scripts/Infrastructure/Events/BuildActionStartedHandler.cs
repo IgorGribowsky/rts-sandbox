@@ -7,7 +7,7 @@ namespace Assets.Scripts.Infrastructure.Events
 
     public class BuildActionStartedEventArgs : EventArgs
     {
-        public BuildActionStartedEventArgs(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld)
+        public BuildActionStartedEventArgs(Vector3 point, UnitTypeData building, bool isMineHeld, GameObject mineToHeld)
         {
             Building = building;
             Point = point;
@@ -17,7 +17,8 @@ namespace Assets.Scripts.Infrastructure.Events
 
         public Vector3 Point { get; set; }
 
-        public GameObject Building { get; set; }
+        /// <summary>The type being put down, not a prefab: see UnitFactory.</summary>
+        public UnitTypeData Building { get; set; }
 
         public bool IsMineHeld { get; set; }
 

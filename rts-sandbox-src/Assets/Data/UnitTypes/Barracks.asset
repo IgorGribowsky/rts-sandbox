@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef60592d271ede498a08acfa17bff3f, type: 3}
+  m_Name: Barracks
+  m_EditorClassIdentifier: 
+  DisplayName: Barracks
+  BodyPrefab: {fileID: 9084684201828076527, guid: d02936b1f716bcab04ce05fd98f9be04, type: 3}
+  HasTeam: 1
+  HasValues: 1
+  IsSelectable: 1
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: 06d060c5327502c498acc5f8e15a22b8, type: 3}
+  HasHealth: 1
+  CallsAlliesWhenAttacked: 1
+  IsMobile: 0
+  TakesCommands: 0
+  IsBuildingObject: 1
+  RequiresSupply: 0
+  ProducesSupply: 0
+  StoresHarvestedResources: 0
+  IsResourceObject: 0
+  Behaviours: []
+  Stats:
+    Id: 4
+    IsInvulnerable: 0
+    CurrentHp: 500
+    MaximumHp: 500
+    BaseHpRegen: 0
+    MovementSpeed: 0
+    Rang: 100
+    ProducingTime: 30
+    Damage: 0
+    AutoAttackDistance: 8
+    AttackRate: 1
+    AttackDurationPercent: 0.4
+    DamageType: 0
+    AttackBreakDistance: 2
+    MeleeAttackDistance: 2
+    HasRangeAttack: 0
+    RangeAttackDistance: 10
+    ProjectileSpeed: 12
+    RangeAttackProjectile: {fileID: 0}
+    ResourceCost:
+    - ResourceName: 1
+      Amount: 200
+    SupplyResourceProduces: []
+    IsBuilding: 1
+    CanProduceUnits: 1
+    IsBuilder: 0
+    IsMiner: 0
+    IsHarvestor: 0
+    CanCastSkills: 0
+    UnitsToProduce:
+    - {fileID: 11400000, guid: 42f5396c61b23430122c723936b8fe48, type: 2}
+    - {fileID: 11400000, guid: ad72603fb6bc599919b07518452c7f61, type: 2}
+    - {fileID: 11400000, guid: bf7307b9d3210fb60e6a61d48afdcf41, type: 2}
+    - {fileID: 11400000, guid: 61dd44c4d55fc4459b335de4997a0c12, type: 2}
+    BuildingsToProduce: []
+    ResourcesCanBeHarvested: []
+    HarvestingRate: 1
+    HarvestingValuePerTick: 1
+    HarvestingMaxValue: 10
+    CurrentMana: 0
+    MaximumMana: 0
+    BaseManaRegen: 1
+  GridSize: 5
+  ObstacleSize: 3
+  IsMine: 0
+  IsHeldMine: 0
+  IsHarvestedResource: 0
+  ResourceName: 0
+  ResourcesAmount: 0
+  ParentMineType: {fileID: 0}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
+  StoredResources: []
+  HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
+  HealthBarPriority: 10
+  ManaBarTemplate: {fileID: 0}
+  ManaBarPriority: 0
+  ProducingBarTemplate: {fileID: 5133334966052544803, guid: 8bd2116edcc282140b5444ce93627637, type: 3}
+  ProducingBarPriority: 5
+  Skills: []
+  HasMana: 0

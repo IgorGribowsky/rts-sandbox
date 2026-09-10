@@ -7,7 +7,7 @@ namespace Assets.Scripts.Infrastructure.Events
 
     public class BuildCommandReceivedEventArgs : CommandReceivedEventArgs
     {
-        public BuildCommandReceivedEventArgs(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld,  bool addToCommandsQueue = false)
+        public BuildCommandReceivedEventArgs(Vector3 point, UnitTypeData building, bool isMineHeld, GameObject mineToHeld,  bool addToCommandsQueue = false)
             : base(addToCommandsQueue)
         {
             Building = building;
@@ -18,7 +18,8 @@ namespace Assets.Scripts.Infrastructure.Events
 
         public Vector3 Point { get; set; }
 
-        public GameObject Building { get; set; }
+        /// <summary>The type being put down, not a prefab: see UnitFactory.</summary>
+        public UnitTypeData Building { get; set; }
 
         public bool IsMineHeld { get; set; }
 

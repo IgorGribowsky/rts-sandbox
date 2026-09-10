@@ -16,7 +16,8 @@ public class BuildingController : MonoBehaviour
     private bool _buildingMod = false;
     public bool BuildingMod { get { return _buildingMod; } }
 
-    public GameObject Building { get; set; } = null;
+    /// <summary>The type chosen in the build menu, not a prefab.</summary>
+    public UnitTypeData Building { get; set; } = null;
 
     public void Awake()
     {
@@ -75,8 +76,7 @@ public class BuildingController : MonoBehaviour
         if (!CanBuild(building, point, builder)) return;
         if (!TrySpendResources(building)) return;
 
-        var unit = InstantiateBuilding(building, point);
-        unit.GetComponent<TeamMember>().TeamId = teamId;
+        var unit = InstantiateBuilding(building, point, teamId);
         unit.GetComponent<Building>().Build();
 
         _playerEventController.OnBuildingStarted(point, builder, unit);
@@ -87,13 +87,12 @@ public class BuildingController : MonoBehaviour
         }
     }
 
-    private bool CanBuild(GameObject building, Vector3 point, GameObject builder)
+    private bool CanBuild(UnitTypeData building, Vector3 point, GameObject builder)
     {
-        var buildingValues = building.GetComponent<BuildingValues>();
-        if (buildingValues.IsHeldMine)
+        if (building.IsHeldMine)
             return true;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(point, buildingValues.GridSize, builder))
+        if (!_buildingGridController.CheckIfCanBuildAt(point, building.GridSize, builder))
         {
             Debug.Log("Can't build here!");
             return false;
@@ -101,9 +100,9 @@ public class BuildingController : MonoBehaviour
         return true;
     }
 
-    private bool TrySpendResources(GameObject building)
+    private bool TrySpendResources(UnitTypeData building)
     {
-        var resourceCost = building.GetComponent<UnitValues>().ResourceCost.ToArray();
+        var resourceCost = building.Stats.ResourceCost.ToArray();
 
         if (!_playerResources.CheckIfCanSpendResources(resourceCost))
         {
@@ -121,17 +120,19 @@ public class BuildingController : MonoBehaviour
         return true;
     }
 
-    private GameObject InstantiateBuilding(GameObject building, Vector3 point)
+    private GameObject InstantiateBuilding(UnitTypeData building, Vector3 point, int teamId)
     {
-        var unit = Instantiate(building, point, building.transform.rotation);
-        AdjustBuildingPosition(unit);
-        return unit;
+        var rotation = building.BodyPrefab.transform.rotation;
+
+        // The building is lifted before it is switched on: moving it afterwards
+        // would drag an already awake NavMeshObstacle across the map.
+        return UnitFactory.Create(building, point, rotation, teamId,
+            created => AdjustBuildingPosition(created, building));
     }
 
-    private void AdjustBuildingPosition(GameObject unit)
+    private void AdjustBuildingPosition(GameObject unit, UnitTypeData type)
     {
-        var buildingValues = unit.GetComponent<BuildingValues>();
-        if (!buildingValues.IsHeldMine)
+        if (!type.IsHeldMine)
         {
             float offsetY = unit.transform.localScale.y / 2f;
             unit.transform.position += new Vector3(0, offsetY, 0);

@@ -12,7 +12,7 @@ namespace Assets.SkillsSection.Scripts
     public class UnitSkills : MonoBehaviour
     {
         /// <summary>What this unit is able to cast. Setup only, no combat state.</summary>
-        public List<SkillSlot> Skills;
+        public List<SkillSlot> Skills = new List<SkillSlot>();
 
         private PlayerEventController _playerEventController;
 

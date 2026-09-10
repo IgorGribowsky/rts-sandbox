@@ -35,10 +35,10 @@ public class BuildingBehaviour : UnitBehaviourBase
 
         actionArgs = args as BuildActionStartedEventArgs;
 
-        var buildingValues = actionArgs.Building.GetComponent<BuildingValues>();
-        _buildingSize = buildingValues.ObstacleSize;
+        var buildingType = actionArgs.Building;
+        _buildingSize = buildingType.ObstacleSize;
 
-        if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject) && !buildingValues.IsHeldMine)
+        if (!_buildingGridController.CheckIfCanBuildAt(actionArgs.Point, _buildingSize, gameObject) && !buildingType.IsHeldMine)
         {
             Debug.Log("Can't build here!");
 

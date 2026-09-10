@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef60592d271ede498a08acfa17bff3f, type: 3}
+  m_Name: mine
+  m_EditorClassIdentifier: 
+  DisplayName: mine
+  BodyPrefab: {fileID: 229893291801480186, guid: aec003d8a1cae51b7f2accf910e25821, type: 3}
+  HasTeam: 1
+  HasValues: 1
+  IsSelectable: 1
+  SelectionCirclePrefab: {fileID: 5399826479641655892, guid: 06d060c5327502c498acc5f8e15a22b8, type: 3}
+  HasHealth: 0
+  CallsAlliesWhenAttacked: 0
+  IsMobile: 0
+  TakesCommands: 0
+  IsBuildingObject: 1
+  RequiresSupply: 0
+  ProducesSupply: 0
+  StoresHarvestedResources: 0
+  IsResourceObject: 1
+  Behaviours: []
+  Stats:
+    Id: 9
+    IsInvulnerable: 1
+    CurrentHp: 100
+    MaximumHp: 100
+    BaseHpRegen: 0
+    MovementSpeed: 0
+    Rang: 10
+    ProducingTime: 1
+    Damage: 10
+    AutoAttackDistance: 8
+    AttackRate: 1
+    AttackDurationPercent: 0.5
+    DamageType: 0
+    AttackBreakDistance: 2
+    MeleeAttackDistance: 2
+    HasRangeAttack: 0
+    RangeAttackDistance: 10
+    ProjectileSpeed: 12
+    RangeAttackProjectile: {fileID: 0}
+    ResourceCost: []
+    SupplyResourceProduces: []
+    IsBuilding: 0
+    CanProduceUnits: 0
+    IsBuilder: 0
+    IsMiner: 0
+    IsHarvestor: 0
+    CanCastSkills: 0
+    UnitsToProduce: []
+    BuildingsToProduce: []
+    ResourcesCanBeHarvested: []
+    HarvestingRate: 1
+    HarvestingValuePerTick: 1
+    HarvestingMaxValue: 10
+    CurrentMana: 0
+    MaximumMana: 0
+    BaseManaRegen: 1
+  GridSize: 8
+  ObstacleSize: 4
+  IsMine: 1
+  IsHeldMine: 0
+  IsHarvestedResource: 0
+  ResourceName: 1
+  ResourcesAmount: 10000
+  ParentMineType: {fileID: 0}
+  MiningRate: 1
+  MiningValue: 10
+  MinersMaxCount: 5
+  StoredResources: []
+  HealthBarTemplate: {fileID: 0}
+  HealthBarPriority: 0
+  ManaBarTemplate: {fileID: 0}
+  ManaBarPriority: 0
+  ProducingBarTemplate: {fileID: 0}
+  ProducingBarPriority: 0
+  Skills: []
+  HasMana: 0

@@ -138,13 +138,13 @@ public class UnitEventManager : MonoBehaviour
     }
 
     public event BuildCommandReceivedHandler BuildCommandReceived;
-    public void OnBuildCommandReceived(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld, bool addToCommandsQueue = false)
+    public void OnBuildCommandReceived(Vector3 point, UnitTypeData building, bool isMineHeld, GameObject mineToHeld, bool addToCommandsQueue = false)
     {
         BuildCommandReceived?.Invoke(new BuildCommandReceivedEventArgs(point, building, isMineHeld, mineToHeld, addToCommandsQueue));
     }
 
     public event BuildActionStartedHandler BuildActionStarted;
-    public void OnBuildActionStarted(Vector3 point, GameObject building, bool isMineHeld, GameObject mineToHeld)
+    public void OnBuildActionStarted(Vector3 point, UnitTypeData building, bool isMineHeld, GameObject mineToHeld)
     {
         BuildActionStarted?.Invoke(new BuildActionStartedEventArgs(point, building, isMineHeld, mineToHeld));
     }
