@@ -22,15 +22,6 @@ public class PlayerResources : MonoBehaviour
             .GetComponent<PlayerEventController>();
     }
 
-    void Start()
-    {
-    }
-
-    void Update()
-    {
-
-    }
-
     public void AddResource(ResourceName resourceName, int amount, bool isMaxSupplyResource = false)
     {
         UpdateResourceAmount(resourceName, amount, isMaxSupplyResource, (current, change) => current + change);

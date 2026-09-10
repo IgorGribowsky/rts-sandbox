@@ -20,7 +20,7 @@ public class HeldMine : MonoBehaviour
     private Building _buildingScript;
     private UnitEventManager _unitEventManager;
     private PlayerResources _playerResources;
-    private ResourceValues _resouceValues;
+    private ResourceValues _resourceValues;
     private PlayerEventController _playerEventController;
 
     private List<GameObject> _miners = new List<GameObject>();
@@ -31,7 +31,7 @@ public class HeldMine : MonoBehaviour
     void Awake()
     {
         _buildingValues = GetComponent<BuildingValues>();
-        _resouceValues = GetComponent<ResourceValues>();
+        _resourceValues = GetComponent<ResourceValues>();
         _buildingScript = GetComponent<Building>();
         _unitEventManager = GetComponent<UnitEventManager>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
@@ -55,7 +55,7 @@ public class HeldMine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_resouceValues.ResourcesAmount <= 0)
+        if (_resourceValues.ResourcesAmount <= 0)
         {
             // Destroy last, see UnitHealthPoints: it takes the subscriptions with it.
             _unitEventManager.OnMineIsFinished(gameObject);
@@ -75,13 +75,13 @@ public class HeldMine : MonoBehaviour
 
         if (miningProgress > MiningRate)
         {
-            _playerResources.AddResource(_resouceValues.ResourceName, MiningValue);
-            _resouceValues.ResourcesAmount -= MiningValue;
+            _playerResources.AddResource(_resourceValues.ResourceName, MiningValue);
+            _resourceValues.ResourcesAmount -= MiningValue;
             miningProgress = 0f;
         }
     }
 
-    public bool ChechIfCanAddMiner()
+    public bool CheckIfCanAddMiner()
     {
         if (_buildingScript.BuildingIsInProgress)
         {
@@ -127,7 +127,7 @@ public class HeldMine : MonoBehaviour
     {
         var point = gameObject.transform.position;
         var teamId = GetComponent<TeamMember>()?.TeamId ?? 0;
-        var leftInMine = _resouceValues.ResourcesAmount;
+        var leftInMine = _resourceValues.ResourcesAmount;
 
         // The gold left over is this mine's own, not the type's, so it is set
         // while the new mine is still switched off.

@@ -63,11 +63,6 @@ public class UnitsController : MonoBehaviour
         _playerEventController.CursorMoved -= CursorMovedHandler;
     }
 
-    private void Update()
-    {
-
-    }
-
     public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
     {
         if (SelectedUnitsTeamId != playerTeamId)
@@ -167,7 +162,6 @@ public class UnitsController : MonoBehaviour
             }
         }
     }
-
 
     public bool CheckBuilderSelected() => CheckBuilderSelected(out _);
 
@@ -493,7 +487,7 @@ public class UnitsController : MonoBehaviour
         SelectedUnitsTeamId = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
-        CreateMovememtMask();
+        CreateMovementMask();
 
         if (_buildingController.BuildingMenuMod)
         {
@@ -519,7 +513,7 @@ public class UnitsController : MonoBehaviour
         return bounds;
     }
 
-    private void CreateMovememtMask()
+    private void CreateMovementMask()
     {
         SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
         var unitsInserted = 0;

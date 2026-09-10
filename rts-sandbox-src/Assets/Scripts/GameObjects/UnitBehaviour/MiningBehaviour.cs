@@ -73,7 +73,7 @@ public class MiningBehaviour : UnitBehaviourBase
             return;
         }
 
-        var canAdd = _heldMineScript.ChechIfCanAddMiner();
+        var canAdd = _heldMineScript.CheckIfCanAddMiner();
 
         if (canAdd)
         {

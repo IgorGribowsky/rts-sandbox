@@ -28,9 +28,4 @@ public class Selectable : MonoBehaviour
         IsSelected = isSelected;
         selectedCircle.SetActive(IsSelected);
     }
-
-    void Update()
-    {
-        
-    }
 }

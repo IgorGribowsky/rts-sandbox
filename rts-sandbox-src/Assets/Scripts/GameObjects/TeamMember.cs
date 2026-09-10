@@ -20,9 +20,4 @@ public class TeamMember : MonoBehaviour
 
         uniqueMaterial.color = team.Color;
     }
-
-    void Update()
-    {
-        
-    }
 }

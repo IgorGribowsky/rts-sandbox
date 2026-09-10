@@ -7,15 +7,6 @@ public class GameResources : MonoBehaviour
 {
     public List<Resource> Resources;
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 }
 
 [Serializable]

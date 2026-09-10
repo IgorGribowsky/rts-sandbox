@@ -2,12 +2,9 @@ using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
-using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.UI.Image;
 
 public class NavMeshMovement : MonoBehaviour
 {

@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SelectionBoxController : MonoBehaviour
@@ -13,10 +12,6 @@ public class SelectionBoxController : MonoBehaviour
         {
             ControlledCamera = Camera.main;
         }
-    }
-
-    void Update()
-    {
     }
 
     public void StartDrawSelection(Vector3 point)

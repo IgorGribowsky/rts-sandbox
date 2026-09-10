@@ -13,10 +13,6 @@ public class UnitHealthPoints : MonoBehaviour
 
     private Coroutine _hpRegenCoroutine;
 
-    public void Update()
-    {
-    }
-
     public void Awake()
     {
         _unitValues = GetComponent<UnitValues>();

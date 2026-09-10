@@ -19,7 +19,7 @@ public class UnitProducing : MonoBehaviour
     public float ProductionTime { get { return productionTime; } }
     public float CurrentProducingTimer { get { return currentProducingTimer; } }
 
-    private TeamMember _teamMemeber;
+    private TeamMember _teamMember;
     private UnitEventManager _unitEventManager;
     private BuildingValues _buildingValues;
     private PlayerResources _playerResources;
@@ -36,7 +36,7 @@ public class UnitProducing : MonoBehaviour
     void Awake()
     {
         _unitEventManager = GetComponent<UnitEventManager>();
-        _teamMemeber = GetComponent<TeamMember>();
+        _teamMember = GetComponent<TeamMember>();
         _buildingValues = GetComponent<BuildingValues>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
@@ -114,7 +114,7 @@ public class UnitProducing : MonoBehaviour
 
                 var positionToSpawn = new Vector3(center.x + producerHalfSize.x + unitHalfSize.x, body.position.y, transform.position.z);
 
-                var unit = UnitFactory.Create(CurrentProducingUnit, positionToSpawn, body.rotation, _teamMemeber.TeamId);
+                var unit = UnitFactory.Create(CurrentProducingUnit, positionToSpawn, body.rotation, _teamMember.TeamId);
 
                 unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
 

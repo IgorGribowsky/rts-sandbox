@@ -42,12 +42,12 @@ public class Building : MonoBehaviour
 
     private void OnEnable()
     {
-        _unitEventManager.Canceled += CancelBulding;
+        _unitEventManager.Canceled += CancelBuilding;
     }
 
     private void OnDisable()
     {
-        _unitEventManager.Canceled -= CancelBulding;
+        _unitEventManager.Canceled -= CancelBuilding;
     }
 
     public void Start()
@@ -98,14 +98,14 @@ public class Building : MonoBehaviour
             }
             else
             {
-                CompletBuilding();
+                CompleteBuilding();
             }
 
             _unitEventManager.OnHealthPointsChanged(_unitValues.CurrentHp);
         }
     }
 
-    protected void CancelBulding(CanceledEventArgs args)
+    protected void CancelBuilding(CanceledEventArgs args)
     {
         if (!BuildingIsInProgress)
         {
@@ -126,7 +126,7 @@ public class Building : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void CompletBuilding()
+    private void CompleteBuilding()
     {
         BuildingIsInProgress = false;
         _unitValues.CurrentHp = Mathf.Round(_unitValues.CurrentHp);

@@ -10,10 +10,6 @@ public class UnitManaPoints : MonoBehaviour
 
     private Coroutine _manaRegenCoroutine;
 
-    public void Update()
-    {
-    }
-
     public void Awake()
     {
         _manaValues = GetComponent<ManaValues>();
