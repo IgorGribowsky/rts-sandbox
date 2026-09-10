@@ -139,13 +139,13 @@ public class NavMeshMovement : MonoBehaviour
 
         Vector3 bestPosition = destinationObjCenter + (gameObject.transform.position - destinationObjCenter).normalized * _distance;
 
-        // Проверка, свободна ли точка
+        // РџСЂРѕРІРµСЂРєР°, СЃРІРѕР±РѕРґРЅР° Р»Рё С‚РѕС‡РєР°
         if (IsPositionFree(bestPosition))
         {
             return bestPosition;
         }
 
-        // Ищем ближайшую свободную точку вокруг цели
+        // РС‰РµРј Р±Р»РёР¶Р°Р№С€СѓСЋ СЃРІРѕР±РѕРґРЅСѓСЋ С‚РѕС‡РєСѓ РІРѕРєСЂСѓРі С†РµР»Рё
         return FindNearestFreePosition(destinationObjCenter, _distance);
     }
 
@@ -163,7 +163,7 @@ public class NavMeshMovement : MonoBehaviour
                 return candidatePosition;
             }
         }
-        return targetPosition; // Если ничего не найдено, идем к центру
+        return targetPosition; // Р•СЃР»Рё РЅРёС‡РµРіРѕ РЅРµ РЅР°Р№РґРµРЅРѕ, РёРґРµРј Рє С†РµРЅС‚СЂСѓ
     }
 
     private bool IsPositionFree(Vector3 position)

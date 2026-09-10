@@ -414,7 +414,7 @@ public class WindowsInputController : MonoBehaviour
 
     bool AlphabetKeyDown(out KeyCode key)
     {
-        if (!Input.anyKeyDown) // Проверяем, нажата ли любая клавиша
+        if (!Input.anyKeyDown) // РџСЂРѕРІРµСЂСЏРµРј, РЅР°Р¶Р°С‚Р° Р»Рё Р»СЋР±Р°СЏ РєР»Р°РІРёС€Р°
         {
             key = KeyCode.None;
             return false;

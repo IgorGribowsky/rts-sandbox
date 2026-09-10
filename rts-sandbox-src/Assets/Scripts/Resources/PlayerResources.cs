@@ -83,7 +83,7 @@ public class PlayerResources : MonoBehaviour
     }
 
     /// <summary>
-    /// Универсальный метод для валидации ресурсов на основе переданной логики проверки.
+    /// РЈРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ РІР°Р»РёРґР°С†РёРё СЂРµСЃСѓСЂСЃРѕРІ РЅР° РѕСЃРЅРѕРІРµ РїРµСЂРµРґР°РЅРЅРѕР№ Р»РѕРіРёРєРё РїСЂРѕРІРµСЂРєРё.
     /// </summary>
     private bool ValidateResources(ResourceAmount[] resourceAmounts, Func<ResourceAmount, Resource, int, bool> validationLogic)
     {
