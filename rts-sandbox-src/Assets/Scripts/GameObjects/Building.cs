@@ -38,7 +38,16 @@ public class Building : MonoBehaviour
             .GetComponent<PlayerEventController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
+    }
+
+    private void OnEnable()
+    {
         _unitEventManager.Canceled += CancelBulding;
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.Canceled -= CancelBulding;
     }
 
     public void Start()
@@ -136,18 +145,5 @@ public class Building : MonoBehaviour
         }
 
         _unitEventManager.OnBuildingCompleted(gameObject);
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.Canceled -= CancelBulding;
     }
 }

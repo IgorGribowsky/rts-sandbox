@@ -16,12 +16,26 @@ public class GridSegment : MonoBehaviour
 
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
+    }
+
+    private void OnEnable()
+    {
+        if (_playerEventController == null)
+        {
+            return;
+        }
 
         _playerEventController.BuildingModChanged += BuildingModChangedHandler;
     }
 
-    public void Start()
+    private void OnDisable()
     {
+        if (_playerEventController == null)
+        {
+            return;
+        }
+
+        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
     }
 
     public void ShowOrHideSegment(bool buildingStateEnabled)
@@ -45,18 +59,5 @@ public class GridSegment : MonoBehaviour
     public void SetMaterial(Material material)
     {
         _renderer.material = material;
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_playerEventController == null)
-        {
-            return;
-        }
-
-        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
     }
 }

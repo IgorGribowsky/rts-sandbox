@@ -28,7 +28,7 @@ public class UnitsController : MonoBehaviour
     private int playerTeamId;
     private GameObject _unitUnderCursor;
 
-    void Start()
+    void Awake()
     {
         playerTeamId = gameObject.GetComponent<PlayerTeamMember>().TeamId;
 
@@ -39,9 +39,28 @@ public class UnitsController : MonoBehaviour
         _buildingGridController = GetComponent<BuildingGridController>();
         _playerResources = GetComponent<PlayerResources>();
         _playerEventController = GetComponent<PlayerEventController>();
+    }
+
+    private void OnEnable()
+    {
+        if (_playerEventController == null)
+        {
+            return;
+        }
 
         _playerEventController.SelectedUnitDied += SelectedUnitDiedHandler;
         _playerEventController.CursorMoved += CursorMovedHandler;
+    }
+
+    private void OnDisable()
+    {
+        if (_playerEventController == null)
+        {
+            return;
+        }
+
+        _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
     }
 
     private void Update()
@@ -605,17 +624,4 @@ public class UnitsController : MonoBehaviour
         public Vector3 PositionFromCenter { get; set; }
     }
 
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_playerEventController == null)
-        {
-            return;
-        }
-
-        _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
-        _playerEventController.CursorMoved -= CursorMovedHandler;
-    }
 }

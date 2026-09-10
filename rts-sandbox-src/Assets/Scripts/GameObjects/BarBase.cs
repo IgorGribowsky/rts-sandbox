@@ -12,13 +12,20 @@ public abstract class BarBase : MonoBehaviour
 
     private BarsContaining _barsContaining;
 
-    public void Start()
+    /// <summary>
+    /// Who the bar belongs to. Resolved in Awake, because a subclass subscribes
+    /// to that unit in OnEnable, and OnEnable runs before Start.
+    /// </summary>
+    public void Awake()
     {
         if (Unit == null)
         {
             Unit = gameObject;
         }
+    }
 
+    public void Start()
+    {
         _barsContaining = Unit.GetComponent<BarsContaining>();
 
         if (Bar == null)

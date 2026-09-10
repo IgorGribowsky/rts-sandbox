@@ -27,7 +27,7 @@ public class UnitProducing : MonoBehaviour
     private float productionTime = 0f;
     private float currentProducingTimer = 0f;
 
-    void Start()
+    void Awake()
     {
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMemeber = GetComponent<TeamMember>();
@@ -36,9 +36,18 @@ public class UnitProducing : MonoBehaviour
             .GetComponent<PlayerResources>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
+    }
 
+    private void OnEnable()
+    {
         _unitEventManager.ProduceCommandReceived += ProduceCommandHandler;
         _playerEventController.ResourceChanged += OnSupplyChanged;
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
+        _playerEventController.ResourceChanged -= OnSupplyChanged;
     }
 
     public void ProduceCommandHandler(ProduceCommandReceivedEventArgs args)
@@ -148,22 +157,5 @@ public class UnitProducing : MonoBehaviour
         CurrentProducingUnit = unit;
         productionTime = unit.Stats.ProducingTime;
         currentProducingTimer = productionTime;
-    }
-
-    private void OnDestroy()
-    {
-        // OnDestroy runs even when Start never did — an object destroyed in the
-        // same frame it was created, or one that was never activated. Then these
-        // fields are still null. Checked with != null and not with ?., because
-        // ?. does not know about Unity's fake-null for destroyed objects.
-        if (_unitEventManager != null)
-        {
-            _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
-        }
-
-        if (_playerEventController != null)
-        {
-            _playerEventController.ResourceChanged -= OnSupplyChanged;
-        }
     }
 }

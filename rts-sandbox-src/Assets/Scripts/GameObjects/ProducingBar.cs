@@ -6,10 +6,9 @@ public class ProducingBar : BarBase
     private UnitProducing _unitProducing;
 
     private bool locker = false;
-    // Start is called before the first frame update
-    public void Start()
+    public new void Awake()
     {
-        base.Start();
+        base.Awake();
 
         _unitProducing = Unit.GetComponent<UnitProducing>();
     }

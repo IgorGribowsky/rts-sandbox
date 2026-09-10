@@ -14,24 +14,24 @@ public class UnitManaPoints : MonoBehaviour
     {
     }
 
+    public void Awake()
+    {
+        _manaValues = GetComponent<ManaValues>();
+        _unitEventManager = GetComponent<UnitEventManager>();
+    }
+
     private void OnEnable()
     {
+        _unitEventManager.ManaUsed += ManaUsedHandler;
         _manaRegenCoroutine = StartCoroutine(ManaRegeneration());
     }
 
     private void OnDisable()
     {
+        _unitEventManager.ManaUsed -= ManaUsedHandler;
+
         if (_manaRegenCoroutine != null)
             StopCoroutine(_manaRegenCoroutine);
-    }
-
-
-    public void Start()
-    {
-        _manaValues = GetComponent<ManaValues>();
-        _unitEventManager = GetComponent<UnitEventManager>();
-
-        _unitEventManager.ManaUsed += ManaUsedHandler;
     }
 
     protected void ManaUsedHandler(ManaUsedEventArgs args)
@@ -55,18 +55,5 @@ public class UnitManaPoints : MonoBehaviour
                 _unitEventManager.OnManaPointsChanged(_manaValues.CurrentMana);
             }
         }
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.ManaUsed -= ManaUsedHandler;
     }
 }

@@ -31,14 +31,30 @@ namespace Assets.SkillsSection.Scripts
         void Awake()
         {
             BuildRuntimeSkills();
+
+            _playerEventController = GameServices.PlayerEventController;
+            _manaValues = GetComponent<ManaValues>();
+            _unitEventManager = GetComponent<UnitEventManager>();
+        }
+
+        private void OnEnable()
+        {
+            if (_playerEventController != null)
+            {
+                _playerEventController.CursorMoved += CursorMovedHandler;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_playerEventController != null)
+            {
+                _playerEventController.CursorMoved -= CursorMovedHandler;
+            }
         }
 
         void Start()
         {
-            _playerEventController = GameServices.PlayerEventController;
-            _manaValues = GetComponent<ManaValues>();
-            _unitEventManager = GetComponent<UnitEventManager>();
-            _playerEventController.CursorMoved += CursorMovedHandler;
 
             // Not in Awake: a passive may reach for other components of the unit,
             // and by Start they have all woken up.
@@ -280,11 +296,6 @@ namespace Assets.SkillsSection.Scripts
 
         private void OnDestroy()
         {
-            if (_playerEventController != null)
-            {
-                _playerEventController.CursorMoved -= CursorMovedHandler;
-            }
-
             DeactivatePassives();
         }
     }

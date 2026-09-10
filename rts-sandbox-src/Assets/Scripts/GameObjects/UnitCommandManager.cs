@@ -41,6 +41,10 @@ namespace Assets.Scripts.GameObjects
             _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
                 .GetComponent<PlayerEventController>();
 
+        }
+
+        private void OnEnable()
+        {
             _unitEventManager.MoveCommandReceived += StartMoveCommand;
             _unitEventManager.AttackCommandReceived += StartAttackCommand;
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
@@ -62,6 +66,31 @@ namespace Assets.Scripts.GameObjects
 
             _unitEventManager.StunStarted += OnStunStarted;
             _unitEventManager.StunEnded += OnStunEnded;
+        }
+
+        private void OnDisable()
+        {
+            _unitEventManager.MoveCommandReceived -= StartMoveCommand;
+            _unitEventManager.AttackCommandReceived -= StartAttackCommand;
+            _unitEventManager.FollowCommandReceived -= StartFollowCommand;
+            _unitEventManager.AMoveCommandReceived -= StartAMoveCommand;
+            _unitEventManager.HoldCommandReceived -= StartHoldCommand;
+            _unitEventManager.BuildCommandReceived -= StartBuildCommand;
+            _unitEventManager.MineCommandReceived -= StartMineCommand;
+            _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
+            _unitEventManager.SkillCastCommandReceived -= StartSkillCastCommand;
+
+            _unitEventManager.MoveActionEnded -= RunNextCommand;
+            _unitEventManager.AttackActionEnded -= RunNextCommand;
+            _unitEventManager.FollowActionEnded -= RunNextCommand;
+            _unitEventManager.AMoveActionEnded -= RunNextCommand;
+            _unitEventManager.BuildActionEnded -= RunNextCommand;
+            _unitEventManager.MineActionEnded -= RunNextCommand;
+            _unitEventManager.HarvestingActionEnded -= RunNextCommand;
+            _unitEventManager.SkillCastActionEnded -= RunNextCommand;
+
+            _unitEventManager.StunStarted -= OnStunStarted;
+            _unitEventManager.StunEnded -= OnStunEnded;
         }
 
         private void Start()
@@ -482,38 +511,5 @@ namespace Assets.Scripts.GameObjects
         }
 
         #endregion
-
-        private void OnDestroy()
-        {
-            // Start may never have run: an object destroyed in the frame it
-            // appeared, or one never activated, reaches OnDestroy with this
-            // still null.
-            if (_unitEventManager == null)
-            {
-                return;
-            }
-
-            _unitEventManager.MoveCommandReceived -= StartMoveCommand;
-            _unitEventManager.AttackCommandReceived -= StartAttackCommand;
-            _unitEventManager.FollowCommandReceived -= StartFollowCommand;
-            _unitEventManager.AMoveCommandReceived -= StartAMoveCommand;
-            _unitEventManager.HoldCommandReceived -= StartHoldCommand;
-            _unitEventManager.BuildCommandReceived -= StartBuildCommand;
-            _unitEventManager.MineCommandReceived -= StartMineCommand;
-            _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
-            _unitEventManager.SkillCastCommandReceived -= StartSkillCastCommand;
-
-            _unitEventManager.MoveActionEnded -= RunNextCommand;
-            _unitEventManager.AttackActionEnded -= RunNextCommand;
-            _unitEventManager.FollowActionEnded -= RunNextCommand;
-            _unitEventManager.AMoveActionEnded -= RunNextCommand;
-            _unitEventManager.BuildActionEnded -= RunNextCommand;
-            _unitEventManager.MineActionEnded -= RunNextCommand;
-            _unitEventManager.HarvestingActionEnded -= RunNextCommand;
-            _unitEventManager.SkillCastActionEnded -= RunNextCommand;
-
-            _unitEventManager.StunStarted -= OnStunStarted;
-            _unitEventManager.StunEnded -= OnStunEnded;
-        }
     }
 }

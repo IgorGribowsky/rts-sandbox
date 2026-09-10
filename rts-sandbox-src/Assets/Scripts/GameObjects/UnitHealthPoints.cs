@@ -17,26 +17,27 @@ public class UnitHealthPoints : MonoBehaviour
     {
     }
 
-    private void OnEnable()
-    {
-        _hpRegenCoroutine = StartCoroutine(HpRegeneration());
-    }
-
-    private void OnDisable()
-    {
-        if (_hpRegenCoroutine != null)
-            StopCoroutine(_hpRegenCoroutine);   
-    }
-
-    public void Start()
+    public void Awake()
     {
         _unitValues = GetComponent<UnitValues>();
         _buildingValues = GetComponent<BuildingValues>();
         _unitEventManager = GetComponent<UnitEventManager>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
+    }
 
+    private void OnEnable()
+    {
         _unitEventManager.DamageReceived += DamageReceivedHandler;
+        _hpRegenCoroutine = StartCoroutine(HpRegeneration());
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.DamageReceived -= DamageReceivedHandler;
+
+        if (_hpRegenCoroutine != null)
+            StopCoroutine(_hpRegenCoroutine);   
     }
 
     protected void DamageReceivedHandler(DamageReceivedEventArgs args)
@@ -72,18 +73,5 @@ public class UnitHealthPoints : MonoBehaviour
                 _unitEventManager.OnHealthPointsChanged(_unitValues.CurrentHp);
             }
         }
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.DamageReceived -= DamageReceivedHandler;
     }
 }

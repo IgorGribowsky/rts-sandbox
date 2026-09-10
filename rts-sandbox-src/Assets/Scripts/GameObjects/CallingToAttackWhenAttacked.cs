@@ -16,7 +16,16 @@ public class CallingToAttackWhenAttacked : MonoBehaviour
         _teamMember = GetComponent<TeamMember>();
         _teamController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
             .GetComponent<TeamController>();
+    }
+
+    private void OnEnable()
+    {
         _unitEventManager.DamageReceived += OnDamageReceivedHandler;
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.DamageReceived -= OnDamageReceivedHandler;
     }
 
     public void OnDamageReceivedHandler(DamageReceivedEventArgs args)
@@ -38,10 +47,5 @@ public class CallingToAttackWhenAttacked : MonoBehaviour
         {
             unit.GetComponent<UnitEventManager>()?.OnCalledToAttack(gameObject, args.Attacker);
         }
-    }
-
-    private void OnDestroy()
-    {
-        _unitEventManager.DamageReceived -= OnDamageReceivedHandler;
     }
 }

@@ -1,52 +1,34 @@
 using Assets.Scripts.Infrastructure.Events;
 
+/// <summary>
+/// A building that raises the supply limit — but only once it is finished.
+/// </summary>
 public class UnitSupplyProducer : UnitSupplyBase
 {
-    private Building? _buildingScript;
+    private Building _buildingScript;
+
+    /// <summary>The limit was actually raised, so it is ours to lower again.</summary>
+    private bool _given;
 
     protected override void Awake()
     {
         base.Awake();
         _buildingScript = gameObject.GetComponent<Building>();
-        _unitEventManager = gameObject.GetComponent<UnitEventManager>();
     }
 
-    void Start()
+    private void OnEnable()
     {
-        if (_unitValues.IsBuilding && _buildingScript?.BuildingIsInProgress == true)
+        if (_unitEventManager == null)
         {
-            _unitEventManager.BuildingCompleted += OnBuildingCompletedHandler;
+            return;
         }
-        else
-        {
-            SetupResources();
-        }
+
+        _unitEventManager.BuildingCompleted += OnBuildingCompletedHandler;
+        _unitEventManager.UnitDied += RemoveMaxSupplyLimit;
     }
 
-    protected void OnBuildingCompletedHandler(BuildingCompletedEventArgs args) => SetupResources();
-
-    protected override void SetupResources()
+    private void OnDisable()
     {
-        if (_playerResources != null)
-        {
-            AddMaxSupplyLimit();
-            _unitEventManager.UnitDied += RemoveMaxSupplyLimit;
-        }
-    }
-
-    protected void AddMaxSupplyLimit() => ProcessResources(
-        (resourceName, amount) => _playerResources.AddResource(resourceName, amount, true),
-        unitValues => unitValues.SupplyResourceProduces);
-
-    protected void RemoveMaxSupplyLimit(DiedEventArgs args) => ProcessResources(
-        (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount, true),
-        unitValues => unitValues.SupplyResourceProduces);
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
         if (_unitEventManager == null)
         {
             return;
@@ -54,5 +36,48 @@ public class UnitSupplyProducer : UnitSupplyBase
 
         _unitEventManager.BuildingCompleted -= OnBuildingCompletedHandler;
         _unitEventManager.UnitDied -= RemoveMaxSupplyLimit;
+    }
+
+    void Start()
+    {
+        // A building still going up gives nothing yet: it will, on
+        // BuildingCompleted.
+        if (_unitValues.IsBuilding && _buildingScript != null && _buildingScript.BuildingIsInProgress)
+        {
+            return;
+        }
+
+        SetupResources();
+    }
+
+    protected void OnBuildingCompletedHandler(BuildingCompletedEventArgs args) => SetupResources();
+
+    protected override void SetupResources()
+    {
+        if (_playerResources == null || _given)
+        {
+            return;
+        }
+
+        _given = true;
+        AddMaxSupplyLimit();
+    }
+
+    protected void AddMaxSupplyLimit() => ProcessResources(
+        (resourceName, amount) => _playerResources.AddResource(resourceName, amount, true),
+        unitValues => unitValues.SupplyResourceProduces);
+
+    protected void RemoveMaxSupplyLimit(DiedEventArgs args)
+    {
+        if (!_given)
+        {
+            return;
+        }
+
+        _given = false;
+
+        ProcessResources(
+            (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount, true),
+            unitValues => unitValues.SupplyResourceProduces);
     }
 }

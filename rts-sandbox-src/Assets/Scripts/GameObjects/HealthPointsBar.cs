@@ -5,16 +5,30 @@ public class HealthPointsBar : BarBase
     private UnitValues _unitValues;
     private UnitEventManager _unitEventManager;
 
-    // Start is called before the first frame update
-    public void Start()
+    public new void Awake()
     {
-        base.Start();
+        base.Awake();
 
         _unitEventManager = Unit.GetComponent<UnitEventManager>();
         _unitValues = Unit.GetComponent<UnitValues>();
+    }
+
+    private void OnEnable()
+    {
+        _unitEventManager.HealthPointsChanged += UpdateScale;
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.HealthPointsChanged -= UpdateScale;
+    }
+
+    // Start is called before the first frame update
+    public new void Start()
+    {
+        base.Start();
 
         UpdateScale(new HealthPointsChangedEventArgs(_unitValues.CurrentHp));
-        _unitEventManager.HealthPointsChanged += UpdateScale;
     }
 
     protected void UpdateScale(HealthPointsChangedEventArgs args)
@@ -22,18 +36,5 @@ public class HealthPointsBar : BarBase
         var percent = args.CurrentHp / _unitValues.MaximumHp;
 
         UpdateBar(percent);
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.HealthPointsChanged -= UpdateScale;
     }
 }

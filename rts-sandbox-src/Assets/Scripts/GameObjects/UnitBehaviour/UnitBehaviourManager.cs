@@ -45,7 +45,10 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _unitEventManager = GetComponent<UnitEventManager>();
 
             CreateBehaviours();
+        }
 
+        private void OnEnable()
+        {
             _unitEventManager.MoveActionStarted += StartMove;
             _unitEventManager.AMoveActionStarted += StartAMove;
             _unitEventManager.FollowActionStarted += StartFollow;
@@ -58,6 +61,22 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _unitEventManager.SkillCastActionStarted += StartSkillCast;
             _unitEventManager.StunStarted += StartStun;
             _unitEventManager.StunEnded += EndStun;
+        }
+
+        private void OnDisable()
+        {
+            _unitEventManager.MoveActionStarted -= StartMove;
+            _unitEventManager.AMoveActionStarted -= StartAMove;
+            _unitEventManager.FollowActionStarted -= StartFollow;
+            _unitEventManager.HoldActionStarted -= StartHold;
+            _unitEventManager.AttackActionStarted -= StartAttack;
+            _unitEventManager.AutoAttackIdleStarted -= StartAutoAttackIdle;
+            _unitEventManager.BuildActionStarted -= StartBuild;
+            _unitEventManager.MineActionStarted -= StartMine;
+            _unitEventManager.HarvestingActionStarted -= StartHarvest;
+            _unitEventManager.SkillCastActionStarted -= StartSkillCast;
+            _unitEventManager.StunStarted -= StartStun;
+            _unitEventManager.StunEnded -= EndStun;
         }
 
         public void Update()
@@ -225,19 +244,6 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
 
         private void OnDestroy()
         {
-            _unitEventManager.MoveActionStarted -= StartMove;
-            _unitEventManager.AMoveActionStarted -= StartAMove;
-            _unitEventManager.FollowActionStarted -= StartFollow;
-            _unitEventManager.HoldActionStarted -= StartHold;
-            _unitEventManager.AttackActionStarted -= StartAttack;
-            _unitEventManager.AutoAttackIdleStarted -= StartAutoAttackIdle;
-            _unitEventManager.BuildActionStarted -= StartBuild;
-            _unitEventManager.MineActionStarted -= StartMine;
-            _unitEventManager.HarvestingActionStarted -= StartHarvest;
-            _unitEventManager.SkillCastActionStarted -= StartSkillCast;
-            _unitEventManager.StunStarted -= StartStun;
-            _unitEventManager.StunEnded -= EndStun;
-
             foreach (var behaviour in _all)
             {
                 behaviour.Dispose();

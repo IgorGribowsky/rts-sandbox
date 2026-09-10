@@ -38,13 +38,18 @@ public class HeldMine : MonoBehaviour
             .GetComponent<PlayerEventController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
+
+        _mineCells = new int?[MinersMaxCount];
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
         _unitEventManager.UnitDied += CreateParentMine;
-        _mineCells = new int?[MinersMaxCount];
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.UnitDied -= CreateParentMine;
     }
 
     // Update is called once per frame
@@ -194,16 +199,4 @@ public class HeldMine : MonoBehaviour
         return n;
     }
 
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.UnitDied -= CreateParentMine;
-    }
 }

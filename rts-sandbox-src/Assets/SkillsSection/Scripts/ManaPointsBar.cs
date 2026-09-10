@@ -5,16 +5,30 @@ public class ManaPointsBar : BarBase
     private ManaValues _manaValues;
     private UnitEventManager _unitEventManager;
 
-    // Start is called before the first frame update
-    public void Start()
+    public new void Awake()
     {
-        base.Start();
+        base.Awake();
 
         _unitEventManager = Unit.GetComponent<UnitEventManager>();
         _manaValues = Unit.GetComponent<ManaValues>();
+    }
+
+    private void OnEnable()
+    {
+        _unitEventManager.ManaPointsChanged += UpdateScale;
+    }
+
+    private void OnDisable()
+    {
+        _unitEventManager.ManaPointsChanged -= UpdateScale;
+    }
+
+    // Start is called before the first frame update
+    public new void Start()
+    {
+        base.Start();
 
         UpdateScale(new ManaPointsChangedEventArgs(_manaValues.CurrentMana));
-        _unitEventManager.ManaPointsChanged += UpdateScale;
     }
 
     protected void UpdateScale(ManaPointsChangedEventArgs args)
@@ -29,18 +43,5 @@ public class ManaPointsBar : BarBase
 
             UpdateBar(percent);
         }
-    }
-
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
-        {
-            return;
-        }
-
-        _unitEventManager.ManaPointsChanged -= UpdateScale;
     }
 }

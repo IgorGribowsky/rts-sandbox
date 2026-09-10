@@ -83,15 +83,29 @@ namespace Assets.SkillsSection.Scripts.Aiming
             HideAll();
         }
 
-        void Start()
+        void Awake()
         {
             _playerEventController = GetComponent<PlayerEventController>();
+        }
 
+        private void OnEnable()
+        {
             if (_playerEventController != null)
             {
                 _playerEventController.CursorMoved += CursorMovedHandler;
             }
+        }
 
+        private void OnDisable()
+        {
+            if (_playerEventController != null)
+            {
+                _playerEventController.CursorMoved -= CursorMovedHandler;
+            }
+        }
+
+        void Start()
+        {
             CreateLines();
             HideAll();
         }
@@ -373,11 +387,6 @@ namespace Assets.SkillsSection.Scripts.Aiming
 
         private void OnDestroy()
         {
-            if (_playerEventController != null)
-            {
-                _playerEventController.CursorMoved -= CursorMovedHandler;
-            }
-
             if (_container != null)
             {
                 Destroy(_container.gameObject);

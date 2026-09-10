@@ -1,10 +1,32 @@
-using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
-using System.Linq;
-using UnityEngine;
 
+/// <summary>
+/// A unit eats supply while it lives and frees it when it dies.
+/// </summary>
 public class UnitSupplyRequirement : UnitSupplyBase
 {
+    /// <summary>
+    /// The limit was actually taken. Guards against giving back supply that was
+    /// never taken — this unit may belong to a team with no player behind it.
+    /// </summary>
+    private bool _taken;
+
+    private void OnEnable()
+    {
+        if (_unitEventManager != null)
+        {
+            _unitEventManager.UnitDied += RemoveSupplyLimit;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_unitEventManager != null)
+        {
+            _unitEventManager.UnitDied -= RemoveSupplyLimit;
+        }
+    }
+
     void Start()
     {
         SetupResources();
@@ -12,31 +34,30 @@ public class UnitSupplyRequirement : UnitSupplyBase
 
     protected override void SetupResources()
     {
-        if (_playerResources != null)
+        if (_playerResources == null || _taken)
         {
-            AddSupplyLimit();
-            _unitEventManager.UnitDied += RemoveSupplyLimit;
+            return;
         }
+
+        _taken = true;
+        AddSupplyLimit();
     }
 
     protected void AddSupplyLimit() => ProcessResources(
         (resourceName, amount) => _playerResources.AddResource(resourceName, amount),
         unitValues => unitValues.ResourceCost);
 
-    protected void RemoveSupplyLimit(DiedEventArgs args) => ProcessResources(
-        (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount),
-        unitValues => unitValues.ResourceCost);
-
-    private void OnDestroy()
+    protected void RemoveSupplyLimit(DiedEventArgs args)
     {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_unitEventManager == null)
+        if (!_taken)
         {
             return;
         }
 
-        _unitEventManager.UnitDied -= RemoveSupplyLimit;
+        _taken = false;
+
+        ProcessResources(
+            (resourceName, amount) => _playerResources.RemoveResource(resourceName, amount),
+            unitValues => unitValues.ResourceCost);
     }
 }

@@ -35,6 +35,14 @@ public class BuildingGridController : MonoBehaviour
 
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
+    }
+
+    private void OnEnable()
+    {
+        if (_playerEventController == null)
+        {
+            return;
+        }
 
         _playerEventController.BuildingStarted += AddToGrid;
         _playerEventController.BuildingRemoved += RemoveFromGrid;
@@ -44,6 +52,23 @@ public class BuildingGridController : MonoBehaviour
         _playerEventController.CurrentCommandEnded += RemoveShadow;
         _playerEventController.CommandAddedToQueue += AddShadow;
         _playerEventController.CommandsQueueCleared += RemoveShadows;
+    }
+
+    private void OnDisable()
+    {
+        if (_playerEventController == null)
+        {
+            return;
+        }
+
+        _playerEventController.BuildingStarted -= AddToGrid;
+        _playerEventController.BuildingRemoved -= RemoveFromGrid;
+        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
+        _playerEventController.CursorMoved -= CursorMovedHandler;
+
+        _playerEventController.CurrentCommandEnded -= RemoveShadow;
+        _playerEventController.CommandAddedToQueue -= AddShadow;
+        _playerEventController.CommandsQueueCleared -= RemoveShadows;
     }
 
     public void Start()
@@ -403,23 +428,4 @@ public class BuildingGridController : MonoBehaviour
         public IBuildCommand Command { get; set; }
     }
 
-    private void OnDestroy()
-    {
-        // Start may never have run: an object destroyed in the frame it
-        // appeared, or one never activated, reaches OnDestroy with this
-        // still null.
-        if (_playerEventController == null)
-        {
-            return;
-        }
-
-        _playerEventController.BuildingStarted -= AddToGrid;
-        _playerEventController.BuildingRemoved -= RemoveFromGrid;
-        _playerEventController.BuildingModChanged -= BuildingModChangedHandler;
-        _playerEventController.CursorMoved -= CursorMovedHandler;
-
-        _playerEventController.CurrentCommandEnded -= RemoveShadow;
-        _playerEventController.CommandAddedToQueue -= AddShadow;
-        _playerEventController.CommandsQueueCleared -= RemoveShadows;
-    }
 }
