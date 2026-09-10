@@ -1,4 +1,4 @@
-using Assets.Scripts.GameObjects.UnitBehaviour;
+﻿using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -198,8 +198,7 @@ public class UnitsController : MonoBehaviour
         var movableSelectedUnits = GetMovableSelectedUnits();
         foreach (var unit in movableSelectedUnits)
         {
-            var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
-            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
+            var pointToMove = point + GetFormationOffset(unit) * ClosenessMultiplier;
             unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
     }
@@ -215,8 +214,7 @@ public class UnitsController : MonoBehaviour
 
         foreach (var unit in SelectedUnits)
         {
-            var unitMovementMaskVector = SelectedUnitsMovementMask[unit.GetInstanceID()].PositionFromCenter;
-            var pointToMove = point + unitMovementMaskVector * ClosenessMultiplier;
+            var pointToMove = point + GetFormationOffset(unit) * ClosenessMultiplier;
             unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
     }
@@ -598,6 +596,21 @@ public class UnitsController : MonoBehaviour
         var unitValues = unit.GetComponent<UnitValues>();
 
         return unitValues == null || unitValues.CurrentHp > 0;
+    }
+
+    /// <summary>
+    /// Where this unit stands in the formation, relative to its centre. Only
+    /// units that can move get a place in the mask, so anything else is sent
+    /// straight to the point clicked instead of dropping the whole order with
+    /// a KeyNotFoundException (T-005).
+    /// </summary>
+    private Vector3 GetFormationOffset(GameObject unit)
+    {
+        UnitMovementMask mask;
+
+        return SelectedUnitsMovementMask.TryGetValue(unit.GetInstanceID(), out mask)
+            ? mask.PositionFromCenter
+            : Vector3.zero;
     }
 
     private List<GameObject> GetMovableSelectedUnits()
