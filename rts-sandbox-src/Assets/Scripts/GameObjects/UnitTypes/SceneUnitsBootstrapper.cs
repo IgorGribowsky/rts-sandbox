@@ -57,6 +57,9 @@ public class SceneUnitsBootstrapper : MonoBehaviour
 
             BuiltUnitsCount++;
 
+            // Destroy waits for the end of the frame, and the placer's preview
+            // mesh would be drawn once on top of the real unit.
+            placer.gameObject.SetActive(false);
             Destroy(placer.gameObject);
         }
     }
