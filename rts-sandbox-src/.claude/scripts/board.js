@@ -146,13 +146,9 @@ function panelPlan(v) {
 
 function panelSmoke(v) {
   const file = path.join(ROOT, '.claude', 'docs', '07-smoke-check.md');
-  if (!v.smoke.length) return [{ text: C.dim('Смоук-чека пока нет. Он наполняется при закрытии важных задач.'), file }];
-  const rows = [{ text: C.bold(`СМОУК-ЧЕК — ${v.smoke.length} пунктов`) }, { text: '' }];
+  if (!v.smoke.length) return [{ text: C.dim('Памятка пока пустая. ИИ дописывает сюда самое важное при закрытии задач.'), file }];
+  const rows = [{ text: C.bold(`СМОУК-ПАМЯТКА — ${v.smoke.length} пунктов`) }, { text: C.dim('  Ручная проверка, когда захочешь. Обязательной нет.') }, { text: '' }];
   for (const s of v.smoke) rows.push({ text: `  [${s.checked ? 'x' : ' '}] ${s.text}`, file });
-  if (v.smoke.length > 15) {
-    rows.push({ text: '' });
-    rows.push({ text: C.yellow('  Больше 15 пунктов — список перестаёт прогоняться за две минуты.') });
-  }
   return rows;
 }
 
@@ -227,7 +223,6 @@ function brief(v) {
 
   const backlog = v.tasks.open.filter((t) => t.milestone === 'backlog');
   out.push(`БЭКЛОГ: ${backlog.length} (от ИИ ${backlog.filter((t) => t.origin === 'ai').length})`);
-  out.push(`СМОУК: ${v.smoke.length} пунктов`);
   out.push(`СЛЕДУЮЩИЙ ID: ${L.nextId(v.tasks, null)}`);
   if (errors.length) {
     out.push(`ФОРМАТ БИТ: ${errors.length} ошибок — прогони board.js --validate и исправь`);
@@ -389,7 +384,9 @@ function tui() {
 function projectName() {
   const text = L.readTextSafe(path.join(ROOT, 'CLAUDE.md')) || '';
   const m = /^#\s+(.+)$/m.exec(text);
-  return (m ? m[1].trim() : path.basename(ROOT)).slice(0, 30);
+  // Шапку ещё не заполнил /intake — в ней заглушка вида «<название игры>».
+  const name = m && !/^</.test(m[1].trim()) ? m[1].trim() : path.basename(ROOT);
+  return name.slice(0, 30);
 }
 
 // ---------------------------------------------------------------- вход
