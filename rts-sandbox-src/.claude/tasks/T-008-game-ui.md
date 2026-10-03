@@ -1,7 +1,7 @@
 ---
 id: T-008
 title: Ресурсы на экране — каркас интерфейса и тема
-status: todo
+status: review
 milestone: v0.3.0
 parent:
 origin: ai
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-022, M-012]
 handoff: []
-checkpoint:
+checkpoint: dd3b30b
 created: 2026-09-05
 updated: 2026-10-04
 ---
@@ -34,10 +34,11 @@ updated: 2026-10-04
 6. Стиль — глазами: один стиль с референсом, не «нейрослоп».
 
 ## План
-- [ ] UIDocument и PanelSettings в сцене, тема USS на переменных
-- [ ] поле иконки ресурса в `GameResources`, сгенерировать три иконки
-- [ ] панель ресурсов по событию `ResourceChanged`, еда как занято/лимит
-- [ ] снимок Game view, сверка со стилем
+- [x] UIDocument и PanelSettings в сцене, тема USS на переменных
+- [x] поле иконки ресурса в `GameResources`, сгенерировать три иконки
+  нарисованы SVG вручную: у генератора MCP нет ключей (Q-14 п.1)
+- [x] панель ресурсов по событию `ResourceChanged`, еда как занято/лимит
+- [x] снимок Game view, сверка со стилем
 
 ## Ход работы
 

@@ -1,0 +1,70 @@
+/* Layout and look of the in-game HUD. Values only through theme variables. */
+
+.hud-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-font-definition: var(--font-display);
+    color: var(--color-text);
+}
+
+.hud-text {
+    -unity-text-outline-width: var(--text-outline);
+    -unity-text-outline-color: var(--color-text-outline);
+    text-shadow: 0 2px 2px var(--color-text-shadow);
+}
+
+/* --- top left: minimap and resources ------------------------------------ */
+
+.hud-top-left {
+    position: absolute;
+    left: var(--edge);
+    top: var(--edge);
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.minimap-slot {
+    display: none;
+}
+
+.resource-bar {
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 14px 4px 8px;
+    border-radius: var(--radius-l);
+    background-color: var(--color-panel-sunken);
+    border-width: 1px;
+    border-color: var(--color-hairline);
+}
+
+.resource-item {
+    flex-direction: row;
+    align-items: center;
+    margin-right: var(--gap-l);
+}
+
+.resource-item:last-child {
+    margin-right: 0;
+}
+
+.resource-icon {
+    width: 44px;
+    height: 44px;
+    margin-right: var(--gap-s);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.resource-value {
+    font-size: var(--text-l);
+    -unity-text-align: middle-left;
+    min-width: 40px;
+    padding: 0;
+    margin: 0;
+}
+
+.resource-value--bump {
+    color: var(--color-accent);
+}

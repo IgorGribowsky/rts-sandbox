@@ -15,4 +15,7 @@ public class Resource
     public ResourceName ResourceName;
 
     public ResourceType ResourceType;
+
+    [Tooltip("Shown next to the amount in the HUD (M-022).")]
+    public Texture2D Icon;
 }

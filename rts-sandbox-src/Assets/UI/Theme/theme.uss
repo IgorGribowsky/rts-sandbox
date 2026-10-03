@@ -1,0 +1,70 @@
+/*
+ * The one place where the interface style lives. Screen stylesheets only
+ * refer to these variables: change a colour here and every element follows.
+ * What the style is about, in words, is in .claude/docs/ui-style.md.
+ */
+:root {
+    /* --- surfaces ------------------------------------------------------- */
+    --color-panel: rgba(16, 21, 34, 0.88);
+    --color-panel-raised: rgb(38, 49, 74);
+    --color-panel-sunken: rgba(6, 9, 16, 0.72);
+    --color-rim: rgb(112, 132, 172);
+    --color-rim-light: rgb(176, 192, 222);
+    --color-rim-dark: rgb(8, 11, 19);
+    --color-hairline: rgba(176, 192, 222, 0.18);
+
+    /* --- accent: what is happening right now ---------------------------- */
+    --color-accent: rgb(255, 204, 82);
+    --color-accent-soft: rgba(255, 204, 82, 0.35);
+    --color-danger: rgb(255, 96, 86);
+
+    /* --- text ----------------------------------------------------------- */
+    --color-text: rgb(248, 244, 232);
+    --color-text-dim: rgb(178, 188, 208);
+    --color-text-outline: rgb(6, 8, 14);
+    --color-text-shadow: rgba(0, 0, 0, 0.75);
+    --color-text-cost-ok: rgb(255, 236, 170);
+    --color-text-cost-missing: rgb(255, 120, 110);
+
+    /* --- characteristics ------------------------------------------------ */
+    --color-hp: rgb(232, 64, 70);
+    --color-hp-back: rgba(70, 14, 18, 0.9);
+    --color-mana: rgb(64, 146, 255);
+    --color-mana-back: rgba(12, 28, 70, 0.9);
+    --color-xp: rgb(246, 200, 72);
+    --color-xp-back: rgba(64, 48, 8, 0.9);
+
+    /* --- icon states (multiplied into the picture) ---------------------- */
+    --tint-normal: rgb(255, 255, 255);
+    --tint-cooldown: rgb(150, 150, 150);
+    --tint-no-mana: rgb(92, 120, 235);
+    --tint-disabled: rgb(120, 120, 120);
+
+    /* --- fonts ---------------------------------------------------------- */
+    --font-display: url("project://database/Assets/UI/Fonts/RussoOne-Regular.ttf");
+    --font-body: url("project://database/Assets/UI/Fonts/FiraSansCondensed-Medium.ttf");
+    --font-body-strong: url("project://database/Assets/UI/Fonts/FiraSansCondensed-SemiBold.ttf");
+
+    --text-xs: 15px;
+    --text-s: 18px;
+    --text-m: 22px;
+    --text-l: 28px;
+    --text-xl: 34px;
+    --text-outline: 1.6px;
+
+    /* --- geometry ------------------------------------------------------- */
+    --edge: 18px;
+    --gap-s: 6px;
+    --gap-m: 12px;
+    --gap-l: 20px;
+    --radius-s: 6px;
+    --radius-m: 12px;
+    --radius-l: 18px;
+    --rim: 2px;
+
+    /* --- motion --------------------------------------------------------- */
+    --press-scale: 0.9;
+    --press-duration: 0.07s;
+    --release-duration: 0.16s;
+    --fade-duration: 0.12s;
+}
