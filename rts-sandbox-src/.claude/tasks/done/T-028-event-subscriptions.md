@@ -1,7 +1,7 @@
 ---
 id: T-028
 title: Подписки на события привести к OnEnable/OnDisable
-status: review
+status: done
 milestone: v0.2.0
 parent:
 origin: user
@@ -11,7 +11,7 @@ mechanics: [M-004]
 handoff: []
 checkpoint: afef7d6
 created: 2026-09-05
-updated: 2026-09-10
+updated: 2026-10-04
 ---
 
 # T-028 · Подписки на события привести к OnEnable/OnDisable
@@ -148,3 +148,5 @@ Play mode — события продолжают работать, дублей
 событий — недостроенная казарма молчит, как и задумано.
 
 Что осталось на глаз пользователя: смоук-чек целиком.
+
+Принято пользователем 2026-10-04 (ответ в чате).

@@ -1,7 +1,7 @@
 ---
 id: T-017
 title: FPSTracker пишет в консоль каждый кадр
-status: review
+status: done
 milestone: v0.2.0
 parent:
 origin: ai
@@ -11,7 +11,7 @@ mechanics: [M-018]
 handoff: []
 checkpoint: 905dfb9
 created: 2026-09-05
-updated: 2026-09-10
+updated: 2026-10-04
 ---
 
 # T-017 · FPSTracker пишет в консоль каждый кадр
@@ -105,3 +105,5 @@ void Update()
 
 Что осталось на пользователя: посмотреть глазом, что лейбл стоит там, где
 удобно, и не лезет на будущий HUD.
+
+Принято пользователем 2026-10-04 (ответ в чате).
