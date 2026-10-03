@@ -1,7 +1,7 @@
 ---
 id: T-027
 title: Юниты собираются фабрикой из UnitTypeData
-status: todo
+status: in-progress
 milestone: v0.2.0
 parent:
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-021, M-018, M-005, M-011, M-010]
 handoff: []
-checkpoint: c82ffd0
+checkpoint: e674cc2
 created: 2026-09-05
 updated: 2026-10-04
 ---

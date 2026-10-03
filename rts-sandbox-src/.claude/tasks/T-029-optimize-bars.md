@@ -1,7 +1,7 @@
 ---
 id: T-029
 title: Оптимизировать полоски над юнитами
-status: review
+status: in-progress
 milestone: v0.2.0
 parent:
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-017, M-011]
 handoff: []
-checkpoint: bf449c7
+checkpoint: e674cc2
 created: 2026-09-05
 updated: 2026-10-04
 ---
