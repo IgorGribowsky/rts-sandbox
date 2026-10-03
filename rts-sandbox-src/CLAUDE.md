@@ -2,10 +2,12 @@
 # rts-sandbox (рабочее название)
 
 Жанр: RTS в реальном времени, 3D, вид сверху · Ощущение: не сформулировано,
-см. Q-1 в docs/06-open-questions.md · Референс: не задан
-Платформы: ПК, управление мышью и клавиатурой
+см. Q-1 в docs/06-open-questions.md · Референс: Warcraft III и его кастомные
+карты; стиль интерфейса — references/menu.jpg
+Платформы: ПК, управление мышью и клавиатурой; интерфейс в мобильном виде
 Стек: Unity 6000.2.13f1 · Built-in Render Pipeline · legacy Input Manager ·
-AI Navigation 2.0.9 · uGUI · C# · MCP for Unity
+AI Navigation 2.0.9 · UI Toolkit (HUD) · uGUI (полоски над юнитами) · C# ·
+MCP for Unity
 <!-- PIPELINE:HEADER:END -->
 
 <!-- PIPELINE:RULES:START — перезаписывается install.js --update, руками не правь -->
