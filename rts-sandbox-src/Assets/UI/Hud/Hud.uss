@@ -68,3 +68,162 @@
 .resource-value--bump {
     color: var(--color-accent);
 }
+
+/* --- bottom right: command ring ----------------------------------------- */
+
+.hud-bottom-right {
+    position: absolute;
+    right: var(--edge);
+    bottom: var(--edge);
+}
+
+/* Size of the ring's layout box; the parts are placed around its centre in code. */
+.command-ring {
+    width: 430px;
+    height: 352px;
+}
+
+.gauge {
+    --gauge-edge: var(--color-rim-dark);
+}
+
+.gauge--hp {
+    --gauge-fill: var(--color-hp);
+    --gauge-back: var(--color-hp-back);
+}
+
+.gauge--mana {
+    --gauge-fill: var(--color-mana);
+    --gauge-back: var(--color-mana-back);
+}
+
+.gauge--xp {
+    --gauge-fill: var(--color-xp);
+    --gauge-back: var(--color-xp-back);
+}
+
+.ring-value {
+    font-size: var(--text-s);
+    -unity-text-align: middle-center;
+    padding: 0;
+    margin: 0;
+    background-color: var(--color-panel);
+    border-radius: var(--radius-m);
+    border-width: var(--rim);
+    border-color: var(--color-rim-dark);
+}
+
+.ring-value--hp {
+    border-color: var(--color-hp);
+}
+
+.ring-value--mana {
+    border-color: var(--color-mana);
+}
+
+.ring-value--xp {
+    border-color: var(--color-xp);
+}
+
+/* --- ring buttons ---------------------------------------------------------- */
+
+.ring-button {
+    position: absolute;
+    transition-property: scale;
+    transition-duration: var(--release-duration);
+    transition-timing-function: ease-out-back;
+}
+
+.ring-button:active {
+    scale: var(--press-scale) var(--press-scale);
+    transition-duration: var(--press-duration);
+    transition-timing-function: ease-out;
+}
+
+.ring-button.is-inert:active {
+    scale: 1 1;
+}
+
+.ring-button__glow {
+    position: absolute;
+    left: -9%;
+    top: -9%;
+    width: 118%;
+    height: 118%;
+    background-image: var(--img-glow);
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--fade-duration);
+}
+
+.ring-button:hover > .ring-button__glow {
+    opacity: 0.3;
+}
+
+.ring-button.is-inert:hover > .ring-button__glow {
+    opacity: 0;
+}
+
+.ring-button.is-pulsed > .ring-button__glow {
+    opacity: 0.75;
+}
+
+.ring-button.is-active > .ring-button__glow {
+    opacity: 1;
+}
+
+.ring-button__frame {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.ring-button--big > .ring-button__frame {
+    background-image: var(--img-frame-big);
+}
+
+.ring-button--small > .ring-button__frame {
+    background-image: var(--img-frame-small);
+}
+
+.ring-button__icon {
+    position: absolute;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 70%;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.ring-button__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ring-attack > .ring-button__icon {
+    left: 13%;
+    top: 13%;
+    width: 74%;
+    height: 74%;
+    background-image: var(--img-sword);
+}
+
+.ring-attack.is-placeholder > .ring-button__icon {
+    background-image: var(--img-no-attack);
+}
+
+.ring-attack.is-placeholder > .ring-button__frame {
+    -unity-background-image-tint-color: var(--tint-disabled);
+}
+
+.ring-hold > .ring-button__icon {
+    background-image: var(--img-hold);
+}
+

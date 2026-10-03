@@ -21,8 +21,11 @@ namespace Assets.Scripts.UI
         private PlayerResources _playerResources;
         private PlayerEventController _playerEventController;
         private GameResources _gameResources;
+        private CommandInput _commands;
+        private int _playerTeamId;
 
         private ResourcePanel _resourcePanel;
+        private CommandRing _commandRing;
 
         /// <summary>The root of the HUD tree, null until the document is up.</summary>
         public VisualElement Root => _root;
@@ -34,6 +37,8 @@ namespace Assets.Scripts.UI
             var player = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString());
             _playerResources = player.GetComponent<PlayerResources>();
             _playerEventController = player.GetComponent<PlayerEventController>();
+            _commands = player.GetComponent<CommandInput>();
+            _playerTeamId = player.GetComponent<PlayerTeamMember>().TeamId;
 
             var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
             _gameResources = gameController.GetComponent<GameResources>();
@@ -59,6 +64,8 @@ namespace Assets.Scripts.UI
         {
             _resourcePanel?.Dispose();
             _resourcePanel = null;
+            _commandRing?.Dispose();
+            _commandRing = null;
         }
 
         private void Build()
@@ -71,6 +78,13 @@ namespace Assets.Scripts.UI
                 _gameResources,
                 _playerResources,
                 _playerEventController);
+
+            _commandRing?.Dispose();
+            _commandRing = new CommandRing(
+                _root.Q<VisualElement>("command-ring"),
+                _commands,
+                _playerEventController,
+                _playerTeamId);
         }
 
         /// <summary>

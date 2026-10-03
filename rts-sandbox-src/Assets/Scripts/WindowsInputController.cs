@@ -1,5 +1,6 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
+using Assets.Scripts.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode ReturnCameraKey = KeyCode.Space;
     public KeyCode AddToQueueKey = KeyCode.LeftShift;
 
-    public bool AClickPressed { get => aClickPressed; }
+    public bool AClickPressed { get => _commands != null && _commands.IsAClick; }
 
     private CameraController _cameraController;
     private UnitsController _unitController;
@@ -24,11 +25,14 @@ public class WindowsInputController : MonoBehaviour
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
     private SkillController _skillController;
+    private CommandInput _commands;
+
+    /// <summary>Optional: without a HUD every click goes to the world, as before.</summary>
+    private HudController _hud;
 
     private const float snapStep = 0.03f * GameConstants.GridCellSize;
 
     private bool selectionStarted = false;
-    private bool aClickPressed = false;
     private int clickLayerMask;
     private int buildLayerMask;
     private Vector3 lastSnappedPosition;
@@ -97,6 +101,9 @@ public class WindowsInputController : MonoBehaviour
         _selectionBoxController = Controller.GetComponent<SelectionBoxController>();
         _playerEventController = Controller.GetComponent<PlayerEventController>();
         _skillController = Controller.GetComponent<SkillController>();
+        _commands = Controller.GetComponent<CommandInput>();
+        _commands.QueueModifierSource = () => Input.GetKey(AddToQueueKey);
+        _hud = FindFirstObjectByType<HudController>();
     }
 
     void Update()
@@ -126,7 +133,13 @@ public class WindowsInputController : MonoBehaviour
             _cameraController.MoveCamera(moveCameraVector * Time.deltaTime);
         }
 
-        if (Input.mouseScrollDelta.y != 0)
+        // A click that lands on the HUD belongs to the HUD: the world must not
+        // move units or drop the selection because a button was pressed (M-022).
+        var pointerOverUI = _hud != null && _hud.IsPointerOverUI(Input.mousePosition);
+        var leftDown = Input.GetMouseButtonDown(0) && !pointerOverUI;
+        var rightDown = Input.GetMouseButtonDown(1) && !pointerOverUI;
+
+        if (Input.mouseScrollDelta.y != 0 && !pointerOverUI)
         {
             var zoomDelta = -1 * Input.mouseScrollDelta.y * Time.deltaTime * _cameraController.SensitivityZoom;
             _cameraController.ChangeZoom(zoomDelta);
@@ -140,25 +153,25 @@ public class WindowsInputController : MonoBehaviour
 
         var isShiftButtonPressed = Input.GetKey(AddToQueueKey);
 
-        if (aClickPressed)
+        if (_commands.IsAClick)
         {
-            if (Input.GetMouseButtonDown(1))
+            if (rightDown)
             {
-                aClickPressed = false;
+                _commands.ExitAClick();
             }
 
             if (Input.GetKeyDown(CancelKey))
             {
-                aClickPressed = false;
+                _commands.ExitAClick();
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (leftDown)
             {
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
                 {
-                    aClickPressed = false;
+                    _commands.ExitAClick();
 
                     var gameObject = hit.transform.gameObject;
                     if (gameObject.layer == (int)Layer.MovementSurface)
@@ -175,19 +188,19 @@ public class WindowsInputController : MonoBehaviour
             return;
         }
 
-        if (_buildingController.BuildingMod)
+        if (_commands.IsPlacingBuilding)
         {
-            if (Input.GetMouseButtonDown(1))
+            if (rightDown)
             {
-                _buildingController.DisableBuildingMod();
+                _commands.CancelBuildingPlacement();
             }
 
             if (Input.GetKeyDown(CancelKey))
             {
-                _buildingController.DisableBuildingMod();
+                _commands.CancelBuildingPlacement();
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (leftDown)
             {
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -200,22 +213,22 @@ public class WindowsInputController : MonoBehaviour
             return;
         }
 
-        if (_buildingController.BuildingMenuMod)
+        if (_commands.IsBuildMenuOpen)
         {
             if (Input.GetKeyDown(CancelKey))
             {
-                _buildingController.DisableBuildingMenuMod();
+                _commands.CloseBuildMenu();
                 return;
             }
 
             if (AlphabetKeyDown(out KeyCode alphabetKeyDown))
             {
-                _buildingController.EnableBuildingMod(alphabetKeyDown);
+                _commands.ChooseBuilding(alphabetKeyDown);
                 return;
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (leftDown)
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -261,7 +274,7 @@ public class WindowsInputController : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (rightDown)
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
@@ -313,12 +326,12 @@ public class WindowsInputController : MonoBehaviour
         if (Input.GetKeyDown(CancelKey))
         {
             heldSkillKey = KeyCode.None;
-            _unitController.OnCancelClick();
+            _commands.Cancel();
         }
 
         if (KeypadCodeDown(out KeyCode keypadCode, out int num))
         {
-            _unitController.ProduceUnit(num);
+            _commands.Produce(num);
         }
 
         if (Input.GetKeyDown(FixScreenKey))
@@ -328,17 +341,19 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.GetKeyDown(OpenBuildingMenuKey))
         {
-            _buildingController.EnableBuildingMenuMod();
+            // Only reached with the menu closed: inside the menu `B` is the
+            // letter of a building (Barracks), as it always was.
+            _commands.ToggleBuildMenu();
         }
 
         if (Input.GetKeyDown(AClickKey))
         {
-            aClickPressed = true;
+            _commands.EnterAClick();
         }
 
         if (Input.GetKeyDown(HoldKey))
         {
-            _unitController.OnHoldKeyDown(isShiftButtonPressed);
+            _commands.Hold(isShiftButtonPressed);
         }
     }
 

@@ -62,6 +62,15 @@
     --radius-l: 18px;
     --rim: 2px;
 
+    /* --- pictures ------------------------------------------------------- */
+    --img-frame-big: url("project://database/Assets/UI/Icons/frame_big.png");
+    --img-frame-small: url("project://database/Assets/UI/Icons/frame_small.png");
+    --img-glow: url("project://database/Assets/UI/Icons/glow_ring.png");
+    --img-sword: url("project://database/Assets/UI/Icons/icon_sword.png");
+    --img-no-attack: url("project://database/Assets/UI/Icons/icon_no_attack.png");
+    --img-hold: url("project://database/Assets/UI/Icons/icon_hold.png");
+    --img-badge-level: url("project://database/Assets/UI/Icons/badge_level.png");
+
     /* --- motion --------------------------------------------------------- */
     --press-scale: 0.9;
     --press-duration: 0.07s;

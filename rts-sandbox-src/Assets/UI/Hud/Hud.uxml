@@ -6,5 +6,8 @@
             <ui:VisualElement name="minimap-slot" class="minimap-slot" picking-mode="Ignore" />
             <ui:VisualElement name="resource-bar" class="resource-bar" picking-mode="Ignore" />
         </ui:VisualElement>
+        <ui:VisualElement name="bottom-right" class="hud-bottom-right" picking-mode="Ignore">
+            <ui:VisualElement name="command-ring" class="command-ring" picking-mode="Ignore" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

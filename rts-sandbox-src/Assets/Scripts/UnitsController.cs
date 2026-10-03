@@ -17,6 +17,12 @@ public class UnitsController : MonoBehaviour
 
     public int SelectedUnitsTeamId { get; set; }
 
+    /// <summary>
+    /// The unit the HUD shows and the skill keys cast with: the first of the
+    /// selection, which is the highest Rang when picked with a frame (M-022).
+    /// </summary>
+    public GameObject MainSelectedUnit => SelectedUnits.FirstOrDefault();
+
     private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
     private TeamController _teamController;
     private GameController _gameController;
@@ -368,7 +374,15 @@ public class UnitsController : MonoBehaviour
 
     public void SelectedUnitDiedHandler(DiedEventArgs args)
     {
-        SelectedUnits.Remove(args.Dead);
+        if (SelectedUnits.Remove(args.Dead))
+        {
+            RaiseSelectionChanged();
+        }
+    }
+
+    private void RaiseSelectionChanged()
+    {
+        _playerEventController.OnSelectionChanged(SelectedUnits, MainSelectedUnit, SelectedUnitsTeamId);
     }
 
     public void StartSelection(Vector3 point)
@@ -494,6 +508,8 @@ public class UnitsController : MonoBehaviour
                 _buildingController.DisableBuildingMenuMod();
             }
         }
+
+        RaiseSelectionChanged();
     }
 
     private Bounds CreateBoundsFromSelection(Vector3 start, Vector3 end)

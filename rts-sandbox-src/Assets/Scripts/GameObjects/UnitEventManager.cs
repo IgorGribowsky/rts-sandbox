@@ -52,6 +52,14 @@ public class UnitEventManager : MonoBehaviour
         HealthPointsChanged?.Invoke(new HealthPointsChangedEventArgs(currentHp));
     }
 
+    public event CurrentCommandChangedHandler CurrentCommandChanged;
+
+    /// <summary>The order the unit runs has changed, or the unit went idle (M-023).</summary>
+    public void OnCurrentCommandChanged(Assets.Scripts.Infrastructure.Abstractions.ICommand command)
+    {
+        CurrentCommandChanged?.Invoke(new CurrentCommandChangedEventArgs(command));
+    }
+
     public event ManaPointsChangedHandler ManaPointsChanged;
 
     public void OnManaPointsChanged(float currentMana)

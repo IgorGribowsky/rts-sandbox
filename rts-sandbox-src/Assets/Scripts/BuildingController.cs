@@ -34,13 +34,25 @@ public class BuildingController : MonoBehaviour
 
         if (isBuilderSelected)
         {
-            _buildingMenuMod = true;
+            SetBuildingMenuMod(true);
         }
     }
 
     public void DisableBuildingMenuMod()
     {
-        _buildingMenuMod = false;
+        SetBuildingMenuMod(false);
+    }
+
+    /// <summary>One place the menu flag changes, so the HUD hears every change.</summary>
+    private void SetBuildingMenuMod(bool state)
+    {
+        if (_buildingMenuMod == state)
+        {
+            return;
+        }
+
+        _buildingMenuMod = state;
+        _playerEventController.OnBuildingMenuModChanged(state);
     }
 
     public void EnableBuildingMod(KeyCode key)
@@ -55,8 +67,8 @@ public class BuildingController : MonoBehaviour
             if (building != null)
             {
                 _buildingMod = true;
-                _buildingMenuMod = false;
                 Building = building.Building;
+                SetBuildingMenuMod(false);
                 _playerEventController.OnBuildingModChanged(_buildingMod);
             }
         }
@@ -64,7 +76,7 @@ public class BuildingController : MonoBehaviour
 
     public void DisableBuildingMod()
     {
-        _buildingMenuMod = false;
+        SetBuildingMenuMod(false);
         _buildingMod = false;
         _playerEventController.OnBuildingModChanged(_buildingMod);
     }

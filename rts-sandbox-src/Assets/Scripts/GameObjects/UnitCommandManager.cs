@@ -18,6 +18,12 @@ namespace Assets.Scripts.GameObjects
 
         public bool HasCommandInQueue { get => CommandsQueue.Any(); }
 
+        /// <summary>The order running now; Idle when the queue is empty (M-023).</summary>
+        public UnitCommandKind CurrentCommandKind => CurrentRunningCommand?.Kind ?? UnitCommandKind.Idle;
+
+        /// <summary>The skill being cast or walked up to, null for any other order.</summary>
+        public UnitSkill CurrentSkill => (CurrentRunningCommand as SkillCastCommand)?.args.UnitSkill;
+
         private UnitEventManager _unitEventManager;
 
         private ICommand CurrentRunningCommand;
@@ -179,7 +185,7 @@ namespace Assets.Scripts.GameObjects
             {
                 CommandListInfo.RemoveAt(0);
                 TriggerEventCurrentCommandEnded();
-                CurrentRunningCommand = CommandsQueue.Dequeue();
+                SetCurrentCommand(CommandsQueue.Dequeue());
                 CurrentRunningCommandInfo = CurrentRunningCommand.GetType().Name;
                 if (CurrentRunningCommand.Check())
                 {
@@ -219,14 +225,14 @@ namespace Assets.Scripts.GameObjects
 
             // Nothing to go back to, or it stopped making sense while the unit
             // stood there: take the next one, or go idle.
-            CurrentRunningCommand = null;
+            SetCurrentCommand(null);
             RunNextCommand(new EventArgs());
         }
 
         private void SetIdleState()
         {
             TriggerEventCurrentCommandEnded();
-            CurrentRunningCommand = null;
+            SetCurrentCommand(null);
             CurrentRunningCommandInfo = "Idle";
             _unitEventManager.OnAutoAttackIdleStarted(gameObject.transform.position);
         }
@@ -239,7 +245,7 @@ namespace Assets.Scripts.GameObjects
                 CommandsQueue.Clear();
                 CommandListInfo.Clear();
                 TriggerEventCurrentCommandEnded();
-                CurrentRunningCommand = null;
+                SetCurrentCommand(null);
                 CurrentRunningCommandInfo = "";
             }
 
@@ -253,6 +259,21 @@ namespace Assets.Scripts.GameObjects
             {
                 RunNextCommand(new EventArgs());
             }
+        }
+
+        /// <summary>
+        /// The one place the running order changes, so that whoever shows it
+        /// hears about every change (M-023).
+        /// </summary>
+        private void SetCurrentCommand(ICommand command)
+        {
+            if (CurrentRunningCommand == command)
+            {
+                return;
+            }
+
+            CurrentRunningCommand = command;
+            _unitEventManager.OnCurrentCommandChanged(command);
         }
 
         private void TriggerEventCurrentCommandEnded()
@@ -273,6 +294,8 @@ namespace Assets.Scripts.GameObjects
         #region Commands
         private class MoveCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Move;
+
             public MoveCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -296,6 +319,8 @@ namespace Assets.Scripts.GameObjects
 
         private class AttackCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Attack;
+
             public AttackCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -319,6 +344,8 @@ namespace Assets.Scripts.GameObjects
 
         private class FollowCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Follow;
+
             public FollowCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -342,6 +369,8 @@ namespace Assets.Scripts.GameObjects
 
         private class AMoveCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.AMove;
+
             public MoveCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -365,6 +394,8 @@ namespace Assets.Scripts.GameObjects
 
         private class BuildCommand : IBuildCommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Build;
+
             public BuildCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -398,6 +429,8 @@ namespace Assets.Scripts.GameObjects
 
         private class HoldCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Hold;
+
             public HoldCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -421,6 +454,8 @@ namespace Assets.Scripts.GameObjects
 
         private class MineCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Mine;
+
             public MineCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -444,6 +479,8 @@ namespace Assets.Scripts.GameObjects
 
         private class HarvestingCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.Harvest;
+
             public HarvestingCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;
@@ -467,6 +504,8 @@ namespace Assets.Scripts.GameObjects
 
         private class SkillCastCommand : ICommand
         {
+            public UnitCommandKind Kind => UnitCommandKind.SkillCast;
+
             public SkillCastCommandReceivedEventArgs args;
 
             private UnitEventManager _unitEventManager;

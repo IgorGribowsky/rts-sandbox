@@ -24,6 +24,23 @@ public class PlayerEventController : MonoBehaviour
         BuildingModChanged?.Invoke(new ModStateChangedEventArgs(state));
     }
 
+    public event ModStateChangedHandler BuildingMenuModChanged;
+    public void OnBuildingMenuModChanged(bool state)
+    {
+        BuildingMenuModChanged?.Invoke(new ModStateChangedEventArgs(state));
+    }
+
+    public event SelectionChangedHandler SelectionChanged;
+
+    /// <summary>
+    /// The selection is a different set of units now. Raised after every pick
+    /// and after a selected unit died, so the HUD never shows a stale unit.
+    /// </summary>
+    public void OnSelectionChanged(IReadOnlyList<GameObject> units, GameObject mainUnit, int teamId)
+    {
+        SelectionChanged?.Invoke(new SelectionChangedEventArgs(units, mainUnit, teamId));
+    }
+
     public event BuildingStartedHandler BuildingStarted;
     public void OnBuildingStarted(Vector3 point, GameObject builder, GameObject building)
     {
