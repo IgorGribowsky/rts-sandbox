@@ -43,7 +43,7 @@ public static class BarsBillboard
 ///
 /// Does as little as it can get away with (T-029): nothing at all while the
 /// unit is off screen — Unity tells us with OnBecameVisible — nothing while no
-/// bar is showing, no turning unless the camera actually turned, and no
+/// bar is showing, no turning unless the bars actually look elsewhere, and no
 /// re-stacking unless a bar appeared or disappeared.
 /// </summary>
 public class BarsContaining : MonoBehaviour
@@ -60,7 +60,6 @@ public class BarsContaining : MonoBehaviour
     private bool _hasVisibleBar;
 
     private bool _needsReorder;
-    private Quaternion _appliedRotation = Quaternion.identity;
 
     void Awake()
     {
@@ -89,18 +88,24 @@ public class BarsContaining : MonoBehaviour
         ApplyContainerState();
     }
 
-    void Update()
+    /// <summary>
+    /// LateUpdate, not Update: the NavMesh agent turns the unit after Update,
+    /// and the bars would trail one frame behind every turn.
+    /// </summary>
+    void LateUpdate()
     {
         if (!_isVisible || !_hasVisibleBar || _barsContainer == null)
         {
             return;
         }
 
+        // Compared with the container itself, not with the last rotation we
+        // set: the container is a child of the unit, so the unit turning moves
+        // it just as much as the camera turning does (T-029, after acceptance).
         var rotation = BarsBillboard.Rotation;
-        if (rotation != _appliedRotation)
+        if (_barsContainer.rotation != rotation)
         {
             _barsContainer.rotation = rotation;
-            _appliedRotation = rotation;
         }
 
         if (_needsReorder)
@@ -187,8 +192,7 @@ public class BarsContaining : MonoBehaviour
         if (shouldBeOn)
         {
             // Coming back into view: face the camera at once, do not wait a frame.
-            _appliedRotation = BarsBillboard.Rotation;
-            _barsContainer.rotation = _appliedRotation;
+            _barsContainer.rotation = BarsBillboard.Rotation;
             ReOrderBars();
             _needsReorder = false;
         }
