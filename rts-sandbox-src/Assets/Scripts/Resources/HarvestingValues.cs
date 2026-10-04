@@ -16,7 +16,7 @@ public class HarvestingValues : MonoBehaviour
 
     public bool IsHarvestor { get => Stats.IsHarvestor; set => Stats.IsHarvestor = value; }
 
-    public List<ResourceName> ResourcesCanBeHarvested { get => Stats.ResourcesCanBeHarvested; set => Stats.ResourcesCanBeHarvested = value; }
+    public List<ResourceDefinition> HarvestableResources { get => Stats.HarvestableResources; set => Stats.HarvestableResources = value; }
 
     public float HarvestingRate { get => Stats.HarvestingRate; set => Stats.HarvestingRate = value; }
 

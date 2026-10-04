@@ -9,7 +9,7 @@ public class ResourceValues : MonoBehaviour
 
     public bool IsHarvestedResource = false;
 
-    public ResourceName ResourceName;
+    public ResourceDefinition Resource;
 
     public int ResourcesAmount;
 }

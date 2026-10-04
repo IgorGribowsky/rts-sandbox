@@ -131,7 +131,7 @@ public class HarvestingStats
     public bool IsMiner = false;
     public bool IsHarvestor = false;
 
-    public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+    [Tooltip("What this worker can mine or cut (T-052).")]
     public List<ResourceDefinition> HarvestableResources = new List<ResourceDefinition>();
 
     public float HarvestingRate = 1f;
@@ -141,7 +141,7 @@ public class HarvestingStats
     public HarvestingStats Clone()
     {
         var copy = (HarvestingStats)MemberwiseClone();
-        copy.ResourcesCanBeHarvested = new List<ResourceName>(ResourcesCanBeHarvested);
+        copy.HarvestableResources = new List<ResourceDefinition>(HarvestableResources);
         return copy;
     }
 }

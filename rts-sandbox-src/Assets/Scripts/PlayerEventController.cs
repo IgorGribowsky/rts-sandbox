@@ -54,7 +54,7 @@ public class PlayerEventController : MonoBehaviour
     }
 
     public event ResourceChangedHandler ResourceChanged;
-    public void OnResourceChanged(ResourceName name, ResourceType type, int oldValue, int newValue)
+    public void OnResourceChanged(ResourceDefinition name, ResourceType type, int oldValue, int newValue)
     {
         ResourceChanged?.Invoke(new ResourceChangedEventArgs(name, type, oldValue, newValue));
     }
@@ -82,7 +82,7 @@ public class PlayerEventController : MonoBehaviour
     }
 
     public event ResourceGainedHandler ResourceGained;
-    public void OnResourceGained(ResourceName name, int amount, Vector3 position)
+    public void OnResourceGained(ResourceDefinition name, int amount, Vector3 position)
     {
         ResourceGained?.Invoke(new ResourceGainedEventArgs(name, amount, position));
     }

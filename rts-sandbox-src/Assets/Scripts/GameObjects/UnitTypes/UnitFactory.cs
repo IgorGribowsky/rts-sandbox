@@ -160,7 +160,7 @@ public static class UnitFactory
             resourceValues.IsMine = type.IsMine;
             resourceValues.IsHeldMine = type.IsHeldMine;
             resourceValues.IsHarvestedResource = type.IsHarvestedResource;
-            resourceValues.ResourceName = type.ResourceName;
+            resourceValues.Resource = type.Resource;
             resourceValues.ResourcesAmount = type.ResourcesAmount;
 
             if (type.IsHarvestedResource)
@@ -197,7 +197,7 @@ public static class UnitFactory
         if (type.StoresHarvestedResources)
         {
             unit.AddComponent<HarvestedResourcesStorage>().StoredResources =
-                new List<Assets.Scripts.Infrastructure.Enums.ResourceName>(type.StoredResources);
+                new List<ResourceDefinition>(type.ResourcesToStore);
         }
 
         if (type.RequiresSupply)

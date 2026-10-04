@@ -92,7 +92,6 @@ public class UnitTypeData : ScriptableObject
     public bool IsMine = false;
     public bool IsHeldMine = false;
     public bool IsHarvestedResource = false;
-    public ResourceName ResourceName;
     [Tooltip("What this mine or tree gives (T-052).")]
     public ResourceDefinition Resource;
     public int ResourcesAmount = 0;
@@ -108,7 +107,6 @@ public class UnitTypeData : ScriptableObject
     public int MinersMaxCount = 5;
 
     [Header("Storage")]
-    public List<ResourceName> StoredResources = new List<ResourceName>();
     [Tooltip("What workers may hand in here (T-052).")]
     public List<ResourceDefinition> ResourcesToStore = new List<ResourceDefinition>();
 

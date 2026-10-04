@@ -14,10 +14,10 @@ tasks: [T-047, T-056, T-063]
 
 ## Как работает
 Дерево — префаб `Tree` с тегом `HarvestedResource`:
-`IsHarvestedResource = 1`, `ResourceName = Wood`, `ResourcesAmount = 100`.
+`IsHarvestedResource = 1`, `Resource = Wood` (ассет, T-052), `ResourcesAmount = 100`.
 
 Рабочий должен иметь `HarvestingValues.IsHarvestor` и нужный ресурс в списке
-`ResourcesCanBeHarvested` (у Builder там только Wood).
+`Harvesting.HarvestableResources` (у Builder там только Wood).
 
 Числа рабочего (Builder): `HarvestingRate` 1 с на тик,
 `HarvestingValuePerTick` 1 единица за тик, `HarvestingMaxValue` 10 — сколько
@@ -31,7 +31,7 @@ tasks: [T-047, T-056, T-063]
 3. Набрал `HarvestingMaxValue` — сам ищет склад и идёт туда.
 4. У склада сдаёт всё в `PlayerResources` и возвращается к дереву.
 5. Дерево кончилось (`ResourcesAmount <= 0`) — оно уничтожается, юнит
-   ищет ближайшее другое с тем же `ResourceName`.
+   ищет ближайшее другое с тем же ресурсом.
 
 Места и толпа (T-063). У дерева и у склада рабочий занимает своё место
 по окружности (`ApproachSlots`, M-006), а не толпится в одной точке. У
@@ -47,7 +47,7 @@ tasks: [T-047, T-056, T-063]
 включённым `HarvestedResourcesStorage`.
 
 Склад — любое здание с компонентом `HarvestedResourcesStorage` и нужным
-ресурсом в списке `StoredResources`. Пока здание строится, компонент
+ресурсом в списке `ResourcesToStore` типа (на компоненте — `StoredResources`). Пока здание строится, компонент
 выключен и складом не считается.
 
 Ручная сдача: ПКМ по своему складу, когда рабочий уже что-то несёт, отправит

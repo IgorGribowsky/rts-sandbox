@@ -50,7 +50,6 @@ public class UnitProducing : MonoBehaviour
     private BuildingValues _buildingValues;
     private PlayerResources _playerResources;
     private PlayerEventController _playerEventController;
-    private GameResources _gameResources;
 
     private bool isProcessing = false;
 
@@ -73,8 +72,6 @@ public class UnitProducing : MonoBehaviour
             .GetComponent<PlayerResources>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
-        _gameResources = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
-            .GetComponent<GameResources>();
     }
 
     private void OnEnable()
@@ -305,20 +302,19 @@ public class UnitProducing : MonoBehaviour
                 continue;
             }
 
-            var resource = _playerResources.ResourcesAmount.FirstOrDefault(r => r.ResourceName == cost.ResourceName);
-            if (resource == null || IsSupply(cost.ResourceName))
+            var resource = _playerResources.ResourcesAmount.FirstOrDefault(r => r.Resource == cost.Resource);
+            if (resource == null || IsSupply(cost.Resource))
             {
                 continue;
             }
 
-            _playerResources.AddResource(cost.ResourceName, cost.Amount);
+            _playerResources.AddResource(cost.Resource, cost.Amount);
         }
     }
 
-    private bool IsSupply(ResourceName name)
+    private static bool IsSupply(ResourceDefinition resource)
     {
-        var type = _gameResources.Resources.FirstOrDefault(r => r.ResourceName == name)?.ResourceType;
-        return type == ResourceType.SupplyResource;
+        return resource != null && resource.IsSupply;
     }
 
     private void RaiseProducingStateChanged(bool producing)

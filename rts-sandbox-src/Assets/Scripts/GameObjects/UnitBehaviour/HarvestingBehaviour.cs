@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class HarvestingBehaviour : UnitBehaviourBase
 {
-    public ResourceName? CurrentResource = null;
+    public ResourceDefinition CurrentResource = null;
     public int CurrentResourceValues = 0;
 
     private NavMeshMovement _navmeshMovement;
@@ -67,7 +67,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
         _toStorage = actionArgs.ToStorage;
 
         var newCurrentResource = _resource != null
-            ? _resource.GetComponent<ResourceValues>().ResourceName
+            ? _resource.GetComponent<ResourceValues>().Resource
             : CurrentResource;
 
         if (CurrentResource != newCurrentResource)
@@ -134,7 +134,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
     private bool IsSameResource(GameObject unit)
     {
         var resourceValues = unit.GetComponent<ResourceValues>();
-        return resourceValues != null && resourceValues.ResourceName == CurrentResource;
+        return resourceValues != null && resourceValues.Resource == CurrentResource;
     }
 
     private static int MaxHarvestersAt(GameObject resource)
@@ -272,7 +272,7 @@ public class HarvestingBehaviour : UnitBehaviourBase
     {
         if (CurrentResource != null && CurrentResourceValues != 0)
         {
-            _harvestedResourcesStorageScript.Store(CurrentResource.Value, CurrentResourceValues);
+            _harvestedResourcesStorageScript.Store(CurrentResource, CurrentResourceValues);
             CurrentResourceValues = 0;
         }
     }

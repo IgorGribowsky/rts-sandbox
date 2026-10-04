@@ -58,7 +58,7 @@ namespace Assets.Scripts.GameObjects
             var harvesting = unit.GetComponent<UnitBehaviourManager>()?.Get<HarvestingBehaviour>();
             if (harvesting != null && harvesting.CurrentResourceValues > 0 && harvesting.CurrentResource != null)
             {
-                var resource = harvesting.CurrentResource.Value;
+                var resource = harvesting.CurrentResource;
                 var storage = unit.GetNearestUnitInRadius(GameConstants.StorageFindDistance, candidate =>
                 {
                     var candidateTeam = candidate.GetComponent<TeamMember>();
@@ -86,7 +86,7 @@ namespace Assets.Scripts.GameObjects
                 {
                     var resourceValues = candidate.GetComponent<ResourceValues>();
                     return resourceValues != null && resourceValues.ResourcesAmount > 0
-                        && values.ResourcesCanBeHarvested.Contains(resourceValues.ResourceName);
+                        && values.HarvestableResources.Contains(resourceValues.Resource);
                 });
             }
 

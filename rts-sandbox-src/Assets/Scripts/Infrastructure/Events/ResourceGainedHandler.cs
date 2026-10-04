@@ -14,14 +14,14 @@ namespace Assets.Scripts.Infrastructure.Events
     /// </summary>
     public class ResourceGainedEventArgs : EventArgs
     {
-        public ResourceGainedEventArgs(ResourceName name, int amount, Vector3 position)
+        public ResourceGainedEventArgs(ResourceDefinition name, int amount, Vector3 position)
         {
             Name = name;
             Amount = amount;
             Position = position;
         }
 
-        public ResourceName Name { get; set; }
+        public ResourceDefinition Name { get; set; }
 
         public int Amount { get; set; }
 

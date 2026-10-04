@@ -22,8 +22,8 @@ namespace Assets.Scripts.UI
     {
         private const long PulseMilliseconds = 160;
 
-        private readonly List<(ResourceName Name, int Amount, Label Label)> _costs =
-            new List<(ResourceName, int, Label)>();
+        private readonly List<(ResourceDefinition Name, int Amount, Label Label)> _costs =
+            new List<(ResourceDefinition, int, Label)>();
 
         public UnitTypeData Type { get; }
 
@@ -61,7 +61,7 @@ namespace Assets.Scripts.UI
             costRow.AddToClassList("card__costs");
             foreach (var cost in type.Stats.ResourceCost.Where(c => c.Amount > 0))
             {
-                var resource = gameResources.Resources.FirstOrDefault(r => r.ResourceName == cost.ResourceName);
+                var resource = cost.Resource;
 
                 var item = new VisualElement { pickingMode = PickingMode.Ignore };
                 item.AddToClassList("card__cost");
@@ -80,7 +80,7 @@ namespace Assets.Scripts.UI
                 item.Add(icon);
                 item.Add(amount);
                 costRow.Add(item);
-                _costs.Add((cost.ResourceName, cost.Amount, amount));
+                _costs.Add((cost.Resource, cost.Amount, amount));
             }
             _body.Add(costRow);
 
@@ -107,13 +107,13 @@ namespace Assets.Scripts.UI
 
             foreach (var cost in _costs)
             {
-                var type = gameResources.Resources.FirstOrDefault(r => r.ResourceName == cost.Name)?.ResourceType;
-                var have = player.ResourcesAmount.FirstOrDefault(r => r.ResourceName == cost.Name)?.Amount ?? 0;
+                var type = cost.Name?.Type;
+                var have = player.ResourcesAmount.FirstOrDefault(r => r.Resource == cost.Name)?.Amount ?? 0;
 
                 bool enough;
                 if (type == ResourceType.SupplyResource)
                 {
-                    var limit = player.MaxSupplyResourcesAmount.FirstOrDefault(r => r.ResourceName == cost.Name)?.Amount ?? 0;
+                    var limit = player.MaxSupplyResourcesAmount.FirstOrDefault(r => r.Resource == cost.Name)?.Amount ?? 0;
                     enough = have + cost.Amount <= limit;
                 }
                 else
@@ -176,7 +176,7 @@ namespace Assets.Scripts.UI
 
             var cost = string.Join("  ", type.Stats.ResourceCost
                 .Where(c => c.Amount > 0)
-                .Select(c => c.Amount + " " + c.ResourceName));
+                .Select(c => c.Amount + " " + c.Resource?.DisplayName));
             if (!string.IsNullOrEmpty(cost))
             {
                 rows.Add(new KeyValuePair<string, string>(UiText.Cost, cost));
@@ -204,7 +204,7 @@ namespace Assets.Scripts.UI
             var supply = type.Stats.SupplyResourceProduces.Where(s => s.Amount > 0).ToList();
             foreach (var s in supply)
             {
-                rows.Add(new KeyValuePair<string, string>(UiText.Supply, "+" + s.Amount + " " + s.ResourceName));
+                rows.Add(new KeyValuePair<string, string>(UiText.Supply, "+" + s.Amount + " " + s.Resource?.DisplayName));
             }
 
             return rows;

@@ -27,17 +27,16 @@ public abstract class UnitSupplyBase : MonoBehaviour
 
     protected abstract void SetupResources();
 
-    protected void ProcessResources(System.Action<ResourceName, int> modifyResource, Func<UnitValues, IEnumerable<ResourceAmount>> resourceSelector)
+    protected void ProcessResources(System.Action<ResourceDefinition, int> modifyResource, Func<UnitValues, IEnumerable<ResourceAmount>> resourceSelector)
     {
         if (_unitValues == null || _playerResources == null || _gameResources == null) return;
 
         var supplyResources = resourceSelector(_unitValues)
-            .Where(x => _gameResources.Resources
-                .FirstOrDefault(r => r.ResourceName == x.ResourceName)?.ResourceType == ResourceType.SupplyResource);
+            .Where(x => x.Resource?.Type == ResourceType.SupplyResource);
 
         foreach (var supplyResource in supplyResources)
         {
-            modifyResource(supplyResource.ResourceName, supplyResource.Amount);
+            modifyResource(supplyResource.Resource, supplyResource.Amount);
         }
     }
 }

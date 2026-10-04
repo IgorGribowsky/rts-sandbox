@@ -38,7 +38,7 @@ namespace Assets.Scripts.UI
 
         private readonly VisualElement _layer;
         private readonly PlayerEventController _events;
-        private readonly Dictionary<ResourceName, Texture2D> _icons = new Dictionary<ResourceName, Texture2D>();
+        private readonly Dictionary<ResourceDefinition, Texture2D> _icons = new Dictionary<ResourceDefinition, Texture2D>();
         private readonly List<Mark> _pool = new List<Mark>();
         private readonly IVisualElementScheduledItem _tick;
 
@@ -50,9 +50,12 @@ namespace Assets.Scripts.UI
             _events = events;
             _layer.Clear();
 
-            foreach (var resource in gameResources.Resources)
+            foreach (var resource in gameResources.Definitions)
             {
-                _icons[resource.ResourceName] = resource.Icon;
+                if (resource != null)
+                {
+                    _icons[resource] = resource.Icon;
+                }
             }
 
             for (var i = 0; i < PoolSize; i++)
@@ -216,7 +219,7 @@ namespace Assets.Scripts.UI
 
             public bool Alive;
             public bool IsCrit;
-            public ResourceName Resource;
+            public ResourceDefinition Resource;
             public int Amount;
             public Vector3 World;
             public float Born;

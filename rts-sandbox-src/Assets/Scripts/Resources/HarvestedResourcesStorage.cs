@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class HarvestedResourcesStorage : MonoBehaviour
 {
-    public List<ResourceName> StoredResources = new List<ResourceName>();
+    public List<ResourceDefinition> StoredResources = new List<ResourceDefinition>();
 
     private PlayerResources _playerResources;
     private PlayerEventController _playerEventController;
@@ -25,7 +25,7 @@ public class HarvestedResourcesStorage : MonoBehaviour
     /// Hands the load in. Through AddResource, so the number at the top of the
     /// screen changes too; before T-056 the amount was written past it.
     /// </summary>
-    public void Store(ResourceName resource, int value)
+    public void Store(ResourceDefinition resource, int value)
     {
         if (_playerResources == null)
         {
@@ -36,8 +36,8 @@ public class HarvestedResourcesStorage : MonoBehaviour
         _playerEventController?.OnResourceGained(resource, value, gameObject.GetTopCenter());
     }
 
-    public bool CheckIfCanStore(ResourceName resource)
+    public bool CheckIfCanStore(ResourceDefinition resource)
     {
-        return StoredResources.Any(x => x == resource) && _playerResources.ResourcesAmount.Any(x => x.ResourceName == resource);
+        return StoredResources.Any(x => x == resource) && _playerResources.ResourcesAmount.Any(x => x.Resource == resource);
     }
 }

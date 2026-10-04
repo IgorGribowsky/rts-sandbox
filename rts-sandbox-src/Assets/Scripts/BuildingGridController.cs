@@ -192,7 +192,7 @@ public class BuildingGridController : MonoBehaviour
         if (buildingValues != null && currentType != null && buildingValues.IsResource && currentType.IsResourceObject)
         {
             var resourceValues = _unitUnderCursor.GetComponent<ResourceValues>();
-            isMine = resourceValues.IsMine && currentType.IsHeldMine && resourceValues.ResourceName == currentType.ResourceName;
+            isMine = resourceValues.IsMine && currentType.IsHeldMine && resourceValues.Resource == currentType.Resource;
         }
 
         return isMine;

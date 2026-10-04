@@ -107,7 +107,7 @@ public class UnitsController : MonoBehaviour
             if (harvestingValues != null
                 && harvestingValues.IsHarvestor
                 && resource.tag == Tag.HarvestedResource.ToString()
-                && harvestingValues.ResourcesCanBeHarvested.Contains(resource.GetComponent<ResourceValues>().ResourceName))
+                && harvestingValues.HarvestableResources.Contains(resource.GetComponent<ResourceValues>().Resource))
             {
                 unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(resource, null, false, addToCommandsQueue);
                 continue;
@@ -376,7 +376,7 @@ public class UnitsController : MonoBehaviour
                     && harvesting.CurrentResource != null
                     && target.GetComponent<HarvestedResourcesStorage>() != null
                     && target.GetComponent<HarvestedResourcesStorage>().isActiveAndEnabled
-                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(harvesting.CurrentResource.Value))
+                    && target.GetComponent<HarvestedResourcesStorage>().StoredResources.Contains(harvesting.CurrentResource))
                 {
                     unit.GetComponent<UnitEventManager>().OnHarvestingCommandReceived(null, target, true, addToCommandsQueue);
                     continue;

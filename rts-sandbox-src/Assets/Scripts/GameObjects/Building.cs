@@ -124,7 +124,7 @@ public class Building : MonoBehaviour
         foreach (var resourceCost in _unitValues.ResourceCost)
         {
             var valueToReturn = Mathf.RoundToInt(resourceCost.Amount * refundShare);
-            _playerResources.AddResource(resourceCost.ResourceName, valueToReturn);
+            _playerResources.AddResource(resourceCost.Resource, valueToReturn);
         }
 
         Destroy(gameObject);

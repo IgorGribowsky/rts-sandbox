@@ -7,7 +7,7 @@ namespace Assets.Scripts.Infrastructure.Events
 
     public class ResourceChangedEventArgs : EventArgs
     {
-        public ResourceChangedEventArgs(ResourceName name, ResourceType type, int oldValue, int newValue)
+        public ResourceChangedEventArgs(ResourceDefinition name, ResourceType type, int oldValue, int newValue)
         {
             Name = name;
             Type = type;
@@ -15,7 +15,7 @@ namespace Assets.Scripts.Infrastructure.Events
             NewValue = newValue;
         }
 
-        public ResourceName Name { get; set; }
+        public ResourceDefinition Name { get; set; }
 
         public ResourceType Type { get; set; }
 

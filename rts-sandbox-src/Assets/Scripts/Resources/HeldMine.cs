@@ -84,8 +84,8 @@ public class HeldMine : MonoBehaviour
 
         if (miningProgress > MiningRate)
         {
-            _playerResources.AddResource(_resourceValues.ResourceName, MiningValue);
-            _playerEventController.OnResourceGained(_resourceValues.ResourceName, MiningValue, gameObject.GetTopCenter());
+            _playerResources.AddResource(_resourceValues.Resource, MiningValue);
+            _playerEventController.OnResourceGained(_resourceValues.Resource, MiningValue, gameObject.GetTopCenter());
             _resourceValues.ResourcesAmount -= MiningValue;
             miningProgress = 0f;
         }

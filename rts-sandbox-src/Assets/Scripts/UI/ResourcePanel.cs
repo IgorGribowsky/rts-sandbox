@@ -9,8 +9,8 @@ namespace Assets.Scripts.UI
 {
     /// <summary>
     /// The player's resources across the top of the screen (M-022). The list
-    /// comes from GameResources, so a resource added there shows up here with
-    /// no change to the interface. A supply resource reads "used/limit".
+    /// comes from GameResources, so a resource asset added there shows up here
+    /// with no change to the interface (T-052). A supply resource reads "used/limit".
     ///
     /// Redrawn on ResourceChanged only, never polled.
     /// </summary>
@@ -22,7 +22,7 @@ namespace Assets.Scripts.UI
         private readonly PlayerResources _playerResources;
         private readonly PlayerEventController _events;
 
-        private readonly Dictionary<ResourceName, Label> _values = new Dictionary<ResourceName, Label>();
+        private readonly Dictionary<ResourceDefinition, Label> _values = new Dictionary<ResourceDefinition, Label>();
 
         public ResourcePanel(VisualElement bar, GameResources gameResources,
             PlayerResources playerResources, PlayerEventController events)
@@ -33,7 +33,7 @@ namespace Assets.Scripts.UI
 
             bar.Clear();
 
-            foreach (var resource in _gameResources.Resources)
+            foreach (var resource in _gameResources.Definitions)
             {
                 var item = new VisualElement();
                 item.AddToClassList("resource-item");
@@ -56,7 +56,7 @@ namespace Assets.Scripts.UI
                 item.Add(value);
                 bar.Add(item);
 
-                _values[resource.ResourceName] = value;
+                _values[resource] = value;
                 Refresh(resource);
             }
 
@@ -70,8 +70,8 @@ namespace Assets.Scripts.UI
 
         private void OnResourceChanged(ResourceChangedEventArgs args)
         {
-            var resource = _gameResources.Resources.FirstOrDefault(x => x.ResourceName == args.Name);
-            if (resource == null)
+            var resource = args.Name;
+            if (resource == null || !_values.ContainsKey(resource))
             {
                 return;
             }
@@ -80,8 +80,8 @@ namespace Assets.Scripts.UI
 
             // A short flash when the amount goes up: income is noticed without
             // staring at the number.
-            if (args.NewValue > args.OldValue && resource.ResourceType != ResourceType.SupplyResource
-                && _values.TryGetValue(resource.ResourceName, out var label))
+            if (args.NewValue > args.OldValue && resource.Type != ResourceType.SupplyResource
+                && _values.TryGetValue(resource, out var label))
             {
                 label.AddToClassList("resource-value--bump");
                 label.schedule.Execute(() => label.RemoveFromClassList("resource-value--bump"))
@@ -89,23 +89,23 @@ namespace Assets.Scripts.UI
             }
         }
 
-        private void Refresh(Resource resource)
+        private void Refresh(ResourceDefinition resource)
         {
-            if (!_values.TryGetValue(resource.ResourceName, out var label))
+            if (resource == null || !_values.TryGetValue(resource, out var label))
             {
                 return;
             }
 
-            var amount = Amount(_playerResources.ResourcesAmount, resource.ResourceName);
+            var amount = Amount(_playerResources.ResourcesAmount, resource);
 
-            label.text = resource.ResourceType == ResourceType.SupplyResource
-                ? amount + "/" + Amount(_playerResources.MaxSupplyResourcesAmount, resource.ResourceName)
+            label.text = resource.Type == ResourceType.SupplyResource
+                ? amount + "/" + Amount(_playerResources.MaxSupplyResourcesAmount, resource)
                 : amount.ToString();
         }
 
-        private static int Amount(List<ResourceAmount> list, ResourceName name)
+        private static int Amount(List<ResourceAmount> list, ResourceDefinition name)
         {
-            var entry = list.FirstOrDefault(x => x.ResourceName == name);
+            var entry = list.FirstOrDefault(x => x.Resource == name);
             return entry != null ? entry.Amount : 0;
         }
     }

@@ -20,52 +20,83 @@ public class PlayerResources : MonoBehaviour
         _gameResources = gameController.GetComponent<GameResources>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
+
+        AddMissingResources();
     }
 
-    public void AddResource(ResourceName resourceName, int amount, bool isMaxSupplyResource = false)
+    /// <summary>
+    /// A resource asset put into GameResources starts at zero here by itself
+    /// (T-052): a new resource needs no entry in the scene to be counted. A
+    /// supply resource gets a zero limit too, which farms then raise.
+    /// </summary>
+    private void AddMissingResources()
     {
-        UpdateResourceAmount(resourceName, amount, isMaxSupplyResource, (current, change) => current + change);
+        foreach (var resource in _gameResources.Definitions)
+        {
+            if (resource == null)
+            {
+                continue;
+            }
+
+            if (!ResourcesAmount.Any(x => x.Resource == resource))
+            {
+                ResourcesAmount.Add(new ResourceAmount { Resource = resource, Amount = 0 });
+            }
+
+            if (resource.IsSupply && !MaxSupplyResourcesAmount.Any(x => x.Resource == resource))
+            {
+                MaxSupplyResourcesAmount.Add(new ResourceAmount { Resource = resource, Amount = 0 });
+            }
+        }
     }
 
-    public void RemoveResource(ResourceName resourceName, int amount, bool isMaxSupplyResource = false)
+    public void AddResource(ResourceDefinition resource, int amount, bool isMaxSupplyResource = false)
     {
-        UpdateResourceAmount(resourceName, amount, isMaxSupplyResource, (current, change) => current - change);
+        UpdateResourceAmount(resource, amount, isMaxSupplyResource, (current, change) => current + change);
+    }
+
+    public void RemoveResource(ResourceDefinition resource, int amount, bool isMaxSupplyResource = false)
+    {
+        UpdateResourceAmount(resource, amount, isMaxSupplyResource, (current, change) => current - change);
     }
 
     private void UpdateResourceAmount(
-        ResourceName resourceName,
+        ResourceDefinition resource,
         int amount,
         bool isMaxSupplyResource,
         Func<int, int, int> updateOperation)
     {
         var resourceAmount = (isMaxSupplyResource
             ? MaxSupplyResourcesAmount
-            : ResourcesAmount).FirstOrDefault(x => x.ResourceName == resourceName);
+            : ResourcesAmount).FirstOrDefault(x => x.Resource == resource);
+
+        // A resource the game does not have — not in GameResources — is not counted.
+        if (resourceAmount == null)
+        {
+            return;
+        }
 
         var oldValue = resourceAmount.Amount;
         resourceAmount.Amount = updateOperation(oldValue, amount);
         var newValue = resourceAmount.Amount;
 
-        var gameResource = _gameResources.Resources
-            .FirstOrDefault(x => x.ResourceName == resourceName);
-
-        _playerEventController.OnResourceChanged(resourceName, gameResource.ResourceType, oldValue, newValue);
+        _playerEventController.OnResourceChanged(resource, resource.Type, oldValue, newValue);
     }
 
     public bool CheckIfCanSpendResources(params ResourceAmount[] resourceAmounts)
     {
         return ValidateResources(resourceAmounts, (playerResource, gameResource, requiredAmount) =>
-            gameResource.ResourceType == ResourceType.SupplyResource || playerResource.Amount >= requiredAmount);
+            gameResource.Type == ResourceType.SupplyResource || playerResource.Amount >= requiredAmount);
     }
 
     public bool CheckIfHaveSupply(params ResourceAmount[] resourceAmounts)
     {
         return ValidateResources(resourceAmounts, (playerResource, gameResource, requiredAmount) =>
         {
-            if (gameResource.ResourceType == ResourceType.SupplyResource)
+            if (gameResource.Type == ResourceType.SupplyResource)
             {
                 var playerMaxSupply = MaxSupplyResourcesAmount
-                    .FirstOrDefault(x => x.ResourceName == gameResource.ResourceName);
+                    .FirstOrDefault(x => x.Resource == gameResource);
 
                 return playerMaxSupply != null && playerResource.Amount + requiredAmount <= playerMaxSupply.Amount;
             }
@@ -76,15 +107,14 @@ public class PlayerResources : MonoBehaviour
     /// <summary>
     /// Универсальный метод для валидации ресурсов на основе переданной логики проверки.
     /// </summary>
-    private bool ValidateResources(ResourceAmount[] resourceAmounts, Func<ResourceAmount, Resource, int, bool> validationLogic)
+    private bool ValidateResources(ResourceAmount[] resourceAmounts, Func<ResourceAmount, ResourceDefinition, int, bool> validationLogic)
     {
         foreach (var resource in resourceAmounts)
         {
-            var gameResource = _gameResources.Resources
-                .FirstOrDefault(x => x.ResourceName == resource.ResourceName);
+            var gameResource = resource.Resource;
 
             var playerResource = ResourcesAmount
-                .FirstOrDefault(x => x.ResourceName == resource.ResourceName);
+                .FirstOrDefault(x => x.Resource == resource.Resource);
 
             if (gameResource == null || playerResource == null)
             {
@@ -103,19 +133,19 @@ public class PlayerResources : MonoBehaviour
     {
         foreach (var resource in resourceAmounts)
         {
-            var gameResource = _gameResources.Resources.FirstOrDefault(x => x.ResourceName == resource.ResourceName);
-            if (gameResource.ResourceType == ResourceType.SupplyResource)
+            var gameResource = resource.Resource;
+            if (gameResource.Type == ResourceType.SupplyResource)
             {
                 continue;
             }
 
-            var playerResource = ResourcesAmount.First(x => x.ResourceName == resource.ResourceName);
+            var playerResource = ResourcesAmount.First(x => x.Resource == resource.Resource);
 
             var oldValue = playerResource.Amount;
             playerResource.Amount -= resource.Amount;
             var newValue = playerResource.Amount;
 
-            _playerEventController.OnResourceChanged(gameResource.ResourceName, gameResource.ResourceType, oldValue, newValue);
+            _playerEventController.OnResourceChanged(gameResource, gameResource.Type, oldValue, newValue);
         }
     }
 }
@@ -123,8 +153,6 @@ public class PlayerResources : MonoBehaviour
 [Serializable]
 public class ResourceAmount
 {
-    public ResourceName ResourceName;
-
     public ResourceDefinition Resource;
 
     public int Amount;
