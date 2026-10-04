@@ -60,6 +60,27 @@ public class PlayerEventController : MonoBehaviour
     }
 
     /// <summary>Income at a place in the world, for the numbers that pop up over it (M-022).</summary>
+    public event CriticalHitHandler CriticalHit;
+
+    /// <summary>
+    /// A crit landed (T-070). The red numbers float up over the attacker's
+    /// head, so the point is taken here, at the moment of the hit.
+    /// </summary>
+    public void OnCriticalHit(GameObject attacker, float damage)
+    {
+        if (attacker == null)
+        {
+            return;
+        }
+
+        var renderer = attacker.GetComponent<Renderer>();
+        var position = renderer != null
+            ? new Vector3(renderer.bounds.center.x, renderer.bounds.max.y, renderer.bounds.center.z)
+            : attacker.transform.position;
+
+        CriticalHit?.Invoke(new CriticalHitEventArgs(attacker, damage, position));
+    }
+
     public event ResourceGainedHandler ResourceGained;
     public void OnResourceGained(ResourceName name, int amount, Vector3 position)
     {

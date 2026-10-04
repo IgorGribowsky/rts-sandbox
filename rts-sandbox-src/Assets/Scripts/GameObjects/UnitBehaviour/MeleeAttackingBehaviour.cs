@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
@@ -161,11 +162,19 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
 
             if (attackAnimation >= _unitValues.CurrentAttackRate * _unitValues.AttackDurationPercent)
             {
-                _targetEventManager.OnDamageReceived(gameObject, _unitValues.CurrentDamage, _unitValues.DamageType);
+                // A crit is rolled as the blow lands (T-070).
+                var damage = AttackRolls.Roll(gameObject, _unitValues.CurrentDamage, out var critical);
+
+                _targetEventManager.OnDamageReceived(gameObject, damage, _unitValues.DamageType);
 
                 // A new kind of ordinary attack has to raise this too, otherwise
                 // on-hit passives stay silent for it.
-                _unitEventManager.OnDamageDealt(Target, _unitValues.CurrentDamage, _unitValues.DamageType);
+                _unitEventManager.OnDamageDealt(Target, damage, _unitValues.DamageType);
+
+                if (critical)
+                {
+                    GameServices.PlayerEventController?.OnCriticalHit(gameObject, damage);
+                }
 
                 attackIsProcessing = false;
                 attackAnimation = 0;

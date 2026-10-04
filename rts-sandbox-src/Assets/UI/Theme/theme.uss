@@ -28,6 +28,7 @@
     --color-text-cost-ok: rgb(232, 240, 245);
     --color-text-cost-missing: rgb(255, 120, 110);
     --color-text-income: rgb(196, 255, 150);
+    --color-text-crit: rgb(255, 64, 52);
 
     /* --- characteristics ------------------------------------------------ */
     /* The uGUI bars over units (HPBar, ManaBar, ProcBar prefabs) repeat

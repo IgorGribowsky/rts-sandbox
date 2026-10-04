@@ -19,6 +19,8 @@ public static class PassiveSkillExecutorFactory
         {
             case SkillActionType.ApplyImpactsOnDamageDealt:
                 return new ApplyImpactsOnDamageDealtExecutor((ApplyImpactsOnDamageDealtAction)action);
+            case SkillActionType.CriticalStrike:
+                return new CriticalStrikeExecutor((CriticalStrikeAction)action);
             default:
                 Debug.LogError("No executor for passive skill action " + action.Type + ".");
                 return null;

@@ -13,6 +13,10 @@ namespace Assets.Scripts.UI
     /// storage that took wood, a mine that gave gold (M-022). It pops, rises
     /// and fades.
     ///
+    /// Crits use the same marks (T-070): red "18!" over the attacker, no icon,
+    /// rising slower and living longer. They are never merged — every crit is
+    /// a blow of its own.
+    ///
     /// The marks are a fixed pool: twenty workers handing in at once reuse the
     /// oldest mark instead of growing the tree. Income of the same resource at
     /// the same place within a moment is added to the mark already there, so
@@ -29,6 +33,8 @@ namespace Assets.Scripts.UI
         private const float FadeFrom = 0.55f;
         private const float MergeSeconds = 0.35f;
         private const float MergeDistance = 1.5f;
+        private const float CritLifetime = 1.7f;
+        private const float CritRisePixels = 55f;
 
         private readonly VisualElement _layer;
         private readonly PlayerEventController _events;
@@ -60,11 +66,13 @@ namespace Assets.Scripts.UI
             _tick.Pause();
 
             _events.ResourceGained += OnResourceGained;
+            _events.CriticalHit += OnCriticalHit;
         }
 
         public void Dispose()
         {
             _events.ResourceGained -= OnResourceGained;
+            _events.CriticalHit -= OnCriticalHit;
             _tick.Pause();
             _layer.Clear();
             _pool.Clear();
@@ -80,6 +88,7 @@ namespace Assets.Scripts.UI
             var now = Time.time;
 
             var same = _pool.FirstOrDefault(m => m.Alive
+                && !m.IsCrit
                 && m.Resource == args.Name
                 && now - m.Born < MergeSeconds
                 && (m.World - args.Position).sqrMagnitude < MergeDistance * MergeDistance);
@@ -95,6 +104,7 @@ namespace Assets.Scripts.UI
             var mark = _pool.FirstOrDefault(m => !m.Alive) ?? _pool.OrderBy(m => m.Born).First();
 
             mark.Alive = true;
+            mark.SetCrit(false);
             mark.Resource = args.Name;
             mark.Amount = args.Amount;
             mark.World = args.Position;
@@ -103,6 +113,24 @@ namespace Assets.Scripts.UI
             mark.Refresh();
 
             // The newest on top of the older ones.
+            mark.Root.BringToFront();
+
+            _tick.Resume();
+            Place(mark, now);
+        }
+
+        private void OnCriticalHit(CriticalHitEventArgs args)
+        {
+            var now = Time.time;
+            var mark = _pool.FirstOrDefault(m => !m.Alive) ?? _pool.OrderBy(m => m.Born).First();
+
+            mark.Alive = true;
+            mark.SetCrit(true);
+            mark.Amount = Mathf.RoundToInt(args.Damage);
+            mark.World = args.Position;
+            mark.Born = now;
+            mark.SetIcon(null);
+            mark.Refresh();
             mark.Root.BringToFront();
 
             _tick.Resume();
@@ -121,7 +149,7 @@ namespace Assets.Scripts.UI
                     continue;
                 }
 
-                if (now - mark.Born >= Lifetime)
+                if (now - mark.Born >= mark.Lifetime)
                 {
                     mark.Hide();
                     continue;
@@ -161,10 +189,14 @@ namespace Assets.Scripts.UI
             }
 
             var age = now - mark.Born;
-            var t = age / Lifetime;
+            var t = age / mark.Lifetime;
 
             var point = RuntimePanelUtils.CameraTransformWorldToPanel(panel, mark.World, _camera);
-            var rise = RisePixels * (1f - (1f - t) * (1f - t));
+
+            // A crit rises evenly and slowly, the income shoots up and settles.
+            var rise = mark.IsCrit
+                ? CritRisePixels * t
+                : RisePixels * (1f - (1f - t) * (1f - t));
 
             mark.Root.style.display = DisplayStyle.Flex;
             mark.Root.style.translate = new Translate(point.x, point.y - rise);
@@ -183,6 +215,7 @@ namespace Assets.Scripts.UI
             private readonly Label _label;
 
             public bool Alive;
+            public bool IsCrit;
             public ResourceName Resource;
             public int Amount;
             public Vector3 World;
@@ -210,6 +243,14 @@ namespace Assets.Scripts.UI
                 Hide();
             }
 
+            public float Lifetime => IsCrit ? CritLifetime : ResourcePopups.Lifetime;
+
+            public void SetCrit(bool crit)
+            {
+                IsCrit = crit;
+                Root.EnableInClassList("popup--crit", crit);
+            }
+
             public void SetIcon(Texture2D icon)
             {
                 _icon.style.backgroundImage = icon != null ? new StyleBackground(icon) : StyleKeyword.None;
@@ -217,7 +258,7 @@ namespace Assets.Scripts.UI
 
             public void Refresh()
             {
-                _label.text = UiText.Income(Amount);
+                _label.text = IsCrit ? UiText.Critical(Amount) : UiText.Income(Amount);
             }
 
             public void Hide()

@@ -68,6 +68,12 @@ namespace Assets.Scripts.UI
                 : seconds.ToString("0.0", CultureInfo.InvariantCulture);
         }
 
+        /// <summary>Damage of a crit over the attacker: "18!", as in WC3.</summary>
+        public static string Critical(int amount)
+        {
+            return amount.ToString(CultureInfo.InvariantCulture) + "!";
+        }
+
         /// <summary>Time an effect has left, under its badge: "7", "0.6", "1:05" for a long one.</summary>
         public static string EffectLeft(float seconds)
         {

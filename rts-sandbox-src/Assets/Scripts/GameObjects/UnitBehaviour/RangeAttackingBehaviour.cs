@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.GameObjects.Projectiles;
 using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
@@ -112,7 +113,10 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
             {
                 var projectile = Instantiate(_unitValues.RangeAttackProjectile, transform.position, transform.rotation);
                 var projectileBehavior = projectile.GetComponent<ProjectileBehavior>();
-                projectileBehavior.SetProperties(Target, gameObject, _unitValues.ProjectileSpeed, _unitValues.CurrentDamage, _unitValues.DamageType);
+                // Rolled as the arrow leaves; the numbers show when it lands (T-070).
+                var damage = AttackRolls.Roll(gameObject, _unitValues.CurrentDamage, out var critical);
+                projectileBehavior.SetProperties(Target, gameObject, _unitValues.ProjectileSpeed, damage, _unitValues.DamageType);
+                projectileBehavior.IsCritical = critical;
 
                 attackIsProcessing = false;
                 attackAnimation = 0;

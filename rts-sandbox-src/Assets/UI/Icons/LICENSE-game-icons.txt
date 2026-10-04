@@ -24,4 +24,5 @@ skill_shock                 lightning-arc      Lorc
 skill_stun_bolt             knockout           Skoll
 skill_water_wave            big-wave           Lorc
 skill_rage                  enrage             Delapouite
+skill_critical_strike       sword-wound        Lorc
 effect_stunned              knocked-out-stars  Delapouite

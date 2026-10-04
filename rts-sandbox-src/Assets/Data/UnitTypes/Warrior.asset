@@ -38,6 +38,7 @@ MonoBehaviour:
     MovementSpeed: 5
     Rang: 50
     ProducingTime: 12
+    TurnSpeed: 540
     Damage: 9
     AutoAttackDistance: 8
     AttackRate: 1.4
@@ -82,6 +83,7 @@ MonoBehaviour:
   IsHarvestedResource: 0
   ResourceName: 0
   ResourcesAmount: 0
+  MaxHarvesters: 3
   ParentMineType: {fileID: 0}
   MiningRate: 1
   MiningValue: 10
@@ -95,6 +97,8 @@ MonoBehaviour:
   ProducingBarPriority: 0
   Skills:
   - Skill: {fileID: 11400000, guid: 44ad9a8b4fc9bbe42a079b5f070189d7, type: 2}
+    Keycode: 0
+  - Skill: {fileID: 11400000, guid: 5e626ec47133a8047955aad08b1c3ed9, type: 2}
     Keycode: 0
   HasMana: 0
   HasLevels: 0

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f3055d8d99b16945ba2ae30a1fb0f7d, type: 3}
+  m_Name: CriticalStrike
+  m_EditorClassIdentifier: Assembly-CSharp::PassiveSkill
+  Name: Critical Strike
+  Cooldown: 0
+  Icon: {fileID: 2800000, guid: 664a4564c9ef6954e975afc4091d2465, type: 3}
+  Description: Now and then a normal attack lands a critical blow for double damage.
+    The numbers flash red over the attacker.
+  Action: {fileID: 11400000, guid: 10f5aa6afee9b1444967f75cb248fe3e, type: 2}

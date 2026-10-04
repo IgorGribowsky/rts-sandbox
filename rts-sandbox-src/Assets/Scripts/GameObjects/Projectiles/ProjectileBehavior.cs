@@ -16,6 +16,9 @@ namespace Assets.Scripts.GameObjects.Projectiles
 
         public GameObject Owner { get; set; }
 
+        /// <summary>A crit of the shooter (T-070): its numbers float up when this lands.</summary>
+        public bool IsCritical { get; set; }
+
         private UnitEventManager _targetEventManager;
 
         private Vector3 _targetPosition;
@@ -75,6 +78,11 @@ namespace Assets.Scripts.GameObjects.Projectiles
                         if (Owner != null)
                         {
                             Owner.GetComponent<UnitEventManager>()?.OnDamageDealt(Target, Damage, DamageType);
+
+                            if (IsCritical)
+                            {
+                                GameServices.PlayerEventController?.OnCriticalHit(Owner, Damage);
+                            }
                         }
                     }
 
