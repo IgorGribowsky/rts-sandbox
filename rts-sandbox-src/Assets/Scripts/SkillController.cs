@@ -140,6 +140,13 @@ public class SkillController : MonoBehaviour
         if (!TryGetSkillCaster(index, out var unitToCast, out var unitSkill, out _))
             return false;
 
+        // Nothing to aim at: the press is the cast (T-053). Aiming is not
+        // touched, so a skill aimed by a button in the meantime stays aimed.
+        if ((unitSkill.Skill as ActiveSkill).Action is CastWithoutTargetAction)
+        {
+            return CastAtOnce(index);
+        }
+
         _preparedSkill = unitSkill;
         _preparedIndex = index;
         _preparedByClick = byClick;
@@ -175,6 +182,41 @@ public class SkillController : MonoBehaviour
         }
 
         unitToCast.GetComponent<UnitEventManager>().OnSkillCastCommandReceived(skillCastArgs);
+    }
+
+    /// <summary>
+    /// A skill without a target goes off right now, past the order queue: the
+    /// unit keeps doing what it does (T-053). The first selected caster of the
+    /// kind that can cast it and is not stunned — a stunned unit takes orders
+    /// for later, but an instant cast has no later.
+    /// </summary>
+    private bool CastAtOnce(int index)
+    {
+        var firstSkillsScript = MainCasterSkills();
+        if (firstSkillsScript == null)
+            return false;
+
+        var unitId = firstSkillsScript.GetComponent<UnitValues>().Id;
+
+        foreach (var caster in _unitsController.SelectedUnits.Where(x => x.GetComponent<UnitValues>().Id == unitId))
+        {
+            var skillsScript = caster.GetComponent<UnitSkills>();
+            if (skillsScript == null || index >= skillsScript.RuntimeSkills.Count)
+                continue;
+
+            var skill = skillsScript.RuntimeSkills[index];
+            if (!skillsScript.CheckIfCanCast(skill))
+                continue;
+
+            var effects = caster.GetComponent<UnitEffects>();
+            if (effects != null && effects.HasAny<StunEffect>())
+                continue;
+
+            skillsScript.Cast(skill, new SkillParams { Owner = caster });
+            return true;
+        }
+
+        return false;
     }
 
     private void ClearPrepared()

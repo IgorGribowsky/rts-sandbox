@@ -7,4 +7,5 @@ public enum SkillImpactType
     InstantDamage,
     PoisonDamage,
     Stun,
+    StatBoost,
 }

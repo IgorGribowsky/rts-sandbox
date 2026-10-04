@@ -149,6 +149,13 @@ public class CommandInput : MonoBehaviour
             return false;
         }
 
+        // A skill without a target has gone off already (T-053): nothing is
+        // aimed, so the other modes stay as they were.
+        if (!IsAimingSkillByClick)
+        {
+            return true;
+        }
+
         SetAClick(false);
 
         if (IsPlacingBuilding)

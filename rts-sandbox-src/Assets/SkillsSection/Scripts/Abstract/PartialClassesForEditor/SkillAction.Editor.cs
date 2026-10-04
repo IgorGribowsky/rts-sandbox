@@ -21,6 +21,15 @@ public abstract partial class SkillAction : ScriptableObject
         Impacts.Add(impact);
     }
 
+    [ContextMenu("Add Stat Boost Impact")]
+    void AddStatBoost()
+    {
+        Impacts ??= new();
+        var impact = new StatBoostImpact();
+        impact.Initialize();
+        Impacts.Add(impact);
+    }
+
     [ContextMenu("Add Poison Damage Impact")]
     void AddPoisonDamage()
     {

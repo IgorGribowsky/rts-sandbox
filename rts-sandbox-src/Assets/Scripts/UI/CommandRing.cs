@@ -291,6 +291,12 @@ namespace Assets.Scripts.UI
                 _experience.Changed += RefreshExperience;
             }
 
+            if (_values != null)
+            {
+                // A boost from an effect changes the damage too (T-053).
+                _values.BoostChanged += RefreshDamage;
+            }
+
             if (_unitEvents != null)
             {
                 _unitEvents.HealthPointsChanged += OnHealthChanged;
@@ -323,6 +329,11 @@ namespace Assets.Scripts.UI
             if (_experience != null)
             {
                 _experience.Changed -= RefreshExperience;
+            }
+
+            if (_values != null)
+            {
+                _values.BoostChanged -= RefreshDamage;
             }
 
             _experience = null;
@@ -369,7 +380,7 @@ namespace Assets.Scripts.UI
         {
             if (_values != null)
             {
-                _damageLabel.text = UiText.Number(_values.Damage);
+                _damageLabel.text = UiText.Number(_values.CurrentDamage);
             }
         }
 

@@ -145,7 +145,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
             && facesTarget)
         {
             attackIsProcessing = true;
-            attackCD = _unitValues.AttackRate;
+            attackCD = _unitValues.CurrentAttackRate;
         }
         if (attackIsProcessing)
         {
@@ -159,13 +159,13 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
                 attackAnimation = 0;
             }
 
-            if (attackAnimation >= _unitValues.AttackRate * _unitValues.AttackDurationPercent)
+            if (attackAnimation >= _unitValues.CurrentAttackRate * _unitValues.AttackDurationPercent)
             {
-                _targetEventManager.OnDamageReceived(gameObject, _unitValues.Damage, _unitValues.DamageType);
+                _targetEventManager.OnDamageReceived(gameObject, _unitValues.CurrentDamage, _unitValues.DamageType);
 
                 // A new kind of ordinary attack has to raise this too, otherwise
                 // on-hit passives stay silent for it.
-                _unitEventManager.OnDamageDealt(Target, _unitValues.Damage, _unitValues.DamageType);
+                _unitEventManager.OnDamageDealt(Target, _unitValues.CurrentDamage, _unitValues.DamageType);
 
                 attackIsProcessing = false;
                 attackAnimation = 0;

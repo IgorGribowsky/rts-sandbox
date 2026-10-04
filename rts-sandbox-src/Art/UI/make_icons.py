@@ -46,6 +46,9 @@ ICONS = {
     'skill_shock': ('lorc/lightning-arc', ('#e4f2ff', '#6fb4ff')),
     'skill_stun_bolt': ('skoll/knockout', ('#fff0bc', '#ffb83d')),
     'skill_water_wave': ('lorc/big-wave', ('#c8f1ff', '#3fa9e8')),
+    'skill_rage': ('delapouite/enrage', ('#ffc4b0', '#e8442c')),
+    # Effects on a unit (T-073): a picture of their own when the skill's one does not fit.
+    'effect_stunned': ('delapouite/knocked-out-stars', ('#fff0bc', '#ffc53d')),
 }
 
 

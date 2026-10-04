@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 797c3aa6f89b477458dc4c9317a034bc, type: 3}
+  m_Name: Rage
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
+  Name: Rage
+  Cooldown: 30
+  Icon: {fileID: 2800000, guid: f7994f645eb335f4cafeaf1400096edb, type: 3}
+  Description: 'The giant flies into a rage: it hits harder and faster for a while.
+    Cast at once, no aiming.'
+  CastDuration: 0
+  CastRange: 0
+  ManaCost: 50
+  Action: {fileID: 11400000, guid: 656130bdd9644e7d8e946d393ac205d2, type: 2}

@@ -38,6 +38,7 @@ MonoBehaviour:
     MovementSpeed: 5
     Rang: 100
     ProducingTime: 20
+    TurnSpeed: 540
     Damage: 26
     AutoAttackDistance: 8
     AttackRate: 1.4
@@ -56,7 +57,7 @@ MonoBehaviour:
       Amount: 4
     SupplyResourceProduces: []
     IsBuilding: 0
-    CanCastSkills: 0
+    CanCastSkills: 1
   Building:
     GridSize: 4
     ObstacleSize: 4
@@ -74,14 +75,15 @@ MonoBehaviour:
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
   Mana:
-    CurrentMana: 0
-    MaximumMana: 0
-    BaseManaRegen: 1
+    CurrentMana: 100
+    MaximumMana: 100
+    BaseManaRegen: 1.5
   IsMine: 0
   IsHeldMine: 0
   IsHarvestedResource: 0
   ResourceName: 0
   ResourcesAmount: 0
+  MaxHarvesters: 3
   ParentMineType: {fileID: 0}
   MiningRate: 1
   MiningValue: 10
@@ -89,12 +91,14 @@ MonoBehaviour:
   StoredResources: 
   HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
   HealthBarPriority: 10
-  ManaBarTemplate: {fileID: 0}
-  ManaBarPriority: 0
+  ManaBarTemplate: {fileID: 5133334966052544803, guid: ba945503ecd709149b42ff20d80164cc, type: 3}
+  ManaBarPriority: 7
   ProducingBarTemplate: {fileID: 0}
   ProducingBarPriority: 0
-  Skills: []
-  HasMana: 0
+  Skills:
+  - Skill: {fileID: 11400000, guid: 70d848f2c3ef7c1488b50045889b4b47, type: 2}
+    Keycode: 113
+  HasMana: 1
   HasLevels: 0
   ExperienceTable: {fileID: 0}
   ExperienceReward: 50

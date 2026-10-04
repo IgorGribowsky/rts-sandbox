@@ -43,6 +43,33 @@ public class UnitValues : MonoBehaviour
 
     public float Damage { get => Stats.Damage; set => Stats.Damage = value; }
 
+    /// <summary>
+    /// Percent on top of Damage and of attack speed from effects running now
+    /// (M-019). Live state only, never saved: the effects put it on and take
+    /// it off themselves.
+    /// </summary>
+    public float DamageBonusPercent { get; private set; }
+    public float AttackSpeedBonusPercent { get; private set; }
+
+    /// <summary>What a blow deals right now, boosts included. Attacks read this, not Damage.</summary>
+    public float CurrentDamage => Damage * (1f + DamageBonusPercent / 100f);
+
+    /// <summary>
+    /// Seconds between blows right now: +50% attack speed is half again as
+    /// many blows, so the rate is divided, not cut by half.
+    /// </summary>
+    public float CurrentAttackRate => AttackRate / Mathf.Max(0.1f, 1f + AttackSpeedBonusPercent / 100f);
+
+    /// <summary>A boost went on or came off. The HUD shows the damage with it.</summary>
+    public event System.Action BoostChanged;
+
+    public void AddBoost(float damagePercent, float attackSpeedPercent)
+    {
+        DamageBonusPercent += damagePercent;
+        AttackSpeedBonusPercent += attackSpeedPercent;
+        BoostChanged?.Invoke();
+    }
+
     public float AutoAttackDistance { get => Stats.AutoAttackDistance; set => Stats.AutoAttackDistance = value; }
 
     public float AttackRate { get => Stats.AttackRate; set => Stats.AttackRate = value; }

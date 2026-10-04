@@ -93,7 +93,7 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
             && facesTarget)
         {
             attackIsProcessing = true;
-            attackCD = _unitValues.AttackRate;
+            attackCD = _unitValues.CurrentAttackRate;
         }
 
         if (attackIsProcessing)
@@ -108,11 +108,11 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
                 attackAnimation = 0;
             }
 
-            if (attackAnimation >= _unitValues.AttackRate * _unitValues.AttackDurationPercent)
+            if (attackAnimation >= _unitValues.CurrentAttackRate * _unitValues.AttackDurationPercent)
             {
                 var projectile = Instantiate(_unitValues.RangeAttackProjectile, transform.position, transform.rotation);
                 var projectileBehavior = projectile.GetComponent<ProjectileBehavior>();
-                projectileBehavior.SetProperties(Target, gameObject, _unitValues.ProjectileSpeed, _unitValues.Damage, _unitValues.DamageType);
+                projectileBehavior.SetProperties(Target, gameObject, _unitValues.ProjectileSpeed, _unitValues.CurrentDamage, _unitValues.DamageType);
 
                 attackIsProcessing = false;
                 attackAnimation = 0;
