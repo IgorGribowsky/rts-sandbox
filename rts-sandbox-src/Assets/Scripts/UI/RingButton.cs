@@ -105,24 +105,31 @@ namespace Assets.Scripts.UI
 
         /// <summary>
         /// The press animation without a press: a hot key that does what this
-        /// button does shows on the button too (M-022).
+        /// button does shows on the button too (M-022). A button that does
+        /// nothing does not pretend to be pressed (T-066).
         /// </summary>
         public void Pulse()
         {
+            if (!_interactive)
+            {
+                return;
+            }
+
             AddToClassList("is-pulsed");
             schedule.Execute(() => RemoveFromClassList("is-pulsed")).StartingIn(PulseMilliseconds);
         }
 
         private void OnClick()
         {
-            // A short flash on every press, accepted or not: the player sees the
-            // click landed even when it changes nothing.
-            Pulse();
-
-            if (_interactive)
+            // An inert button — an enemy's, a passive skill, the empty centre —
+            // takes the click so the world does not, but shows nothing (T-066).
+            if (!_interactive)
             {
-                Clicked?.Invoke();
+                return;
             }
+
+            Pulse();
+            Clicked?.Invoke();
         }
 
         private void OnPointerDown(PointerDownEvent evt)

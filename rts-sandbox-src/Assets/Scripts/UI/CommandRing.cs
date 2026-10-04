@@ -55,6 +55,8 @@ namespace Assets.Scripts.UI
         private readonly VisualElement _levelBadge;
         private readonly Label _levelLabel;
         private readonly RingButton _attack;
+        private readonly VisualElement _damageTag;
+        private readonly Label _damageLabel;
         private readonly RingButton _hold;
         private readonly RingButton _gather;
         private readonly IVisualElementScheduledItem _gatherCheck;
@@ -95,6 +97,18 @@ namespace Assets.Scripts.UI
             _attack.Clicked += OnAttackClicked;
             PlaceAtCenter(_attack, BigButtonSize);
             _container.Add(_attack);
+
+            // The damage of one hit, on a tag at the foot of the sword (T-066).
+            _damageTag = new VisualElement { pickingMode = PickingMode.Ignore };
+            _damageTag.AddToClassList("attack-damage");
+            var damageIcon = new VisualElement { pickingMode = PickingMode.Ignore };
+            damageIcon.AddToClassList("attack-damage__icon");
+            _damageTag.Add(damageIcon);
+            _damageLabel = new Label { pickingMode = PickingMode.Ignore };
+            _damageLabel.AddToClassList("attack-damage__value");
+            _damageLabel.AddToClassList("hud-text");
+            _damageTag.Add(_damageLabel);
+            _attack.Body.Add(_damageTag);
 
             _hold = new RingButton("ring-button--small");
             _hold.AddToClassList("ring-hold");
@@ -230,9 +244,13 @@ namespace Assets.Scripts.UI
                 || type.Behaviours.Contains(UnitBehaviourType.RangeAttacking)
                 || type.Behaviours.Contains(UnitBehaviourType.AutoAttackBuilding));
             var hasSkills = type != null && type.HasSkills;
+            var hasHealth = _values != null && _values.MaximumHp > 0f && !_values.IsInvulnerable;
+            var hasMana = _mana != null && _mana.MaximumMana > 0f;
 
-            // The ring is for units that fight or cast (M-023). A farm gets nothing.
-            if (!canAttack && !hasSkills)
+            // The ring is for anything with something to show: an attack, skills,
+            // health or mana (T-066). A farm shows its health around an empty
+            // centre; an invulnerable gold mine gets nothing.
+            if (!canAttack && !hasSkills && !hasHealth && !hasMana)
             {
                 _container.style.display = DisplayStyle.None;
                 return;
@@ -242,6 +260,10 @@ namespace Assets.Scripts.UI
 
             _attack.Interactive = canAttack && _ownUnit;
             _attack.EnableInClassList("is-placeholder", !canAttack);
+            _damageTag.style.display = canAttack ? DisplayStyle.Flex : DisplayStyle.None;
+
+            _hpGauge.style.display = hasHealth ? DisplayStyle.Flex : DisplayStyle.None;
+            _hpLabel.style.display = hasHealth ? DisplayStyle.Flex : DisplayStyle.None;
 
             var canHold = type.Behaviours.Contains(UnitBehaviourType.Holding);
             _hold.style.display = canHold ? DisplayStyle.Flex : DisplayStyle.None;
@@ -255,7 +277,6 @@ namespace Assets.Scripts.UI
                 _gatherCheck.Resume();
             }
 
-            var hasMana = _mana != null && _mana.MaximumMana > 0f;
             _manaGauge.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
             _manaLabel.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -280,6 +301,7 @@ namespace Assets.Scripts.UI
             RefreshHealth();
             RefreshMana();
             RefreshExperience();
+            RefreshDamage();
             RefreshHighlights();
 
             // Another unit: its levels show at once, they do not flow from the last one's.
@@ -343,12 +365,23 @@ namespace Assets.Scripts.UI
             _manaLabel.text = UiText.Fraction(current, max);
         }
 
+        private void RefreshDamage()
+        {
+            if (_values != null)
+            {
+                _damageLabel.text = UiText.Number(_values.Damage);
+            }
+        }
+
         private void RefreshExperience()
         {
             if (_experience == null)
             {
                 return;
             }
+
+            // A new level may hit harder.
+            RefreshDamage();
 
             _levelLabel.text = _experience.Level.ToString();
 

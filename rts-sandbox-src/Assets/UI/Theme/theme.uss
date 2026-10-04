@@ -87,7 +87,7 @@
     --img-frame-small: url("project://database/Assets/UI/Icons/frame_small.png");
     --img-glow: url("project://database/Assets/UI/Icons/glow_ring.png");
     --img-sword: url("project://database/Assets/UI/Icons/icon_sword.png");
-    --img-no-attack: url("project://database/Assets/UI/Icons/icon_no_attack.png");
+    --img-core-empty: url("project://database/Assets/UI/Icons/core_empty.png");
     --img-hold: url("project://database/Assets/UI/Icons/icon_hold.png");
     --img-gather: url("project://database/Assets/UI/Icons/icon_gather.png");
     --img-build: url("project://database/Assets/UI/Icons/icon_build.png");

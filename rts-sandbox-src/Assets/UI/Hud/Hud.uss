@@ -359,8 +359,45 @@
     background-image: var(--img-sword);
 }
 
+/* No attack: a quiet emblem instead of the sword, the centre is empty (T-066). */
 .ring-attack.is-placeholder .ring-button__icon {
-    background-image: var(--img-no-attack);
+    left: 18%;
+    top: 18%;
+    width: 64%;
+    height: 64%;
+    background-image: var(--img-core-empty);
+}
+
+/* The damage of one hit, a tag at the foot of the sword (T-066). */
+.attack-damage {
+    position: absolute;
+    left: 50%;
+    bottom: 11%;
+    translate: -50% 0;
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    padding: 0 9px 0 5px;
+    background-color: var(--color-panel);
+    border-radius: var(--radius-s);
+    border-width: 1px;
+    border-color: var(--color-hairline);
+    border-top-color: var(--color-rim-light);
+}
+
+.attack-damage__icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 3px;
+    background-image: var(--img-sword);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.attack-damage__value {
+    font-size: var(--text-m);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
 }
 
 .ring-attack.is-placeholder .ring-button__frame {

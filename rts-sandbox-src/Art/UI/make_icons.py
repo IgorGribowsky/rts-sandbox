@@ -133,6 +133,21 @@ def badge_svg():
 '''
 
 
+def core_empty_svg():
+    """The empty centre of the ring for a unit with no attack (T-066): two thin
+    rings, four notches and a small diamond, quiet steel on transparent."""
+    notches = ''.join(
+        f'<rect x="125" y="40" width="6" height="22" rx="3" fill="{RIM_LIGHT}" opacity="0.5" '
+        f'transform="rotate({a} 128 128)"/>' for a in (45, 135, 225, 315))
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <circle cx="128" cy="128" r="84" fill="none" stroke="{RIM_LIGHT}" stroke-width="3" opacity="0.32"/>
+  <circle cx="128" cy="128" r="52" fill="none" stroke="{RIM_LIGHT}" stroke-width="2" opacity="0.22" stroke-dasharray="6 9"/>
+  {notches}
+  <path d="M128 106 L150 128 L128 150 L106 128 Z" fill="none" stroke="{RIM_LIGHT}" stroke-width="3" opacity="0.45"/>
+</svg>
+'''
+
+
 def write(name, text):
     with open(os.path.join(OUT, name + '.svg'), 'w', encoding='utf-8') as f:
         f.write(text)
@@ -152,3 +167,4 @@ if __name__ == '__main__':
     write('frame_small', frame_svg(128, 9, 4, (10, 22)))
     write('glow_ring', glow_svg())
     write('badge_level', badge_svg())
+    write('core_empty', core_empty_svg())
