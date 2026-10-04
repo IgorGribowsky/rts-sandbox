@@ -44,6 +44,7 @@
     --color-sweep: rgba(4, 6, 12, 0.62);
     --color-progress-back: rgba(4, 6, 12, 0.7);
     --tint-minimap-ground: rgb(150, 162, 150);
+    --color-minimap-blocked: rgba(10, 12, 20, 0.78);
 
     /* --- fonts ---------------------------------------------------------- */
     --font-display: url("project://database/Assets/UI/Fonts/RussoOne-Regular.ttf");

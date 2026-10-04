@@ -87,6 +87,17 @@
     -unity-background-image-tint-color: var(--tint-minimap-ground);
 }
 
+/* What units cannot walk on, darkened over the ground picture. */
+.minimap__blocked {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: var(--color-minimap-blocked);
+}
+
 .minimap__overlay {
     position: absolute;
     left: 0;

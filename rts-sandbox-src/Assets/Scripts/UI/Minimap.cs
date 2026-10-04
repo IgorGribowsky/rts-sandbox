@@ -2,6 +2,7 @@ using Assets.Scripts.Infrastructure.Enums;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 
 namespace Assets.Scripts.UI
@@ -15,12 +16,17 @@ namespace Assets.Scripts.UI
     /// The ground is photographed once at start from above, without units: the
     /// map does not change during a game. Dots and the frame are drawn on top
     /// a few times a second.
+    ///
+    /// Over the picture, everything a unit cannot walk on is darkened, taken
+    /// from the NavMesh (T-057): on light ground the picture alone does not
+    /// tell a rock from a field.
     /// </summary>
     public sealed class Minimap : IDisposable
     {
         private const float Width = 260f;
         private const long RedrawMilliseconds = 100;
         private const int GroundPixels = 512;
+        private const int BlockedPixels = 256;
 
         private readonly VisualElement _slot;
         private readonly VisualElement _view;
@@ -29,6 +35,7 @@ namespace Assets.Scripts.UI
         private readonly IVisualElementScheduledItem _ticker;
 
         private RenderTexture _ground;
+        private Texture2D _blocked;
         private int _pointerId = -1;
 
         public Minimap(VisualElement slot, MapValues map, CameraController camera, TeamController teams,
@@ -57,6 +64,15 @@ namespace Assets.Scripts.UI
                 _view.style.backgroundImage = Background.FromRenderTexture(_ground);
             }
 
+            _blocked = RenderBlocked(world);
+            if (_blocked != null)
+            {
+                var blocked = new VisualElement { pickingMode = PickingMode.Ignore };
+                blocked.AddToClassList("minimap__blocked");
+                blocked.style.backgroundImage = new StyleBackground(_blocked);
+                _view.Add(blocked);
+            }
+
             _overlay = new MinimapOverlay(world, camera, teams, selection);
             _view.Add(_overlay);
             _slot.Add(_view);
@@ -77,6 +93,12 @@ namespace Assets.Scripts.UI
                 _ground.Release();
                 UnityEngine.Object.Destroy(_ground);
                 _ground = null;
+            }
+
+            if (_blocked != null)
+            {
+                UnityEngine.Object.Destroy(_blocked);
+                _blocked = null;
             }
         }
 
@@ -171,6 +193,125 @@ namespace Assets.Scripts.UI
 
             return texture;
         }
+
+        // --- what cannot be walked on ------------------------------------------------
+
+        /// <summary>
+        /// A mask of the map: opaque where a unit cannot walk, clear where it
+        /// can. Walkable is what the baked NavMesh covers. Units, buildings,
+        /// trees and mines are dots or part of the picture, not walls: their
+        /// own holes in the NavMesh are filled back, so a building standing at
+        /// start does not leave a dark patch for the whole game. Any other
+        /// obstacle is a wall and is darkened.
+        /// </summary>
+        private static Texture2D RenderBlocked(Rect world)
+        {
+            var triangulation = NavMesh.CalculateTriangulation();
+            if (triangulation.indices == null || triangulation.indices.Length == 0)
+            {
+                return null;
+            }
+
+            var width = BlockedPixels;
+            var height = Mathf.Max(1, Mathf.RoundToInt(BlockedPixels * world.height / Mathf.Max(1f, world.width)));
+            var walkable = new bool[width * height];
+
+            Vector2 ToPixel(Vector3 p) => new Vector2(
+                (p.x - world.xMin) / world.width * width,
+                (p.z - world.yMin) / world.height * height);
+
+            var vertices = triangulation.vertices;
+            var indices = triangulation.indices;
+            for (var i = 0; i + 2 < indices.Length; i += 3)
+            {
+                FillTriangle(walkable, width, height,
+                    ToPixel(vertices[indices[i]]), ToPixel(vertices[indices[i + 1]]), ToPixel(vertices[indices[i + 2]]));
+            }
+
+            var margin = NavMesh.GetSettingsByIndex(0).agentRadius + 0.25f;
+            foreach (var obstacle in UnityEngine.Object.FindObjectsByType<NavMeshObstacle>(FindObjectsSortMode.None))
+            {
+                var collider = obstacle.GetComponent<Collider>();
+                var bounds = collider != null ? collider.bounds : new Bounds(obstacle.transform.position, Vector3.zero);
+                var isGameObject = obstacle.GetComponentInParent<UnitValues>() != null
+                    || obstacle.GetComponentInParent<ResourceValues>() != null
+                    || obstacle.GetComponentInParent<HarvestedResource>() != null;
+
+                if (isGameObject)
+                {
+                    bounds.Expand(margin * 2f);
+                }
+
+                FillRect(walkable, width, height, ToPixel(bounds.min), ToPixel(bounds.max), isGameObject);
+            }
+
+            var pixels = new Color32[width * height];
+            for (var i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = new Color32(255, 255, 255, walkable[i] ? (byte)0 : (byte)255);
+            }
+
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                name = "Minimap Blocked",
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply(false, true);
+            return texture;
+        }
+
+        /// <summary>Marks every pixel whose centre lies in the triangle.</summary>
+        private static void FillTriangle(bool[] mask, int width, int height, Vector2 a, Vector2 b, Vector2 c)
+        {
+            var area = Cross(b - a, c - a);
+            if (Mathf.Abs(area) < 1e-6f)
+            {
+                return;
+            }
+
+            var xMin = Mathf.Max(0, Mathf.FloorToInt(Mathf.Min(a.x, Mathf.Min(b.x, c.x))));
+            var xMax = Mathf.Min(width - 1, Mathf.CeilToInt(Mathf.Max(a.x, Mathf.Max(b.x, c.x))));
+            var yMin = Mathf.Max(0, Mathf.FloorToInt(Mathf.Min(a.y, Mathf.Min(b.y, c.y))));
+            var yMax = Mathf.Min(height - 1, Mathf.CeilToInt(Mathf.Max(a.y, Mathf.Max(b.y, c.y))));
+
+            // A little slack, so pixels on an edge shared by two triangles are not lost.
+            var slack = -0.02f * Mathf.Abs(area);
+            var sign = Mathf.Sign(area);
+
+            for (var y = yMin; y <= yMax; y++)
+            {
+                for (var x = xMin; x <= xMax; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    if (Cross(b - a, p - a) * sign >= slack
+                        && Cross(c - b, p - b) * sign >= slack
+                        && Cross(a - c, p - c) * sign >= slack)
+                    {
+                        mask[y * width + x] = true;
+                    }
+                }
+            }
+        }
+
+        private static void FillRect(bool[] mask, int width, int height, Vector2 min, Vector2 max, bool value)
+        {
+            var xMin = Mathf.Max(0, Mathf.FloorToInt(min.x));
+            var xMax = Mathf.Min(width - 1, Mathf.CeilToInt(max.x) - 1);
+            var yMin = Mathf.Max(0, Mathf.FloorToInt(min.y));
+            var yMax = Mathf.Min(height - 1, Mathf.CeilToInt(max.y) - 1);
+
+            for (var y = yMin; y <= yMax; y++)
+            {
+                for (var x = xMin; x <= xMax; x++)
+                {
+                    mask[y * width + x] = value;
+                }
+            }
+        }
+
+        private static float Cross(Vector2 u, Vector2 v) => u.x * v.y - u.y * v.x;
 
         /// <summary>Dots and the camera frame, drawn over the ground picture.</summary>
         private sealed class MinimapOverlay : VisualElement
