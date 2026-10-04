@@ -5094,9 +5094,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourcesAmount:
   - Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
-    Amount: 300000
+    Amount: 3000
   - Resource: {fileID: 11400000, guid: fc730630a3c9975499c22871ab4abf93, type: 2}
-    Amount: 100000
+    Amount: 1000
   - Resource: {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
     Amount: 0
   MaxSupplyResourcesAmount:
