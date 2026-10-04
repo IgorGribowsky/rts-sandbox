@@ -30,6 +30,8 @@ namespace Assets.Scripts.UI
         public const string Size = "Size";
         public const string Supply = "Supply";
 
+        public const string MaxLevel = "MAX";
+
         public const string Building = "Building";
         public const string Unit = "Unit";
 

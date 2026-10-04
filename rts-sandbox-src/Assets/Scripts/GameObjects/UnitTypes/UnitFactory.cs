@@ -216,6 +216,11 @@ public static class UnitFactory
             unit.AddComponent<UnitSkills>().Skills = new List<UnitSkills.SkillSlot>(type.Skills);
         }
 
+        if (type.HasLevels && type.ExperienceTable != null)
+        {
+            unit.AddComponent<UnitExperience>().Table = type.ExperienceTable;
+        }
+
         if (type.HasMana)
         {
             unit.AddComponent<ManaValues>().Stats = type.Mana.Clone();

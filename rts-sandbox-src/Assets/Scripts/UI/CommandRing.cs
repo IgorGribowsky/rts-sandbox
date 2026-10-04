@@ -32,6 +32,7 @@ namespace Assets.Scripts.UI
         public const float SmallButtonRadius = 128f;
         public const float SkillRadius = 182f;
         public const float SkillButtonSize = 72f;
+        public const float LevelBadgeSize = 46f;
 
         // Where the parts sit, in degrees clockwise from the right.
         public const float HoldAngle = 130f;
@@ -47,8 +48,12 @@ namespace Assets.Scripts.UI
 
         private readonly ArcGauge _hpGauge;
         private readonly ArcGauge _manaGauge;
+        private readonly ArcGauge _xpGauge;
         private readonly Label _hpLabel;
         private readonly Label _manaLabel;
+        private readonly Label _xpLabel;
+        private readonly VisualElement _levelBadge;
+        private readonly Label _levelLabel;
         private readonly RingButton _attack;
         private readonly RingButton _hold;
         private readonly RingButton _gather;
@@ -60,6 +65,7 @@ namespace Assets.Scripts.UI
         private ManaValues _mana;
         private UnitEventManager _unitEvents;
         private UnitCommandManager _unitCommands;
+        private UnitExperience _experience;
         private bool _ownUnit;
 
         /// <summary>The bound unit, for the parts other presenters add to the ring.</summary>
@@ -80,6 +86,7 @@ namespace Assets.Scripts.UI
 
             _hpGauge = CreateGauge("gauge--hp", 150f, 262f, false);
             _manaGauge = CreateGauge("gauge--mana", 278f, 390f, true);
+            _xpGauge = CreateGauge("gauge--xp", 67f, 113f, false);
 
             _attack = new RingButton("ring-button--big");
             _attack.AddToClassList("ring-attack");
@@ -108,6 +115,17 @@ namespace Assets.Scripts.UI
             // belongs to the skills.
             _hpLabel = CreateValueLabel("ring-value--hp", 158f);
             _manaLabel = CreateValueLabel("ring-value--mana", 22f);
+            // Under its band, not on it: the band is short and a label would hide it.
+            _xpLabel = CreateValueLabel("ring-value--xp", 90f, GaugeRadius + 26f);
+
+            _levelBadge = new VisualElement { pickingMode = PickingMode.Ignore };
+            _levelBadge.AddToClassList("level-badge");
+            Place(_levelBadge, LevelAngle, GaugeRadius + 4f, LevelBadgeSize);
+            _levelLabel = new Label { pickingMode = PickingMode.Ignore };
+            _levelLabel.AddToClassList("level-badge__value");
+            _levelLabel.AddToClassList("hud-text");
+            _levelBadge.Add(_levelLabel);
+            _container.Add(_levelBadge);
 
             _events.SelectionChanged += OnSelectionChanged;
             _commands.ModesChanged += RefreshHighlights;
@@ -157,7 +175,7 @@ namespace Assets.Scripts.UI
             return gauge;
         }
 
-        private Label CreateValueLabel(string className, float angle)
+        private Label CreateValueLabel(string className, float angle, float radius = GaugeRadius)
         {
             var label = new Label { pickingMode = PickingMode.Ignore };
             label.AddToClassList("ring-value");
@@ -169,8 +187,8 @@ namespace Assets.Scripts.UI
             const float height = 28f;
             var radians = angle * Mathf.Deg2Rad;
             label.style.position = Position.Absolute;
-            label.style.left = CenterX + Mathf.Cos(radians) * GaugeRadius - width / 2f;
-            label.style.top = CenterY + Mathf.Sin(radians) * GaugeRadius - height / 2f;
+            label.style.left = CenterX + Mathf.Cos(radians) * radius - width / 2f;
+            label.style.top = CenterY + Mathf.Sin(radians) * radius - height / 2f;
             label.style.width = width;
             label.style.height = height;
 
@@ -237,6 +255,17 @@ namespace Assets.Scripts.UI
             _manaGauge.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
             _manaLabel.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
 
+            // No levels — no experience band and no badge: hidden, not empty (M-023).
+            _experience = unit.GetComponent<UnitExperience>();
+            var hasLevels = _experience != null;
+            _xpGauge.style.display = hasLevels ? DisplayStyle.Flex : DisplayStyle.None;
+            _xpLabel.style.display = hasLevels ? DisplayStyle.Flex : DisplayStyle.None;
+            _levelBadge.style.display = hasLevels ? DisplayStyle.Flex : DisplayStyle.None;
+            if (hasLevels)
+            {
+                _experience.Changed += RefreshExperience;
+            }
+
             if (_unitEvents != null)
             {
                 _unitEvents.HealthPointsChanged += OnHealthChanged;
@@ -246,6 +275,7 @@ namespace Assets.Scripts.UI
 
             RefreshHealth();
             RefreshMana();
+            RefreshExperience();
             RefreshHighlights();
         }
 
@@ -260,6 +290,12 @@ namespace Assets.Scripts.UI
                 _unitEvents.CurrentCommandChanged -= OnCurrentCommandChanged;
             }
 
+            if (_experience != null)
+            {
+                _experience.Changed -= RefreshExperience;
+            }
+
+            _experience = null;
             _unit = null;
             _values = null;
             _mana = null;
@@ -297,6 +333,27 @@ namespace Assets.Scripts.UI
             var current = Mathf.Clamp(_mana.CurrentMana, 0f, max);
             _manaGauge.Value = current / max;
             _manaLabel.text = UiText.Fraction(current, max);
+        }
+
+        private void RefreshExperience()
+        {
+            if (_experience == null)
+            {
+                return;
+            }
+
+            _levelLabel.text = _experience.Level.ToString();
+
+            if (_experience.IsMaxLevel)
+            {
+                _xpGauge.Value = 1f;
+                _xpLabel.text = UiText.MaxLevel;
+                return;
+            }
+
+            var next = Mathf.Max(1, _experience.ExperienceToNext);
+            _xpGauge.Value = (float)_experience.Experience / next;
+            _xpLabel.text = _experience.Experience + "/" + next;
         }
 
         // --- what is happening now --------------------------------------------------

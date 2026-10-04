@@ -68,7 +68,7 @@ MonoBehaviour:
   Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    ResourcesCanBeHarvested: []
+    ResourcesCanBeHarvested: 
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -85,7 +85,7 @@ MonoBehaviour:
   MiningRate: 1
   MiningValue: 10
   MinersMaxCount: 5
-  StoredResources: []
+  StoredResources: 
   HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
   HealthBarPriority: 10
   ManaBarTemplate: {fileID: 5133334966052544803, guid: ba945503ecd709149b42ff20d80164cc, type: 3}
@@ -108,3 +108,6 @@ MonoBehaviour:
   - Skill: {fileID: 11400000, guid: 96f90a8ded8c0ca4194f0f298d3a7fd7, type: 2}
     Keycode: 103
   HasMana: 1
+  HasLevels: 1
+  ExperienceTable: {fileID: 11400000, guid: a837b5c7c7d1edd4ab9723c9f5f19b17, type: 2}
+  ExperienceReward: 80

@@ -34,9 +34,18 @@ public class UnitEventManager : MonoBehaviour
 
     public event DiedHandler UnitDied;
 
+    /// <summary>
+    /// Any unit of any team died. For those who care about deaths around them
+    /// rather than their own — experience (M-026). Static: there is no one
+    /// object every unit could report to.
+    /// </summary>
+    public static event DiedHandler AnyUnitDied;
+
     public void OnUnitDied(GameObject killer, GameObject dead)
     {
-        UnitDied?.Invoke(new DiedEventArgs(killer, dead));
+        var args = new DiedEventArgs(killer, dead);
+        UnitDied?.Invoke(args);
+        AnyUnitDied?.Invoke(args);
     }
 
     public event MineIsFinishedHandler MineIsFinished;

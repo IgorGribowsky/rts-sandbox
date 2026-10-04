@@ -27,7 +27,7 @@ MonoBehaviour:
   ProducesSupply: 0
   StoresHarvestedResources: 1
   IsResourceObject: 0
-  Behaviours: []
+  Behaviours: 
   Stats:
     Id: 8
     IsInvulnerable: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    ResourcesCanBeHarvested: []
+    ResourcesCanBeHarvested: 
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -93,3 +93,6 @@ MonoBehaviour:
   ProducingBarPriority: 5
   Skills: []
   HasMana: 0
+  HasLevels: 0
+  ExperienceTable: {fileID: 0}
+  ExperienceReward: 80

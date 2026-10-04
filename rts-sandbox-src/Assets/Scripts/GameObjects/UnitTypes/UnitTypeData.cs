@@ -117,6 +117,16 @@ public class UnitTypeData : ScriptableObject
     [Tooltip("Mana pool and its bar. Off for a unit with skills but no mana cost.")]
     public bool HasMana = false;
 
+    [Header("Experience")]
+    [Tooltip("Gathers experience and levels up (M-026). Needs a table.")]
+    public bool HasLevels = false;
+
+    [Tooltip("Level-up costs and the share radius. Used when HasLevels is on.")]
+    public ExperienceTable ExperienceTable;
+
+    [Tooltip("Experience shared among the enemy's units with levels nearby when this one dies.")]
+    public int ExperienceReward = 0;
+
     /// <summary>The unit gathers, so it gets a HarvestingValues component.</summary>
     public bool HasHarvesting => Harvesting.IsMiner || Harvesting.IsHarvestor;
 

@@ -80,7 +80,7 @@
 /* Size of the ring's layout box; the parts are placed around its centre in code. */
 .command-ring {
     width: 430px;
-    height: 352px;
+    height: 364px;
 }
 
 .gauge {
@@ -363,5 +363,22 @@
     color: var(--color-text);
     margin: 0;
     padding: 1px 0;
+}
+
+/* --- level badge ------------------------------------------------------------ */
+
+.level-badge {
+    background-image: var(--img-badge-level);
+    -unity-background-scale-mode: scale-to-fit;
+    justify-content: center;
+    align-items: center;
+}
+
+.level-badge__value {
+    font-size: var(--text-m);
+    color: var(--color-accent);
+    -unity-text-align: middle-center;
+    margin: 0;
+    padding: 0;
 }
 
