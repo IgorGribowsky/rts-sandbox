@@ -1,6 +1,14 @@
 using Assets.Scripts.Infrastructure.Enums;
 using UnityEngine;
 
+/// <summary>
+/// One bar over a unit (M-017): health, mana, production. The bar template
+/// has a child tagged ActiveBar, the fill, anywhere inside it.
+///
+/// The fill is shortened by its right anchor, not squeezed by its scale
+/// (T-059): the fill is a 9-sliced picture with round ends, and a squeezed
+/// picture would squash its ends too.
+/// </summary>
 public abstract class BarBase : MonoBehaviour
 {
     public GameObject Unit;
@@ -8,7 +16,7 @@ public abstract class BarBase : MonoBehaviour
     public GameObject BarTemplate;
     public int Priority;
 
-    private Transform activeBar;
+    private RectTransform activeBar;
 
     protected BarsContaining _barsContaining;
 
@@ -33,7 +41,7 @@ public abstract class BarBase : MonoBehaviour
             Bar = _barsContaining.AddBarToContainer(BarTemplate, Priority);
         }
 
-        foreach (Transform barChild in Bar.transform)
+        foreach (var barChild in Bar.GetComponentsInChildren<RectTransform>(true))
         {
             if (barChild.CompareTag(Tag.ActiveBar.ToString()))
             {
@@ -61,9 +69,12 @@ public abstract class BarBase : MonoBehaviour
                 _barsContaining.OnBarVisibilityChanged();
             }
 
-            var currentBarScale = activeBar.localScale;
-            var newCurrentBarScale = new Vector3(percent, currentBarScale.y, currentBarScale.z);
-            activeBar.localScale = newCurrentBarScale;
+            var anchorMax = activeBar.anchorMax;
+            var fill = Mathf.Clamp01(percent);
+            if (!Mathf.Approximately(anchorMax.x, fill))
+            {
+                activeBar.anchorMax = new Vector2(fill, anchorMax.y);
+            }
         }
         else if (Bar.activeSelf)
         {

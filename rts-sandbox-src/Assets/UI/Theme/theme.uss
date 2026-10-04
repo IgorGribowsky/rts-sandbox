@@ -28,6 +28,8 @@
     --color-text-income: rgb(196, 255, 150);
 
     /* --- characteristics ------------------------------------------------ */
+    /* The uGUI bars over units (HPBar, ManaBar, ProcBar prefabs) repeat
+       these colours as numbers: uGUI does not read USS. */
     --color-hp: rgb(232, 64, 70);
     --color-hp-back: rgba(70, 14, 18, 0.9);
     --color-mana: rgb(64, 146, 255);

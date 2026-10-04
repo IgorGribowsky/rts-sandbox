@@ -1,7 +1,9 @@
 """Renders every SVG in svg/ into a transparent PNG with headless Chrome.
 
 Usage: python render.py [name ...]   (no names = all)
-Output goes to Assets/UI/Icons/<name>.png at the size written in the SVG.
+Output goes to Assets/UI/Icons/<name>.png at the size written in the SVG;
+sprites for the uGUI bars over units (SPRITES below) go to Assets/UI/Sprites/,
+where the icon importer does not touch them and they stay 9-sliced sprites.
 Grey versions for cooldown and disabled states are made by the game at run
 time, so only the colour picture is stored.
 """
@@ -13,6 +15,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'svg')
 OUT = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'UI', 'Icons'))
+OUT_SPRITES = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'UI', 'Sprites'))
+SPRITES = {'bar_frame', 'bar_fill'}
 TMP = os.path.join(HERE, '.render')
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
@@ -27,7 +31,7 @@ def render(name):
     with open(html, 'w', encoding='utf-8') as f:
         f.write('<html><body style="margin:0;background:transparent;overflow:hidden">'
                 + svg + '</body></html>')
-    png = os.path.join(OUT, name + '.png')
+    png = os.path.join(OUT_SPRITES if name in SPRITES else OUT, name + '.png')
     url = 'file:///' + html.replace(os.sep, '/')
     subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--hide-scrollbars',
                     '--default-background-color=00000000', '--window-size=%d,%d' % (w, h),
