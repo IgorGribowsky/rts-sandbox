@@ -19,6 +19,7 @@ public class Building : MonoBehaviour
     private HarvestedResourcesStorage _harvestedResourcesStorage;
     private PlayerEventController _playerEventController;
     private PlayerResources _playerResources;
+    private GameController _gameController;
 
     private float timeToBuild;
     private float hpToBuild;
@@ -38,6 +39,8 @@ public class Building : MonoBehaviour
             .GetComponent<PlayerEventController>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
+        _gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString())
+            .GetComponent<GameController>();
     }
 
     private void OnEnable()
@@ -117,9 +120,10 @@ public class Building : MonoBehaviour
         _playerEventController.OnBuildingRemoved(gameObject);
         _unitEventManager.OnUnitDied(gameObject, gameObject);
 
+        var refundShare = _gameController.BuildingCancelRefundPercent / 100f;
         foreach (var resourceCost in _unitValues.ResourceCost)
         {
-            var valueToReturn = Mathf.RoundToInt(resourceCost.Amount * GameConstants.ResourcesReturnedWhenBuildingCanceled);
+            var valueToReturn = Mathf.RoundToInt(resourceCost.Amount * refundShare);
             _playerResources.AddResource(resourceCost.ResourceName, valueToReturn);
         }
 

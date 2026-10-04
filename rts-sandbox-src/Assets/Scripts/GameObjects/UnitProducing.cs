@@ -71,12 +71,14 @@ public class UnitProducing : MonoBehaviour
     private void OnEnable()
     {
         _unitEventManager.ProduceCommandReceived += ProduceCommandHandler;
+        _unitEventManager.Canceled += OnCanceled;
         _playerEventController.ResourceChanged += OnSupplyChanged;
     }
 
     private void OnDisable()
     {
         _unitEventManager.ProduceCommandReceived -= ProduceCommandHandler;
+        _unitEventManager.Canceled -= OnCanceled;
         _playerEventController.ResourceChanged -= OnSupplyChanged;
     }
 
@@ -145,6 +147,16 @@ public class UnitProducing : MonoBehaviour
 
         RaiseQueueChanged();
         return true;
+    }
+
+    /// <summary>
+    /// `Esc` on a finished building: the unit in production goes, its price
+    /// comes back in full, the next one starts (M-011). While the building is
+    /// still going up this component is off and Building takes the `Esc`.
+    /// </summary>
+    private void OnCanceled(CanceledEventArgs args)
+    {
+        Cancel(0);
     }
 
     void Update()
