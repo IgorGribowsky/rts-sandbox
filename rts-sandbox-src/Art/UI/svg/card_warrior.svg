@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="helm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f5fb"/>
+      <stop offset="0.5" stop-color="#9aa8c4"/>
+      <stop offset="1" stop-color="#4c5a78"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6a5a"/>
+      <stop offset="1" stop-color="#8e1a12"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff0a8"/>
+      <stop offset="1" stop-color="#b47a08"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#7f93b8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="234" rx="92" ry="12" fill="#000" opacity="0.35"/>
+  <g stroke="#120c08" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M186 32 L200 44 L148 180 L134 174 Z" fill="url(#blade)"/>
+    <path d="M124 166 L162 182" stroke-width="16"/>
+    <path d="M124 166 L162 182" stroke="url(#gold)" stroke-width="8"/>
+    <path d="M70 236 C74 188 98 170 128 170 C158 170 182 188 186 236 Z" fill="#5a6a8c"/>
+    <path d="M84 120 C84 64 172 64 172 120 L172 150 L84 150 Z" fill="url(#helm)"/>
+    <path d="M100 116 L156 116 L156 128 L100 128 Z" fill="#141826"/>
+    <path d="M128 62 L128 40" stroke-width="8"/>
+    <path d="M128 40 C150 30 160 44 150 58" fill="none" stroke="#e84a3a" stroke-width="10"/>
+    <path d="M24 130 C24 110 46 102 70 102 C94 102 116 110 116 130 C116 184 88 212 70 222 C52 212 24 184 24 130 Z" fill="url(#shield)"/>
+    <path d="M70 112 L70 210 M32 140 L108 140" stroke="url(#gold)" stroke-width="8"/>
+  </g>
+  <path d="M96 84 Q116 70 140 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+</svg>

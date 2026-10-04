@@ -27,6 +27,7 @@ namespace Assets.Scripts.UI
         private ResourcePanel _resourcePanel;
         private CommandRing _commandRing;
         private SkillButtons _skillButtons;
+        private CardPanel _cardPanel;
         private HudTooltip _tooltip;
 
         /// <summary>The root of the HUD tree, null until the document is up.</summary>
@@ -68,6 +69,8 @@ namespace Assets.Scripts.UI
             _resourcePanel = null;
             _skillButtons?.Dispose();
             _skillButtons = null;
+            _cardPanel?.Dispose();
+            _cardPanel = null;
             _commandRing?.Dispose();
             _commandRing = null;
         }
@@ -95,6 +98,17 @@ namespace Assets.Scripts.UI
                 _playerEventController,
                 _playerTeamId);
             _skillButtons = new SkillButtons(_commandRing, _commands, _playerEventController, _tooltip, _playerTeamId);
+
+            _cardPanel?.Dispose();
+            _cardPanel = new CardPanel(
+                _root.Q<VisualElement>("build-button-slot"),
+                _root.Q<ScrollView>("card-strip"),
+                _commands,
+                _playerEventController,
+                _playerResources,
+                _gameResources,
+                _tooltip,
+                _playerTeamId);
         }
 
         /// <summary>

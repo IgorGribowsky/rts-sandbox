@@ -72,6 +72,7 @@
     --img-no-attack: url("project://database/Assets/UI/Icons/icon_no_attack.png");
     --img-hold: url("project://database/Assets/UI/Icons/icon_hold.png");
     --img-gather: url("project://database/Assets/UI/Icons/icon_gather.png");
+    --img-build: url("project://database/Assets/UI/Icons/icon_build.png");
     --img-badge-level: url("project://database/Assets/UI/Icons/badge_level.png");
 
     /* --- motion --------------------------------------------------------- */

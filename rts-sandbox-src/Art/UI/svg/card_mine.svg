@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a3a0a8"/>
+      <stop offset="1" stop-color="#4e4a55"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c88a4e"/>
+      <stop offset="1" stop-color="#6a3a16"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#fff2b0"/>
+      <stop offset="0.5" stop-color="#f4bd2a"/>
+      <stop offset="1" stop-color="#9a5a00"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="226" rx="112" ry="14" fill="#000" opacity="0.35"/>
+  <g stroke="#14121a" stroke-width="6" stroke-linejoin="round">
+    <path d="M10 222 L36 120 L84 70 L150 52 L210 88 L246 222 Z" fill="url(#rock)"/>
+    <path d="M78 222 L78 140 C78 110 178 110 178 140 L178 222 Z" fill="#120e14"/>
+    <path d="M70 222 L70 136 L86 136 L86 222 Z" fill="url(#wood)"/>
+    <path d="M170 222 L170 136 L186 136 L186 222 Z" fill="url(#wood)"/>
+    <path d="M62 128 L194 128 L194 144 L62 144 Z" fill="url(#wood)"/>
+    <path d="M92 222 L104 196 L126 192 L138 210 L130 222 Z" fill="url(#gold)"/>
+    <path d="M132 222 L146 202 L166 206 L168 222 Z" fill="url(#gold)"/>
+  </g>
+  <g fill="url(#gold)" stroke="#14121a" stroke-width="4" stroke-linejoin="round">
+    <path d="M46 150 L58 140 L66 154 L54 162 Z"/>
+    <path d="M196 120 L210 112 L216 128 L202 134 Z"/>
+    <path d="M150 74 L162 68 L166 82 L154 86 Z"/>
+  </g>
+  <path d="M42 120 L86 76 L148 60" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.35" stroke-linecap="round"/>
+</svg>

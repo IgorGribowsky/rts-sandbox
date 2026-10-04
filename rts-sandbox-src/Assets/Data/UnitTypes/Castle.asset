@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Castle
   m_EditorClassIdentifier: 
   DisplayName: Castle
+  Preview: {fileID: 2800000, guid: b9f50ee26badbc94594f708b5faac32b, type: 3}
+  Description: The heart of the base. Trains builders and takes in the wood they
+    bring.
   BodyPrefab: {fileID: 9084684201828076527, guid: 2c598a38cc4537655621a8f3bb12ff6b, type: 3}
   HasTeam: 1
   HasValues: 1

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="skin" cx="0.45" cy="0.35" r="0.65">
+      <stop offset="0" stop-color="#b6e08a"/>
+      <stop offset="1" stop-color="#4e7a2a"/>
+    </radialGradient>
+    <linearGradient id="club" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b07a46"/>
+      <stop offset="1" stop-color="#4a2810"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="234" rx="104" ry="13" fill="#000" opacity="0.35"/>
+  <g stroke="#101806" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M196 238 L226 40 C238 30 252 42 246 56 L214 238 Z" fill="url(#club)"/>
+    <path d="M30 238 C30 170 70 140 128 140 C186 140 226 170 226 238 Z" fill="url(#skin)"/>
+    <path d="M70 238 C76 200 96 186 128 186 C160 186 180 200 186 238 Z" fill="#7a4e2a"/>
+    <path d="M78 110 C78 50 178 50 178 110 C178 150 156 168 128 168 C100 168 78 150 78 110 Z" fill="url(#skin)"/>
+    <path d="M96 96 L120 104 M160 96 L136 104" stroke-width="8"/>
+    <path d="M104 142 L152 142" stroke-width="6"/>
+  </g>
+  <g fill="#fff6e0" stroke="#101806" stroke-width="3">
+    <path d="M110 142 L114 132 L118 142 Z"/>
+    <path d="M138 142 L142 132 L146 142 Z"/>
+  </g>
+  <g fill="#1a0a04">
+    <circle cx="110" cy="116" r="6"/>
+    <circle cx="146" cy="116" r="6"/>
+  </g>
+  <g fill="#3a2410" opacity="0.6">
+    <circle cx="232" cy="64" r="4"/>
+    <circle cx="226" cy="96" r="4"/>
+  </g>
+</svg>

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Barracks
   m_EditorClassIdentifier: 
   DisplayName: Barracks
+  Preview: {fileID: 2800000, guid: 5fa3e45b607b0d3459dd652242919ca2, type: 3}
+  Description: 'Trains the army: warriors for close combat and shooters.'
   BodyPrefab: {fileID: 9084684201828076527, guid: d02936b1f716bcab04ce05fd98f9be04, type: 3}
   HasTeam: 1
   HasValues: 1

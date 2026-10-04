@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="hood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6fd06a"/>
+      <stop offset="1" stop-color="#1f6a22"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e0a464"/>
+      <stop offset="1" stop-color="#6a3a16"/>
+    </linearGradient>
+    <radialGradient id="skin" cx="0.45" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#ffd9b8"/>
+      <stop offset="1" stop-color="#c98a5e"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="128" cy="234" rx="92" ry="12" fill="#000" opacity="0.35"/>
+  <g stroke="#0e1608" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M60 236 C64 186 92 168 128 168 C164 168 192 186 196 236 Z" fill="url(#hood)"/>
+    <path d="M78 150 C70 90 96 50 128 46 C160 50 186 90 178 150 Z" fill="url(#hood)"/>
+    <ellipse cx="128" cy="126" rx="34" ry="38" fill="url(#skin)"/>
+    <path d="M90 104 C100 84 156 84 166 104 C150 96 106 96 90 104 Z" fill="#1f6a22"/>
+    <path d="M206 30 C252 90 252 170 206 230" fill="none" stroke="#0e1608" stroke-width="16"/>
+    <path d="M206 30 C252 90 252 170 206 230" fill="none" stroke="url(#wood)" stroke-width="8"/>
+    <path d="M206 30 L206 230" stroke="#e6e6e6" stroke-width="3"/>
+    <path d="M140 132 L232 132" stroke="#0e1608" stroke-width="10"/>
+    <path d="M140 132 L232 132" stroke="#c98a4e" stroke-width="4"/>
+    <path d="M232 132 L220 122 L246 132 L220 142 Z" fill="#c9d4e8" stroke-width="4"/>
+  </g>
+  <g fill="#2a160a">
+    <circle cx="116" cy="128" r="5"/>
+    <circle cx="140" cy="128" r="5"/>
+  </g>
+</svg>

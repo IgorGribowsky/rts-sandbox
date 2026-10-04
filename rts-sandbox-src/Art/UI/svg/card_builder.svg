@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="skin" cx="0.45" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#ffd9b8"/>
+      <stop offset="1" stop-color="#c98a5e"/>
+    </radialGradient>
+    <linearGradient id="helmet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe27a"/>
+      <stop offset="1" stop-color="#d48a10"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5f9bff"/>
+      <stop offset="1" stop-color="#1e4aa0"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d0945a"/>
+      <stop offset="1" stop-color="#6a3a16"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f8ff"/>
+      <stop offset="1" stop-color="#5a6b8e"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="234" rx="88" ry="12" fill="#000" opacity="0.35"/>
+  <g stroke="#1a0e06" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M48 236 C52 186 82 168 128 168 C174 168 204 186 208 236 Z" fill="url(#shirt)"/>
+    <path d="M104 172 L104 236 M152 172 L152 236" stroke="#8a5a2a" stroke-width="10"/>
+    <circle cx="128" cy="118" r="44" fill="url(#skin)"/>
+    <path d="M78 104 C78 58 178 58 178 104 Z" fill="url(#helmet)"/>
+    <path d="M70 104 L186 104" stroke-width="10"/>
+    <path d="M70 104 L186 104" stroke="#f0b62a" stroke-width="5"/>
+    <path d="M190 236 L226 150" stroke-width="22"/>
+    <path d="M190 236 L226 150" stroke="url(#wood)" stroke-width="10"/>
+    <path d="M206 140 L238 152 L230 176 L198 164 Z" fill="url(#steel)"/>
+  </g>
+  <g fill="#2a160a">
+    <circle cx="112" cy="122" r="5"/>
+    <circle cx="144" cy="122" r="5"/>
+  </g>
+  <path d="M114 140 Q128 150 142 140" fill="none" stroke="#7a3a1a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M92 86 Q110 70 136 70" fill="none" stroke="#fff6c8" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+</svg>

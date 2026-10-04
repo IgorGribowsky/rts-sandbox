@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Caster Unit
   m_EditorClassIdentifier: 
   DisplayName: Caster Unit
+  Preview: {fileID: 2800000, guid: 7797a23acbd91804f83c2539cf4059a5, type: 3}
+  Description: A hero mage with a handful of spells. Gains experience and levels.
   BodyPrefab: {fileID: 7849110260153872687, guid: 21026c63e0b8c701b308b052d450e4c2, type: 3}
   HasTeam: 1
   HasValues: 1
