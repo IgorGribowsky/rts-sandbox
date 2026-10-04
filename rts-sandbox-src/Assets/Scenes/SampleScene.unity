@@ -1396,6 +1396,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FriendlyFire: 1
+  BuildingCancelRefundPercent: 70
+  StunStarsMaterial: {fileID: 2100000, guid: fb31d3a849b22a5439895fe8d2fae65f, type: 2}
+  OwnSelectionColor: {r: 0.428, g: 1, b: 0.099, a: 1}
+  EnemySelectionColor: {r: 1, g: 0.15, b: 0.1, a: 1}
+  FriendlySelectionColor: {r: 1, g: 0.85, b: 0.1, a: 1}
 --- !u!114 &327621832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5649,6 +5654,7 @@ MonoBehaviour:
   AClickKey: 97
   FixScreenKey: 289
   HoldKey: 104
+  StopKey: 115
   GatherKey: 61
   GatherKeyAlt: 270
   OpenBuildingMenuKey: 98

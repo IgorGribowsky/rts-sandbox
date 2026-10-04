@@ -495,6 +495,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FriendlyFire: 1
+  BuildingCancelRefundPercent: 70
+  StunStarsMaterial: {fileID: 2100000, guid: fb31d3a849b22a5439895fe8d2fae65f, type: 2}
+  OwnSelectionColor: {r: 0.428, g: 1, b: 0.099, a: 1}
+  EnemySelectionColor: {r: 1, g: 0.15, b: 0.1, a: 1}
+  FriendlySelectionColor: {r: 1, g: 0.85, b: 0.1, a: 1}
 --- !u!114 &327621832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1512,8 +1517,8 @@ MonoBehaviour:
   Sensitivity: 30
   MoveCameraBorderSize: 20
   Zoom: 0.5
-  SensitivityZoom: 1.4
-  ZoomChangingVelocity: 0.5
+  ZoomStep: 0.125
+  ZoomSmoothTime: 0.2
   MinY: 10
   MaxY: 30
 --- !u!114 &1332743801
@@ -1556,7 +1561,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClosenessMultiplier: 2.5
-  SelectedUnits: []
 --- !u!114 &1332743805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1587,6 +1591,7 @@ MonoBehaviour:
   BuildingAllowedMaterial: {fileID: 2100000, guid: faaaf4eb417f9554bb5427832fb45642, type: 2}
   BuildingRestrictedMaterial: {fileID: 2100000, guid: 2689153389e65a5428f95804183435d5, type: 2}
   BuildingShadowMaterial: {fileID: 2100000, guid: f59bf3e8f63a8754e9408811200b7d2e, type: 2}
+  BuildingGhostMaterial: {fileID: 0}
 --- !u!114 &1332743807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1645,15 +1650,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1ebc18d3939e6441a8b957f25daf391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.SkillsSection.Scripts.Aiming.SkillAimHintController
-  LineMaterial: {fileID: 2100000, guid: 10bb80fad01d8104c8e7a438a25eb4a1, type: 2}
+  RangeMaterial: {fileID: 0}
+  AreaMaterial: {fileID: 0}
+  ArrowBodyMaterial: {fileID: 0}
+  ArrowHeadMaterial: {fileID: 0}
+  TargetMaterial: {fileID: 0}
   RangeColor: {r: 1, g: 1, b: 1, a: 0.35}
   HintColor: {r: 0.35, g: 0.8, b: 1, a: 0.9}
-  LineWidth: 0.08
+  LockedColor: {r: 1, g: 0.8, b: 0.32, a: 0.95}
   GroundHeight: 0.05
-  CircleSegments: 64
-  CrossSize: 0.5
+  ArrowWidth: 1.1
   ArrowHeadLength: 0.8
-  ArrowHeadAngle: 25
+  ArrowStartOffset: 0.6
+  TargetSize: 1.3
 --- !u!114 &1332743811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1792,6 +1801,9 @@ MonoBehaviour:
   AClickKey: 97
   FixScreenKey: 289
   HoldKey: 104
+  StopKey: 115
+  GatherKey: 61
+  GatherKeyAlt: 270
   OpenBuildingMenuKey: 98
   CancelKey: 27
   ReturnCameraKey: 32

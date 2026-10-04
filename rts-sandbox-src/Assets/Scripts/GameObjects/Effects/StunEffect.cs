@@ -21,6 +21,10 @@ public class StunEffect : UnitEffect
     internal override void OnApplied(GameObject target)
     {
         _targetEvents = target.GetComponent<UnitEventManager>();
+
+        // Before the event, so the stars hear the very first stun (T-069).
+        StunStars.GetOrAdd(target);
+
         _targetEvents?.OnStunStarted();
     }
 

@@ -8,6 +8,10 @@ public class GameController : MonoBehaviour
     [Range(0, 100)]
     public int BuildingCancelRefundPercent = 70;
 
+    [Header("Effects (M-019)")]
+    [Tooltip("Stars over a stunned unit: a flat picture on RTS/GroundMark, turning by its _Spin.")]
+    public Material StunStarsMaterial;
+
     [Header("Selection circle (M-003)")]
     [Tooltip("Under the player's own units.")]
     public Color OwnSelectionColor = new Color(0.428f, 1f, 0.099f);
