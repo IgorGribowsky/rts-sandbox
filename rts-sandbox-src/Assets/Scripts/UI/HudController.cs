@@ -26,6 +26,8 @@ namespace Assets.Scripts.UI
 
         private ResourcePanel _resourcePanel;
         private CommandRing _commandRing;
+        private SkillButtons _skillButtons;
+        private HudTooltip _tooltip;
 
         /// <summary>The root of the HUD tree, null until the document is up.</summary>
         public VisualElement Root => _root;
@@ -64,6 +66,8 @@ namespace Assets.Scripts.UI
         {
             _resourcePanel?.Dispose();
             _resourcePanel = null;
+            _skillButtons?.Dispose();
+            _skillButtons = null;
             _commandRing?.Dispose();
             _commandRing = null;
         }
@@ -79,12 +83,18 @@ namespace Assets.Scripts.UI
                 _playerResources,
                 _playerEventController);
 
+            var hudRoot = _root.Q<VisualElement>("hud-root");
+            hudRoot.Q<VisualElement>(className: "tooltip")?.RemoveFromHierarchy();
+            _tooltip = new HudTooltip(hudRoot);
+
+            _skillButtons?.Dispose();
             _commandRing?.Dispose();
             _commandRing = new CommandRing(
                 _root.Q<VisualElement>("command-ring"),
                 _commands,
                 _playerEventController,
                 _playerTeamId);
+            _skillButtons = new SkillButtons(_commandRing, _commands, _playerEventController, _tooltip, _playerTeamId);
         }
 
         /// <summary>

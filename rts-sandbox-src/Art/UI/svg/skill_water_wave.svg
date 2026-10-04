@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fe2ff"/>
+      <stop offset="0.5" stop-color="#1f8fe0"/>
+      <stop offset="1" stop-color="#0b3c8a"/>
+    </linearGradient>
+    <linearGradient id="water2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4cc3f5"/>
+      <stop offset="1" stop-color="#0a2f70"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#06173a" stroke-width="6" stroke-linejoin="round">
+    <path d="M24 214 C40 150 80 92 140 72 C186 58 226 80 230 118 C232 140 214 156 192 150 C176 146 172 128 184 118 C170 110 146 116 132 134 C112 160 112 192 124 214 Z" fill="url(#water)"/>
+    <path d="M18 230 C60 214 100 222 140 214 C180 206 210 214 238 226 L238 240 L18 240 Z" fill="url(#water2)"/>
+  </g>
+  <path d="M62 170 C80 124 116 92 160 84" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+  <path d="M190 96 C206 100 216 110 216 122" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+  <g fill="#e8f9ff" stroke="#06173a" stroke-width="3">
+    <circle cx="214" cy="80" r="9"/>
+    <circle cx="232" cy="98" r="6"/>
+    <circle cx="200" cy="62" r="5"/>
+  </g>
+</svg>

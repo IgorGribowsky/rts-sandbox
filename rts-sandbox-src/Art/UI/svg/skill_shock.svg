@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.4" stop-color="#fff27a"/>
+      <stop offset="1" stop-color="#ffb000"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+  <path d="M150 14 L62 140 L118 140 L92 242 L196 102 L136 102 L168 14 Z" fill="#7fd8ff" opacity="0.8" filter="url(#glow)"/>
+  <path d="M150 14 L62 140 L118 140 L92 242 L196 102 L136 102 L168 14 Z" fill="url(#bolt)" stroke="#3a2200" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M146 34 L92 118" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+</svg>

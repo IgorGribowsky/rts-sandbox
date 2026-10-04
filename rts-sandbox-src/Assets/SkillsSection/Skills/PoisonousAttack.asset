@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PassiveSkill
   Name: Poisonous Attack
   Cooldown: 0
+  Icon: {fileID: 2800000, guid: 431d41df9b065284e8edd3525b5b8c72, type: 3}
+  Description: 'Every normal attack poisons the enemy hit: it keeps taking damage
+    for a few seconds.'
   Action: {fileID: 11400000, guid: e5893d5f4036c2e44b0e17e33f126ea5, type: 2}

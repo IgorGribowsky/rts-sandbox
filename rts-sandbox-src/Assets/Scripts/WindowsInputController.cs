@@ -153,6 +153,23 @@ public class WindowsInputController : MonoBehaviour
 
         var isShiftButtonPressed = Input.GetKey(AddToQueueKey);
 
+        // A skill aimed from its button waits for a click in the world (M-023).
+        // The keyboard way — press, aim, release — goes on further below.
+        if (_commands.IsAimingSkillByClick)
+        {
+            if (leftDown)
+            {
+                _commands.CastAimedSkill(isShiftButtonPressed);
+                return;
+            }
+
+            if (rightDown || Input.GetKeyDown(CancelKey))
+            {
+                _commands.CancelSkillAiming();
+                return;
+            }
+        }
+
         if (_commands.IsAClick)
         {
             if (rightDown)

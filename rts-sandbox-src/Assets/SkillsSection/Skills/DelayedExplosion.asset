@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
   Name: Delayed Explosion
   Cooldown: 9
+  Icon: {fileID: 2800000, guid: 8d2f616c944d26345b8e935523f74520, type: 3}
+  Description: Marks an area. A moment later it explodes, then keeps burning everyone
+    inside for a while.
   CastDuration: 0.4
   CastRange: 11
   ManaCost: 70

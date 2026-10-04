@@ -2,15 +2,13 @@
 
 Usage: python render.py [name ...]   (no names = all)
 Output goes to Assets/UI/Icons/<name>.png at the size written in the SVG.
-A '_gray' variant is written next to icons whose name starts with 'skill_'
-or 'card_': the UI swaps to it for cooldown and disabled states.
+Grey versions for cooldown and disabled states are made by the game at run
+time, so only the colour picture is stored.
 """
 import os
 import re
 import subprocess
 import sys
-
-from PIL import Image, ImageOps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'svg')
@@ -35,11 +33,6 @@ def render(name):
                     '--default-background-color=00000000', '--window-size=%d,%d' % (w, h),
                     '--screenshot=' + png, url],
                    check=True, capture_output=True)
-    if name.startswith('skill_') or name.startswith('card_'):
-        im = Image.open(png).convert('RGBA')
-        gray = ImageOps.grayscale(im.convert('RGB')).convert('RGBA')
-        gray.putalpha(im.getchannel('A'))
-        gray.save(os.path.join(OUT, name + '_gray.png'))
     print('ok', name, w, h)
 
 

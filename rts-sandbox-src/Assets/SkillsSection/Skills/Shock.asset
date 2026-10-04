@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
   Name: Shock
   Cooldown: 4
+  Icon: {fileID: 2800000, guid: d66e698828641af4b9638821f70498a8, type: 3}
+  Description: Strikes the chosen unit with lightning. The damage lands at once.
   CastDuration: 0.3
   CastRange: 6
   ManaCost: 40

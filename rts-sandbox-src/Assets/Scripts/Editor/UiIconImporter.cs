@@ -7,12 +7,18 @@ using UnityEngine;
 /// downscale, are never compressed (compression smears thin outlines) and treat
 /// alpha as transparency so the edges do not get a dark halo.
 ///
+/// Readable, so that the HUD can make a grey copy for cooldowns at run time
+/// instead of storing a second picture of every skill.
+///
 /// Lives in an importer rather than in each .meta so that a new icon dropped
 /// into the folder comes out right without anyone touching the inspector.
 /// </summary>
 public class UiIconImporter : AssetPostprocessor
 {
     private const string IconsFolder = "Assets/UI/Icons/";
+
+    /// <summary>Raise when the settings below change: Unity then reimports the icons.</summary>
+    public override uint GetVersion() => 2;
 
     private void OnPreprocessTexture()
     {
@@ -32,5 +38,9 @@ public class UiIconImporter : AssetPostprocessor
         importer.npotScale = TextureImporterNPOTScale.None;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.maxTextureSize = 512;
+
+        // The HUD makes the grey cooldown version of a skill picture itself,
+        // which needs the pixels on the CPU side.
+        importer.isReadable = true;
     }
 }

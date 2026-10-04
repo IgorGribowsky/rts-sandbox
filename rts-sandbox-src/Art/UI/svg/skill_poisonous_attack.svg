@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f2fff0"/>
+      <stop offset="0.5" stop-color="#b9d6bd"/>
+      <stop offset="0.52" stop-color="#6f9478"/>
+      <stop offset="1" stop-color="#3f5a46"/>
+    </linearGradient>
+    <radialGradient id="venom" cx="0.4" cy="0.35" r="0.65">
+      <stop offset="0" stop-color="#eaffb0"/>
+      <stop offset="0.45" stop-color="#7be034"/>
+      <stop offset="1" stop-color="#1f6a0c"/>
+    </radialGradient>
+  </defs>
+  <g transform="rotate(-40 128 128)" stroke="#0e1a0c" stroke-width="6" stroke-linejoin="round">
+    <path d="M128 18 L144 46 L144 150 L112 150 L112 46 Z" fill="url(#blade)"/>
+    <path d="M84 150 L172 150 L168 166 L88 166 Z" fill="#c9a24a"/>
+    <rect x="118" y="166" width="20" height="40" rx="5" fill="#5a3a1c"/>
+    <circle cx="128" cy="214" r="11" fill="#c9a24a"/>
+    <path d="M118 60 C112 80 124 92 118 112" fill="none" stroke="#7be034" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <path d="M184 128 C184 128 216 168 216 190 C216 210 202 224 184 224 C166 224 152 210 152 190 C152 168 184 128 184 128 Z" fill="url(#venom)" stroke="#0e2a06" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="174" cy="186" rx="7" ry="12" fill="#ffffff" opacity="0.75"/>
+</svg>

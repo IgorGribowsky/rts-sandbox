@@ -17,6 +17,7 @@ public class CommandInput : MonoBehaviour
     private UnitsController _unitsController;
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
+    private SkillController _skillController;
 
     private bool _aClick;
 
@@ -32,6 +33,11 @@ public class CommandInput : MonoBehaviour
 
     public bool IsPlacingBuilding => _buildingController.BuildingMod;
 
+    /// <summary>Place of the aimed skill in the main unit's list, -1 when none.</summary>
+    public int AimedSkillIndex => _skillController.AimedSkillIndex;
+
+    public bool IsAimingSkillByClick => _skillController.IsAimingByClick;
+
     /// <summary>Shift or whatever the input has for "add to the queue".</summary>
     public bool IsQueueModifierHeld => QueueModifierSource != null
         ? QueueModifierSource()
@@ -42,6 +48,7 @@ public class CommandInput : MonoBehaviour
         _unitsController = GetComponent<UnitsController>();
         _buildingController = GetComponent<BuildingController>();
         _playerEventController = GetComponent<PlayerEventController>();
+        _skillController = GetComponent<SkillController>();
     }
 
     private void OnEnable()
@@ -68,6 +75,7 @@ public class CommandInput : MonoBehaviour
             _buildingController.DisableBuildingMenuMod();
         }
 
+        _skillController.CancelAiming();
         SetAClick(true);
     }
 
@@ -88,6 +96,7 @@ public class CommandInput : MonoBehaviour
         }
 
         ExitAClick();
+        _skillController.CancelAiming();
         _buildingController.EnableBuildingMenuMod();
     }
 
@@ -105,6 +114,45 @@ public class CommandInput : MonoBehaviour
     public void CancelBuildingPlacement()
     {
         _buildingController.DisableBuildingMod();
+    }
+
+    // --- skills -------------------------------------------------------------
+
+    /// <summary>
+    /// A skill button: aim the skill at this place, as a pressed key would.
+    /// Other modes give way, the same as they never stand together with aiming
+    /// on the keyboard. False when the skill cannot be cast right now.
+    /// </summary>
+    public bool AimSkill(int index)
+    {
+        if (!_skillController.PrepareSkillCastByClick(index))
+        {
+            return false;
+        }
+
+        SetAClick(false);
+
+        if (IsPlacingBuilding)
+        {
+            _buildingController.DisableBuildingMod();
+        }
+        else if (IsBuildMenuOpen)
+        {
+            _buildingController.DisableBuildingMenuMod();
+        }
+
+        return true;
+    }
+
+    /// <summary>Left click in the world with a button-aimed skill: cast it there.</summary>
+    public void CastAimedSkill(bool addToQueue)
+    {
+        _skillController.CommandAimedSkillCast(addToQueue);
+    }
+
+    public void CancelSkillAiming()
+    {
+        _skillController.CancelAiming();
     }
 
     // --- orders -------------------------------------------------------------

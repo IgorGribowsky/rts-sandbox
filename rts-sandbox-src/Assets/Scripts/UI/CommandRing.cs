@@ -30,8 +30,8 @@ namespace Assets.Scripts.UI
         public const float GaugeRadius = 106f;
         public const float GaugeThickness = 17f;
         public const float SmallButtonRadius = 128f;
-        public const float SkillRadius = 178f;
-        public const float SkillButtonSize = 68f;
+        public const float SkillRadius = 182f;
+        public const float SkillButtonSize = 72f;
 
         // Where the parts sit, in degrees clockwise from the right.
         public const float HoldAngle = 130f;

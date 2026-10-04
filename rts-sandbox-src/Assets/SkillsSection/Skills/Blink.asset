@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
   Name: Blink
   Cooldown: 3
+  Icon: {fileID: 2800000, guid: 7742df1a5bb95aa4f856188d98af60ce, type: 3}
+  Description: Teleports the caster towards the chosen point, a short distance at
+    most.
   CastDuration: 0.15
   CastRange: 50
   ManaCost: 30

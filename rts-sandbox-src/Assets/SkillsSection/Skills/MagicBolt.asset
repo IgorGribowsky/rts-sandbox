@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
   Name: Magic Bolt
   Cooldown: 4
+  Icon: {fileID: 2800000, guid: c2350d24231ebdd4b823be034571b122, type: 3}
+  Description: Launches a bolt that follows the chosen unit. The damage lands when
+    it hits.
   CastDuration: 0.3
   CastRange: 6
   ManaCost: 40

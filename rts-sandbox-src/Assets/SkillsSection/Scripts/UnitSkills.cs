@@ -28,6 +28,12 @@ namespace Assets.SkillsSection.Scripts
         /// </summary>
         private readonly List<UnitSkill> _runtimeSkills = new List<UnitSkill>();
 
+        /// <summary>
+        /// Every skill of this unit in the order of the setup, passives included.
+        /// The HUD lays its buttons out in this order (M-023). Read only.
+        /// </summary>
+        public IReadOnlyList<UnitSkill> RuntimeSkills => _runtimeSkills;
+
         void Awake()
         {
             BuildRuntimeSkills();

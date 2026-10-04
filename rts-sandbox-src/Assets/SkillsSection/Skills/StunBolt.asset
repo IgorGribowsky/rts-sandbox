@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActiveSkill
   Name: Stun Bolt
   Cooldown: 8
+  Icon: {fileID: 2800000, guid: cfaeb83f5fac32a46af41aa2e3aeeb48, type: 3}
+  Description: Launches a bolt that follows the chosen unit, hurts it and stuns it
+    for a short time.
   CastDuration: 0.3
   CastRange: 6
   ManaCost: 50

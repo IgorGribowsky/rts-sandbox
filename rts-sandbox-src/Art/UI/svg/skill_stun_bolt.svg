@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="hit" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.4" stop-color="#9fd4ff"/>
+      <stop offset="1" stop-color="#2a63d6"/>
+    </radialGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff9c4"/>
+      <stop offset="1" stop-color="#ffb21a"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="96" rx="96" ry="32" fill="none" stroke="#ffd34a" stroke-width="7" opacity="0.85"/>
+  <circle cx="128" cy="150" r="64" fill="url(#hit)" stroke="#0c1f5a" stroke-width="6"/>
+  <path d="M110 114 L98 156 L124 156 L112 196 L158 144 L132 144 L146 114 Z" fill="#ffffff" stroke="#0c1f5a" stroke-width="4" stroke-linejoin="round"/>
+  <g fill="url(#star)" stroke="#5a3200" stroke-width="4" stroke-linejoin="round">
+    <path d="M44 92 L52 76 L60 92 L76 96 L62 106 L66 122 L52 112 L38 122 L42 106 L28 96 Z"/>
+    <path d="M196 74 L204 58 L212 74 L228 78 L214 88 L218 104 L204 94 L190 104 L194 88 L180 78 Z"/>
+    <path d="M128 48 L134 36 L140 48 L152 51 L142 58 L145 70 L134 63 L123 70 L126 58 L116 51 Z"/>
+  </g>
+</svg>
