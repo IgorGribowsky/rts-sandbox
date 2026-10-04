@@ -3,7 +3,8 @@
 
 Жанр: RTS в реальном времени, 3D, вид сверху · Ощущение: не сформулировано,
 см. Q-1 в docs/06-open-questions.md · Референс: Warcraft III и его кастомные
-карты; стиль интерфейса — references/menu.jpg
+карты; стиль интерфейса — docs/ui-style.md (как StarCraft II, ближе к
+мобильному)
 Платформы: ПК, управление мышью и клавиатурой; интерфейс в мобильном виде
 Стек: Unity 6000.2.13f1 · Built-in Render Pipeline · legacy Input Manager ·
 AI Navigation 2.0.9 · UI Toolkit (HUD) · uGUI (полоски над юнитами) · C# ·
