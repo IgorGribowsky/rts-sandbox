@@ -1,25 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 256 256">
   <defs>
-    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#eef3fc"/>
-      <stop offset="0.25" stop-color="#a9b8d6"/>
-      <stop offset="0.6" stop-color="#5b6b8e"/>
-      <stop offset="1" stop-color="#232c42"/>
-    </linearGradient>
-    <linearGradient id="groove" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0a0e18"/>
-      <stop offset="1" stop-color="#3a4867"/>
-    </linearGradient>
-    <radialGradient id="field" cx="0.5" cy="0.38" r="0.62">
-      <stop offset="0" stop-color="#3d5180"/>
-      <stop offset="0.6" stop-color="#1d2944"/>
-      <stop offset="1" stop-color="#0e1424"/>
+    <radialGradient id="field" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#172430"/>
+      <stop offset="1" stop-color="#0a1018"/>
     </radialGradient>
   </defs>
-  <circle cx="128" cy="132" r="124" fill="#000" opacity="0.55"/>
-  <circle cx="128" cy="128" r="122" fill="url(#rim)"/>
-  <circle cx="128" cy="128" r="122" fill="none" stroke="#070a12" stroke-width="6"/>
-  <circle cx="128" cy="128" r="100" fill="url(#groove)"/>
-  <circle cx="128" cy="128" r="93" fill="url(#field)"/>
-  <path d="M28 104 A102 102 0 0 1 116 24" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.55" stroke-linecap="round"/>
+  <circle cx="128" cy="131" r="126" fill="#000" opacity="0.45"/>
+  <circle cx="128" cy="128" r="119.5" fill="url(#field)" stroke="#6e93aa" stroke-width="9"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#a9cadb" stroke-width="4" opacity="0.35"/>
+  <rect x="123.0" y="2" width="10" height="22" rx="5.0" fill="#a9cadb" transform="rotate(0 128 128)"/><rect x="123.0" y="2" width="10" height="22" rx="5.0" fill="#a9cadb" transform="rotate(90 128 128)"/><rect x="123.0" y="2" width="10" height="22" rx="5.0" fill="#a9cadb" transform="rotate(180 128 128)"/><rect x="123.0" y="2" width="10" height="22" rx="5.0" fill="#a9cadb" transform="rotate(270 128 128)"/>
 </svg>

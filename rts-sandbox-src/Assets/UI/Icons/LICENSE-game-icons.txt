@@ -1,0 +1,25 @@
+Icon silhouettes from game-icons.net
+https://game-icons.net — https://github.com/game-icons/icons
+
+Licensed under Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+Changes: recoloured, outlined, shadowed and scaled for this game's HUD
+(Art/UI/make_icons.py). Frames, rims, glow and the level badge are original.
+
+Icon in the game            Source icon        Author
+icon_sword, icon_no_attack  broadsword         Lorc        https://lorcblog.blogspot.com
+icon_hold                   checked-shield     Lorc
+icon_gather                 axe-in-stump       Lorc
+icon_build                  hammer-nails       Lorc
+res_gold                    two-coins          Delapouite  https://delapouite.com
+res_wood                    wood-pile          Delapouite
+res_food                    meat               Lorc
+skill_blink                 teleport           Lorc
+skill_delayed_explosion     time-bomb          Lorc
+skill_light_orb             ball-glow          Lorc
+skill_magic_bolt            bolt-spell-cast    Delapouite
+skill_poisonous_attack      dripping-blade     Lorc
+skill_shock                 lightning-arc      Lorc
+skill_stun_bolt             knockout           Skoll
+skill_water_wave            big-wave           Lorc

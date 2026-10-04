@@ -109,11 +109,13 @@
 .resource-bar {
     flex-direction: row;
     align-items: center;
-    padding: 4px 14px 4px 8px;
-    border-radius: var(--radius-l);
+    height: 52px;
+    padding: 0 16px 0 10px;
+    border-radius: var(--radius-s);
     background-color: var(--color-panel-sunken);
     border-width: 1px;
     border-color: var(--color-hairline);
+    border-top-color: var(--color-rim);
 }
 
 .resource-item {
@@ -127,14 +129,15 @@
 }
 
 .resource-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     margin-right: var(--gap-s);
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .resource-value {
     font-size: var(--text-l);
+    -unity-text-outline-width: var(--text-outline-thick);
     -unity-text-align: middle-left;
     min-width: 40px;
     padding: 0;
@@ -403,7 +406,7 @@
 
 .tooltip__title {
     font-size: var(--text-m);
-    color: var(--color-accent);
+    color: var(--color-text);
     margin: 0;
     padding: 0;
 }

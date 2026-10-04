@@ -1,13 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="fire" cx="0.5" cy="0.55" r="0.55">
-      <stop offset="0" stop-color="#fffbe0"/>
-      <stop offset="0.3" stop-color="#ffd84a"/>
-      <stop offset="0.65" stop-color="#ff7a1a"/>
-      <stop offset="1" stop-color="#c41e0a"/>
-    </radialGradient>
+    <linearGradient id="tone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd2b0"/>
+      <stop offset="1" stop-color="#ff7a45"/>
+    </linearGradient>
+    <filter id="o" x="-25%" y="-25%" width="150%" height="150%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="14" result="grown"/>
+      <feFlood flood-color="#04070b" flood-opacity="0.95"/>
+      <feComposite in2="grown" operator="in" result="outline"/>
+      <feOffset in="outline" dy="8" result="moved"/>
+      <feGaussianBlur in="moved" stdDeviation="8" result="shadow"/>
+      <feComponentTransfer in="shadow" result="soft"><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+      <feMerge><feMergeNode in="soft"/><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <ellipse cx="128" cy="198" rx="104" ry="34" fill="none" stroke="#ff8a3d" stroke-width="7" stroke-dasharray="18 12" opacity="0.9"/>
-  <path d="M128 26 L148 84 L204 50 L180 108 L238 116 L186 146 L214 196 L156 176 L128 230 L104 176 L44 196 L72 146 L20 116 L78 108 L52 50 L108 84 Z" fill="url(#fire)" stroke="#4a0a02" stroke-width="7" stroke-linejoin="round"/>
-  <circle cx="128" cy="130" r="30" fill="#fffde8" opacity="0.9"/>
+  <g filter="url(#o)">
+    <g transform="translate(56 56) scale(0.78125)"><path fill="url(#tone)" d="M104.53 28.72c-.676 0-1.356.012-2.03.03-16.186.435-31.577 6.108-44.375 15.25-34.13 24.378-50.547 75.233-18.563 118.72 25.234 34.303 14.237 79.597-11.874 104.905l13.03 13.406c32.24-31.247 45.253-86.76 13.907-129.374C28.415 116.022 42.253 78.324 69 59.22c13.374-9.554 29.767-14.01 46.28-10.75 15.853 3.126 32.335 13.31 46.907 35l-59.875 34.655 24.344 42.28c-49.898 63.943-58.988 154.445-16 229.126 56.487 98.133 181.517 131.802 279.281 75.19 97.765-56.614 131.237-182.057 74.75-280.19-42.912-74.55-125.41-111.868-205.437-100.686l-24.438-42.438-56.437 32.657c-16.916-25.592-38.054-39.714-59.47-43.938-4.813-.95-9.63-1.405-14.374-1.406zm170.126 81.124c79.9 0 144.813 64.347 144.813 144.25 0 79.9-64.913 144.844-144.814 144.844-79.9 0-144.25-64.945-144.25-144.844 0-79.9 64.35-144.25 144.25-144.25zm-9.094 25.187v88.19c-13.248 4.192-23.156 16.79-23.156 31.218 0 17.726 14.962 32.125 32.688 32.125 16.82 0 30.63-12.968 32-29.438l76.53-54.875-10.905-15.188-70.283 50.407c-4.103-6.774-10.542-11.993-18.187-14.345V135.03h-18.688zm-42.187 11.314l-16.188 9.344 14.344 24.843 16.19-9.374-14.345-24.812zm103.063 0l-14.344 24.812 16.187 9.375 14.345-24.843-16.188-9.343zm-150.125 40.22l-9.344 16.186 24.81 14.344 9.345-16.188-24.813-14.344zm98.78 53.874c7.628 0 13.438 6.375 13.438 14 0 7.626-5.81 13.437-13.436 13.437-7.627 0-14-5.81-14-13.438 0-7.626 6.372-14 14-14zm-119.437 4.5v18.687h28.656v-18.688h-28.656zm209.813 0v18.687h28.686v-18.688H365.47zM191.78 291.5l-24.81 14.313L176.312 322l24.812-14.344-9.344-16.156zm166.25 0l-9.342 16.156L373.5 322l9.344-16.188L358.03 291.5zm-136.5 36.563l-14.343 24.812 16.188 9.344 14.344-24.814-16.19-9.344zm106.75 0l-16.186 9.343 14.344 24.813 16.187-9.345-14.344-24.813zm-62.717 16.812v28.656h18.687v-28.655h-18.688z"/></g>
+    
+  </g>
 </svg>
