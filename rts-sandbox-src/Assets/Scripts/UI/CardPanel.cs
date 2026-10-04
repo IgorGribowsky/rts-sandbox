@@ -12,6 +12,9 @@ namespace Assets.Scripts.UI
     /// the button or `B` alike: the panel follows the mode, it does not keep
     /// one of its own.
     ///
+    /// A finished building that trains units shows its hire cards all the
+    /// time, with no button: a click is the same as the unit's digit key.
+    ///
     /// The row never grows over the command ring; what does not fit scrolls
     /// by dragging.
     /// </summary>
@@ -29,7 +32,13 @@ namespace Assets.Scripts.UI
         private readonly List<UnitCard> _cards = new List<UnitCard>();
 
         private BuilderValues _builder;
-        private bool _showingBuildings;
+        private BuildingValues _producer;
+        private Building _producerBuilding;
+        private UnitEventManager _producerEvents;
+
+        // What the row shows now and for whom; rebuilt only when either changes.
+        private string _content = "";
+        private UnityEngine.Object _contentOwner;
 
         public CardPanel(VisualElement buttonSlot, ScrollView strip, CommandInput commands,
             PlayerEventController events, PlayerResources playerResources, GameResources gameResources,
@@ -63,6 +72,7 @@ namespace Assets.Scripts.UI
 
         public void Dispose()
         {
+            UnbindProducer();
             _events.SelectionChanged -= OnSelectionChanged;
             _events.ResourceChanged -= OnResourceChanged;
             _commands.ModesChanged -= Refresh;
@@ -80,24 +90,90 @@ namespace Assets.Scripts.UI
             var builder = own ? unit.GetComponent<BuilderValues>() : null;
             _builder = builder != null && builder.IsBuilder ? builder : null;
 
+            UnbindProducer();
+            var producer = own ? unit.GetComponent<BuildingValues>() : null;
+            if (producer != null && producer.CanProduceUnits && producer.UnitsToProduce.Count > 0)
+            {
+                _producer = producer;
+                _producerBuilding = unit.GetComponent<Building>();
+                _producerEvents = unit.GetComponent<UnitEventManager>();
+                if (_producerEvents != null)
+                {
+                    _producerEvents.BuildingCompleted += OnProducerCompleted;
+                }
+            }
+
             _buildButton.style.display = _builder != null ? DisplayStyle.Flex : DisplayStyle.None;
             Refresh();
         }
 
+        private void UnbindProducer()
+        {
+            if (_producerEvents != null)
+            {
+                _producerEvents.BuildingCompleted -= OnProducerCompleted;
+            }
+
+            _producer = null;
+            _producerBuilding = null;
+            _producerEvents = null;
+        }
+
+        private void OnProducerCompleted(BuildingCompletedEventArgs args) => Refresh();
+
         private void Refresh()
         {
-            var showBuildings = _builder != null && _commands.IsBuildMenuOpen;
             _buildButton.SetActive(_builder != null && (_commands.IsBuildMenuOpen || _commands.IsPlacingBuilding));
 
-            if (showBuildings == _showingBuildings)
+            string content;
+            UnityEngine.Object owner;
+            if (_builder != null && _commands.IsBuildMenuOpen)
+            {
+                content = "buildings";
+                owner = _builder;
+            }
+            else if (_producer != null && (_producerBuilding == null || !_producerBuilding.BuildingIsInProgress))
+            {
+                // A building still going up cannot train anybody yet (M-011).
+                content = "hire";
+                owner = _producer;
+            }
+            else
+            {
+                content = "";
+                owner = null;
+            }
+
+            if (content == _content && owner == _contentOwner)
             {
                 return;
             }
 
-            _showingBuildings = showBuildings;
+            _content = content;
+            _contentOwner = owner;
             ClearCards();
 
-            if (showBuildings)
+            if (content == "hire")
+            {
+                for (var i = 0; i < _producer.UnitsToProduce.Count; i++)
+                {
+                    var type = _producer.UnitsToProduce[i];
+                    if (type == null)
+                    {
+                        continue;
+                    }
+
+                    // Same numbering as the digit keys: 1..9, then 0 for the tenth.
+                    var index = i;
+                    var key = index < 10 ? ((index + 1) % 10).ToString() : "";
+                    var card = new UnitCard(type, key, _gameResources);
+                    card.Clicked += () => _commands.Produce(index);
+                    AddCard(card);
+                }
+
+                _strip.scrollOffset = Vector2.zero;
+            }
+            else if (content == "buildings")
             {
                 foreach (var entry in _builder.BuildingsToProduce)
                 {
