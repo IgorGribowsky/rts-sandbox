@@ -390,6 +390,24 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Takes the unit at this place out of the main building's queue, price
+    /// back (M-011). Only the main one: its queue is the one on the screen.
+    /// </summary>
+    public void CancelProduction(int slot)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        var producing = SelectedUnits.FirstOrDefault()?.GetComponent<UnitProducing>();
+        if (producing != null)
+        {
+            producing.Cancel(slot);
+        }
+    }
+
     public void SelectedUnitDiedHandler(DiedEventArgs args)
     {
         if (SelectedUnits.Remove(args.Dead))

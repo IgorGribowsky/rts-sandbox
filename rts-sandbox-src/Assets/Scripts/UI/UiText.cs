@@ -35,6 +35,10 @@ namespace Assets.Scripts.UI
         public const string Building = "Building";
         public const string Unit = "Unit";
 
+        public const string InProduction = "In production";
+        public const string Queued = "Queued";
+        public const string CancelHint = "Click to cancel. The price comes back in full.";
+
         /// <summary>"420/500". A living unit never reads 0: the current value rounds up.</summary>
         public static string Fraction(float current, float max)
         {

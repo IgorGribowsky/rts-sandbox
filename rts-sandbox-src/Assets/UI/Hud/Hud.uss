@@ -443,10 +443,134 @@
     background-image: var(--img-build);
 }
 
+/* The hire queue sits on top of the cards, both scroll on their own. */
+.card-column {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 0;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
 .card-strip {
     flex-grow: 0;
     flex-shrink: 1;
     min-width: 0;
+    max-width: 100%;
+}
+
+/* --- hire queue ------------------------------------------------------------ */
+
+.hire-queue {
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 0;
+    max-width: 100%;
+    margin-bottom: var(--gap-s);
+}
+
+.hire-queue > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container {
+    flex-direction: row;
+    align-items: flex-end;
+    padding-left: 8px;
+    padding-top: 6px;
+}
+
+/* A waiting unit: a small round frame with its picture. */
+.queue-slot {
+    position: relative;
+    flex-shrink: 0;
+    width: var(--slot-waiting);
+    height: var(--slot-waiting);
+    margin-right: var(--gap-s);
+    opacity: 1;
+    transition-property: width, height, margin-right, opacity;
+    transition-duration: var(--slot-duration);
+    transition-timing-function: ease-out;
+}
+
+/* The unit in production: bigger, with the ring of progress. */
+.queue-slot.is-current {
+    width: var(--slot-current);
+    height: var(--slot-current);
+    margin-right: var(--gap-m);
+}
+
+.queue-slot.is-entering {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+}
+
+.queue-slot.is-leaving {
+    width: 0;
+    height: var(--slot-waiting);
+    margin-right: 0;
+    opacity: 0;
+}
+
+.queue-slot .ring-button__icon {
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 80%;
+}
+
+.queue-slot__progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    --progress-fill: var(--color-accent);
+    --progress-back: var(--color-progress-back);
+}
+
+.queue-slot.is-stalled .queue-slot__progress {
+    --progress-fill: var(--tint-disabled);
+}
+
+.queue-slot.is-stalled .ring-button__icon {
+    -unity-background-image-tint-color: var(--tint-cooldown);
+}
+
+/* A red cross on hover: a click takes the unit out. */
+.queue-slot__cancel {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: var(--color-danger);
+    border-width: 2px;
+    border-color: var(--color-rim-dark);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--fade-duration);
+}
+
+.queue-slot:hover .queue-slot__cancel {
+    opacity: 1;
+}
+
+.queue-slot.is-leaving .queue-slot__cancel {
+    opacity: 0;
+}
+
+.queue-slot__cancel-stroke {
+    position: absolute;
+    left: 3px;
+    top: 7px;
+    width: 12px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--color-text);
+    rotate: 45deg;
+}
+
+.queue-slot__cancel-stroke--back {
+    rotate: -45deg;
 }
 
 .card-strip > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container {

@@ -192,6 +192,12 @@ public class CommandInput : MonoBehaviour
         _unitsController.ProduceUnit(index);
     }
 
+    /// <summary>A slot of the hire queue: that unit leaves the queue, its price comes back.</summary>
+    public void CancelProduction(int slot)
+    {
+        _unitsController.CancelProduction(slot);
+    }
+
     /// <summary>`Esc` in the normal mode: cancel what the selection is building.</summary>
     public void Cancel()
     {

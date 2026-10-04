@@ -121,6 +121,7 @@ namespace Assets.Scripts.UI
             _cardPanel = new CardPanel(
                 _root.Q<VisualElement>("build-button-slot"),
                 _root.Q<ScrollView>("card-strip"),
+                _root.Q<ScrollView>("hire-queue"),
                 _commands,
                 _playerEventController,
                 _playerResources,

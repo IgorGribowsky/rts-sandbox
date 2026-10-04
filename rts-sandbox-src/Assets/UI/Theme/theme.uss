@@ -41,6 +41,7 @@
     --tint-disabled: rgb(120, 120, 120);
     --tint-passive-frame: rgb(190, 175, 140);
     --color-sweep: rgba(4, 6, 12, 0.62);
+    --color-progress-back: rgba(4, 6, 12, 0.7);
     --tint-minimap-ground: rgb(150, 162, 150);
 
     /* --- fonts ---------------------------------------------------------- */
@@ -64,6 +65,8 @@
     --radius-m: 12px;
     --radius-l: 18px;
     --rim: 2px;
+    --slot-current: 76px;
+    --slot-waiting: 58px;
 
     /* --- pictures ------------------------------------------------------- */
     --img-frame-big: url("project://database/Assets/UI/Icons/frame_big.png");
@@ -81,4 +84,5 @@
     --press-duration: 0.07s;
     --release-duration: 0.16s;
     --fade-duration: 0.12s;
+    --slot-duration: 0.18s;
 }

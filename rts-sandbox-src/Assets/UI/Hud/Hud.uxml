@@ -8,7 +8,10 @@
         </ui:VisualElement>
         <ui:VisualElement name="bottom-left" class="hud-bottom-left" picking-mode="Ignore">
             <ui:VisualElement name="build-button-slot" class="build-button-slot" picking-mode="Ignore" />
-            <ui:ScrollView name="card-strip" class="card-strip" mode="Horizontal" />
+            <ui:VisualElement name="card-column" class="card-column" picking-mode="Ignore">
+                <ui:ScrollView name="hire-queue" class="hire-queue" mode="Horizontal" />
+                <ui:ScrollView name="card-strip" class="card-strip" mode="Horizontal" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-right" class="hud-bottom-right" picking-mode="Ignore">
             <ui:VisualElement name="command-ring" class="command-ring" picking-mode="Ignore" />

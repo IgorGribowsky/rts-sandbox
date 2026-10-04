@@ -15,6 +15,8 @@ namespace Assets.Scripts.UI
     /// A finished building that trains units shows its hire cards all the
     /// time, with no button: a click is the same as the unit's digit key.
     ///
+    /// Above the hire cards, the building's production queue (HireQueue).
+    ///
     /// The row never grows over the command ring; what does not fit scrolls
     /// by dragging.
     /// </summary>
@@ -29,6 +31,7 @@ namespace Assets.Scripts.UI
 
         private readonly RingButton _buildButton;
         private readonly ScrollView _strip;
+        private readonly HireQueue _hireQueue;
         private readonly List<UnitCard> _cards = new List<UnitCard>();
         private readonly Dictionary<int, UnitCard> _hireCards = new Dictionary<int, UnitCard>();
 
@@ -41,7 +44,7 @@ namespace Assets.Scripts.UI
         private string _content = "";
         private UnityEngine.Object _contentOwner;
 
-        public CardPanel(VisualElement buttonSlot, ScrollView strip, CommandInput commands,
+        public CardPanel(VisualElement buttonSlot, ScrollView strip, ScrollView queueRow, CommandInput commands,
             PlayerEventController events, PlayerResources playerResources, GameResources gameResources,
             HudTooltip tooltip, int playerTeamId)
         {
@@ -65,6 +68,8 @@ namespace Assets.Scripts.UI
             _strip.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             _strip.AddManipulator(new DragScroller(_strip));
 
+            _hireQueue = new HireQueue(queueRow, commands, tooltip);
+
             _events.SelectionChanged += OnSelectionChanged;
             _events.ResourceChanged += OnResourceChanged;
             _commands.ModesChanged += Refresh;
@@ -80,6 +85,7 @@ namespace Assets.Scripts.UI
             _events.ResourceChanged -= OnResourceChanged;
             _commands.ModesChanged -= Refresh;
             _commands.HotkeyPressed -= OnHotkey;
+            _hireQueue.Dispose();
             ClearCards();
         }
 
@@ -147,6 +153,8 @@ namespace Assets.Scripts.UI
                 content = "";
                 owner = null;
             }
+
+            _hireQueue.Bind(content == "hire" ? _producer.GetComponent<UnitProducing>() : null);
 
             if (content == _content && owner == _contentOwner)
             {
