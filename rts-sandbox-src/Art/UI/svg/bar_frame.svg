@@ -1,14 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32">
-  <!-- Rim of a bar over a unit: tinted by the rim colour in the prefab.
-       Light on top, dark at the bottom, like the HUD panels; the black
-       outline stays black under any tint. 9-sliced, border 12 px. -->
-  <defs>
-    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.45" stop-color="#b8b8b8"/>
-      <stop offset="1" stop-color="#4a4a4a"/>
-    </linearGradient>
-  </defs>
-  <rect x="1" y="1" width="46" height="30" rx="11" ry="11" fill="#05070c"/>
-  <rect x="3" y="3" width="42" height="26" rx="9" ry="9" fill="url(#rim)"/>
+  <!-- Rim of a bar over a unit, 0.3.1 style (T-065.5): a flat dark plate
+       with a thin light line on top, like the HUD panels. White parts take
+       the rim colour of the prefab, the black outline stays black.
+       9-sliced, border 12 px. -->
+  <rect x="1" y="1" width="46" height="30" rx="6" ry="6" fill="#05070c"/>
+  <rect x="3" y="3" width="42" height="26" rx="4" ry="4" fill="#2c2c2c"/>
+  <rect x="5" y="3" width="38" height="2.5" rx="1.2" fill="#ffffff"/>
 </svg>
