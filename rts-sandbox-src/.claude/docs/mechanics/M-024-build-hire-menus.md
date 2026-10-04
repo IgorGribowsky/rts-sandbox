@@ -1,9 +1,9 @@
 ---
 id: M-024
 title: Меню построек и список найма
-status: accepted
+status: implemented
 source: concept/processed/Интерфейс добавление.txt
-tasks: []
+tasks: [T-049, T-050]
 ---
 
 # M-024 · Меню построек и список найма

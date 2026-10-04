@@ -1,9 +1,9 @@
 ---
 id: M-012
 title: Ресурсы и снабжение
-status: accepted
+status: implemented
 source:
-tasks: []
+tasks: [T-008]
 ---
 
 # M-012 · Ресурсы и снабжение
