@@ -285,8 +285,12 @@ namespace Assets.Scripts.UI
                 kind = KindOf(active);
                 rows.Add(new KeyValuePair<string, string>(UiText.Mana, active.ManaCost.ToString()));
                 rows.Add(new KeyValuePair<string, string>(UiText.Cooldown, UiText.Seconds(skill.Cooldown)));
-                rows.Add(new KeyValuePair<string, string>(UiText.CastTime, UiText.Seconds(active.CastDuration)));
-                rows.Add(new KeyValuePair<string, string>(UiText.Range, UiText.Number(active.CastRange)));
+                // Cast at once (T-053): no cast time, no range to speak of.
+                if (active.Action is not CastWithoutTargetAction)
+                {
+                    rows.Add(new KeyValuePair<string, string>(UiText.CastTime, UiText.Seconds(active.CastDuration)));
+                    rows.Add(new KeyValuePair<string, string>(UiText.Range, UiText.Number(active.CastRange)));
+                }
 
                 if (active.Action is CastToAreaAction area)
                 {
@@ -313,6 +317,7 @@ namespace Assets.Scripts.UI
                 case CastToAreaAction _: return UiText.CastArea;
                 case CastToTargetAction _: return UiText.CastUnit;
                 case CastToPointAction _: return UiText.CastPoint;
+                case CastWithoutTargetAction _: return UiText.CastAtOnce;
                 default: return UiText.CastInstant;
             }
         }

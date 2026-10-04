@@ -33,3 +33,4 @@ MonoBehaviour:
       data:
         _impactType: StunImpact
         duration: 2
+        effectInfo: {fileID: 11400000, guid: e07c9945f7cbc2b4689d5fd742803c69, type: 2}

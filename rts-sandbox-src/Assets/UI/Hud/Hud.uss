@@ -844,3 +844,71 @@
     color: var(--color-text);
 }
 
+
+/* --- effects on the selected unit (T-073) ----------------------------------- */
+
+/* A row to the left of the ring, low, at the height of the Hold button; the
+   newest effect sits nearest the ring. */
+.effect-bar {
+    position: absolute;
+    right: 100%;
+    bottom: 22px;
+    /* The ring's box is wider than the ring: pull the row in to the HP label. */
+    margin-right: -36px;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+}
+
+.effect {
+    width: 64px;
+    margin-left: var(--gap-s);
+    align-items: center;
+}
+
+.ring-button--effect {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.ring-button--effect .ring-button__frame {
+    background-image: var(--img-frame-small);
+}
+
+.ring-button--effect .ring-button__icon {
+    left: 13%;
+    top: 13%;
+    width: 74%;
+    height: 74%;
+}
+
+.effect--buff .ring-button__frame {
+    -unity-background-image-tint-color: var(--tint-buff-frame);
+}
+
+.effect--debuff .ring-button__frame {
+    -unity-background-image-tint-color: var(--tint-debuff-frame);
+}
+
+.effect-sweep {
+    position: absolute;
+    left: 14%;
+    top: 14%;
+    width: 72%;
+    height: 72%;
+    --sweep-color: var(--color-sweep);
+}
+
+/* Seconds left, under the badge. */
+.effect-time {
+    margin-top: -6px;
+    min-width: 30px;
+    padding: 0 4px;
+    font-size: var(--text-xs);
+    -unity-text-align: middle-center;
+    color: var(--color-text);
+    background-color: var(--color-panel);
+    border-radius: var(--radius-s);
+    border-width: 1px;
+    border-color: var(--color-hairline);
+}

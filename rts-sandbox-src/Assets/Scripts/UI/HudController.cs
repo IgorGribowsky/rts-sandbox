@@ -27,6 +27,7 @@ namespace Assets.Scripts.UI
         private ResourcePanel _resourcePanel;
         private CommandRing _commandRing;
         private SkillButtons _skillButtons;
+        private EffectBar _effectBar;
         private CardPanel _cardPanel;
         private Minimap _minimap;
         private ResourcePopups _popups;
@@ -80,6 +81,8 @@ namespace Assets.Scripts.UI
             _resourcePanel = null;
             _skillButtons?.Dispose();
             _skillButtons = null;
+            _effectBar?.Dispose();
+            _effectBar = null;
             _cardPanel?.Dispose();
             _cardPanel = null;
             _minimap?.Dispose();
@@ -116,6 +119,9 @@ namespace Assets.Scripts.UI
                 _playerEventController,
                 _playerTeamId);
             _skillButtons = new SkillButtons(_commandRing, _commands, _playerEventController, _tooltip, _playerTeamId);
+
+            _effectBar?.Dispose();
+            _effectBar = new EffectBar(_root.Q<VisualElement>("effect-bar"), _playerEventController, _tooltip);
 
             _minimap?.Dispose();
             _minimap = _mapValues != null && _cameraController != null

@@ -6,9 +6,14 @@ using System;
 /// action, so the two numbers are balanced apart from each other.
 /// </summary>
 [Serializable]
-public class StunImpact : SkillUnitImpact
+public class StunImpact : SkillUnitImpact, IEffectImpact
 {
     public float duration;
+
+    [UnityEngine.Tooltip("How the effect looks in the HUD (T-073). Empty: as the skill that put it on.")]
+    public EffectInfo effectInfo;
+
+    public EffectInfo EffectInfo => effectInfo;
 
     public override SkillImpactType Type => SkillImpactType.Stun;
 }

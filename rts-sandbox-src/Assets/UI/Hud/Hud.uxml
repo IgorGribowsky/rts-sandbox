@@ -15,6 +15,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-right" class="hud-bottom-right" picking-mode="Ignore">
+            <ui:VisualElement name="effect-bar" class="effect-bar" picking-mode="Ignore" />
             <ui:VisualElement name="command-ring" class="command-ring" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>

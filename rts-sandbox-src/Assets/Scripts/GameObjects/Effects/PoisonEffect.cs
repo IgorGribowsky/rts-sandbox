@@ -22,6 +22,9 @@ public class PoisonEffect : UnitEffect
 
     private float _untilNextTick;
 
+    /// <summary>Damage a second, for the HUD (T-073).</summary>
+    public float Dps => _dps;
+
     private UnitEventManager _targetEvents;
 
     private UnitValues _targetValues;

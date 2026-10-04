@@ -167,6 +167,9 @@ namespace Assets.SkillsSection.Scripts
                 }
 
                 _runtimeSkills.Add(new UnitSkill(slot));
+
+                // So an effect of this skill can find its picture (T-073).
+                SkillCatalog.Register(slot.Skill);
             }
         }
 

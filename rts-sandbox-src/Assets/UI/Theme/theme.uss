@@ -46,6 +46,8 @@
     --tint-no-mana: rgb(92, 120, 235);
     --tint-disabled: rgb(120, 120, 120);
     --tint-passive-frame: rgb(150, 178, 196);
+    --tint-buff-frame: rgb(140, 235, 120);
+    --tint-debuff-frame: rgb(255, 120, 105);
     --color-sweep: rgba(4, 6, 12, 0.62);
     --color-progress-back: rgba(4, 6, 12, 0.7);
     /* Minimap (T-065.2): the white ground photo multiplied down to dark

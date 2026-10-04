@@ -15,6 +15,15 @@ namespace Assets.Scripts.UI
         public const string CastUnit = "Active · cast at a unit";
         public const string CastArea = "Active · cast at an area";
         public const string CastInstant = "Active";
+        public const string CastAtOnce = "Active · cast at once, no aiming";
+
+        public const string Buff = "Effect · helps";
+        public const string Debuff = "Effect · harms";
+        public const string TimeLeft = "Time left";
+        public const string DamageBonus = "Damage";
+        public const string AttackSpeedBonus = "Attack speed";
+        public const string DamagePerSecond = "Damage per second";
+        public const string AppliedBy = "From";
 
         public const string Mana = "Mana";
         public const string Cooldown = "Cooldown";
@@ -57,6 +66,24 @@ namespace Assets.Scripts.UI
             return seconds >= 1f
                 ? Mathf.CeilToInt(seconds).ToString(CultureInfo.InvariantCulture)
                 : seconds.ToString("0.0", CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>Time an effect has left, under its badge: "7", "0.6", "1:05" for a long one.</summary>
+        public static string EffectLeft(float seconds)
+        {
+            if (seconds >= 60f)
+            {
+                var whole = Mathf.CeilToInt(seconds);
+                return (whole / 60).ToString(CultureInfo.InvariantCulture) + ":" + (whole % 60).ToString("00", CultureInfo.InvariantCulture);
+            }
+
+            return CooldownLeft(seconds);
+        }
+
+        /// <summary>A change in percent: "+50%", "-20%".</summary>
+        public static string Percent(float value)
+        {
+            return (value >= 0f ? "+" : "") + Number(value) + "%";
         }
 
         public static string Seconds(float seconds)

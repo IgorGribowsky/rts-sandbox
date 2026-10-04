@@ -17,6 +17,9 @@ public class StatBoostEffect : UnitEffect
         _attackSpeedPercent = attackSpeedPercent;
     }
 
+    public float DamagePercent => _damagePercent;
+    public float AttackSpeedPercent => _attackSpeedPercent;
+
     internal override void OnApplied(GameObject target)
     {
         var values = target.GetComponent<UnitValues>();

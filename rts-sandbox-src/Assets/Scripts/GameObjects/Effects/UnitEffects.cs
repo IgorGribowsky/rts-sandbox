@@ -10,6 +10,12 @@ public class UnitEffects : MonoBehaviour
 {
     private readonly List<UnitEffect> _effects = new List<UnitEffect>();
 
+    /// <summary>What hangs on the unit now, in the order it landed. Read only (T-073).</summary>
+    public IReadOnlyList<UnitEffect> All => _effects;
+
+    /// <summary>An effect landed or went away. A refresh of the same one is not a change.</summary>
+    public event System.Action Changed;
+
     /// <summary>The holder of this unit, created on the spot if it has none yet.</summary>
     public static UnitEffects GetOrAdd(GameObject unit)
     {
@@ -44,6 +50,7 @@ public class UnitEffects : MonoBehaviour
 
         _effects.Add(effect);
         effect.OnApplied(gameObject);
+        Changed?.Invoke();
     }
 
     public bool Has(object key)
@@ -81,6 +88,7 @@ public class UnitEffects : MonoBehaviour
 
         _effects.Remove(effect);
         effect.OnRemoved(gameObject);
+        Changed?.Invoke();
     }
 
     private UnitEffect Find(object key)
@@ -109,6 +117,7 @@ public class UnitEffects : MonoBehaviour
             {
                 _effects.RemoveAt(i);
                 effect.OnRemoved(gameObject);
+                Changed?.Invoke();
             }
         }
     }
