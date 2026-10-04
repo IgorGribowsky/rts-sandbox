@@ -4976,8 +4976,8 @@ MonoBehaviour:
   Sensitivity: 30
   MoveCameraBorderSize: 20
   Zoom: 0.5
-  SensitivityZoom: 1.4
-  ZoomChangingVelocity: 0.5
+  ZoomStep: 0.125
+  ZoomSmoothTime: 0.2
   MinY: 10
   MaxY: 30
 --- !u!114 &1332743801
@@ -5020,7 +5020,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClosenessMultiplier: 2.5
-  SelectedUnits: []
 --- !u!114 &1332743805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5115,9 +5114,9 @@ MonoBehaviour:
   ArrowBodyMaterial: {fileID: 2100000, guid: a6e53bd47608048449a828393e4a0920, type: 2}
   ArrowHeadMaterial: {fileID: 2100000, guid: 2fb04b2727cd0bc47b83f76bda4ae450, type: 2}
   TargetMaterial: {fileID: 2100000, guid: ce3a2e186ff126f4380dd7b769df3f69, type: 2}
-  RangeColor: {r: 0.85, g: 0.93, b: 1, a: 0.75}
-  HintColor: {r: 0.35, g: 0.8, b: 1, a: 0.9}
-  LockedColor: {r: 1, g: 0.8, b: 0.32, a: 0.95}
+  RangeColor: {r: 0.66, g: 0.79, b: 0.86, a: 0.75}
+  HintColor: {r: 0.31, g: 0.88, b: 1, a: 0.9}
+  LockedColor: {r: 0.95, g: 0.98, b: 1, a: 1}
   GroundHeight: 0.05
   ArrowWidth: 1.1
   ArrowHeadLength: 1.2

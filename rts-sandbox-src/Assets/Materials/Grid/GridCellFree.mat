@@ -29,11 +29,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _FadeIn: 0
     - _Pulse: 0
     - _PulseSpeed: 3
     - _Scroll: 0
     - _Spin: 0
     m_Colors:
-    - _Color: {r: 0.69, g: 0.75, b: 0.87, a: 0.9}
+    - _Color: {r: 0.45, g: 0.86, b: 1, a: 0.9}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
