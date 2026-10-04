@@ -11,7 +11,8 @@ namespace Assets.Scripts.UI
     /// The minimap in the top left corner (M-025): the ground of the whole map,
     /// units and buildings as dots in their team colour, a frame of what the
     /// camera sees. A click moves the camera there, dragging keeps it under the
-    /// pointer. Orders are not given from here.
+    /// pointer. A right click is the same right click on the ground there: the
+    /// selection walks, a building puts its rally point (T-054).
     ///
     /// The ground is photographed once at start from above, without units: the
     /// map does not change during a game. Dots and the frame are drawn on top
@@ -39,6 +40,8 @@ namespace Assets.Scripts.UI
         private readonly VisualElement _view;
         private readonly MinimapOverlay _overlay;
         private readonly CameraController _camera;
+        private readonly UnitsController _selection;
+        private readonly CommandInput _commands;
         private readonly IVisualElementScheduledItem _ticker;
 
         private RenderTexture _ground;
@@ -46,10 +49,12 @@ namespace Assets.Scripts.UI
         private int _pointerId = -1;
 
         public Minimap(VisualElement slot, MapValues map, CameraController camera, TeamController teams,
-            UnitsController selection)
+            UnitsController selection, CommandInput commands)
         {
             _slot = slot;
             _camera = camera;
+            _selection = selection;
+            _commands = commands;
 
             var a = map.LeftTopMapCornerPosition;
             var b = map.RightBottomMapCornerPosition;
@@ -126,9 +131,16 @@ namespace Assets.Scripts.UI
 
         private void OnPointerDown(PointerDownEvent evt)
         {
+            if (evt.button == 1)
+            {
+                OnRightClick(evt.localPosition, evt.shiftKey);
+                evt.StopPropagation();
+                return;
+            }
+
             if (evt.button != 0)
             {
-                // Right button and others: swallowed, the world must not get them.
+                // Other buttons: swallowed, the world must not get them.
                 evt.StopPropagation();
                 return;
             }
@@ -162,6 +174,39 @@ namespace Assets.Scripts.UI
             }
 
             _pointerId = -1;
+        }
+
+        /// <summary>
+        /// As a right click in the world: in a targeting mode it only takes the
+        /// mode off, otherwise it is the order "go there" (T-054, M-025).
+        /// </summary>
+        private void OnRightClick(Vector2 local, bool addToQueue)
+        {
+            if (_commands != null)
+            {
+                if (_commands.IsAimingSkillByClick)
+                {
+                    _commands.CancelSkillAiming();
+                    return;
+                }
+
+                if (_commands.IsAClick)
+                {
+                    _commands.ExitAClick();
+                    return;
+                }
+
+                if (_commands.IsPlacingBuilding)
+                {
+                    _commands.CancelBuildingPlacement();
+                    return;
+                }
+            }
+
+            if (_selection != null)
+            {
+                _selection.OnGroundRightClick(_overlay.ToWorld(local), addToQueue);
+            }
         }
 
         private void MoveCameraTo(Vector2 local)

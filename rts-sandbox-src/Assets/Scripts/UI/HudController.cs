@@ -120,7 +120,7 @@ namespace Assets.Scripts.UI
             _minimap?.Dispose();
             _minimap = _mapValues != null && _cameraController != null
                 ? new Minimap(_root.Q<VisualElement>("minimap-slot"), _mapValues, _cameraController,
-                    _teamController, _unitsController)
+                    _teamController, _unitsController, _commands)
                 : null;
 
             _cardPanel?.Dispose();
