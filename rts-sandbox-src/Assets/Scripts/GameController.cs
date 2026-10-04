@@ -7,4 +7,14 @@ public class GameController : MonoBehaviour
     [Tooltip("How much of its price an unfinished building gives back when cancelled with Esc, in percent (M-010).")]
     [Range(0, 100)]
     public int BuildingCancelRefundPercent = 70;
+
+    [Header("Selection circle (M-003)")]
+    [Tooltip("Under the player's own units.")]
+    public Color OwnSelectionColor = new Color(0.428f, 1f, 0.099f);
+
+    [Tooltip("Under enemies of the player.")]
+    public Color EnemySelectionColor = new Color(1f, 0.15f, 0.1f);
+
+    [Tooltip("Under allies that are not the player's own, and under peaceful teams.")]
+    public Color FriendlySelectionColor = new Color(1f, 0.85f, 0.1f);
 }
