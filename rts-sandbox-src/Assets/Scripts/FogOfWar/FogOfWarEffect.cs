@@ -12,14 +12,17 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class FogOfWarEffect : MonoBehaviour
 {
-    private static readonly int FogTexId = Shader.PropertyToID("_FogTex");
-    private static readonly int FogPrevTexId = Shader.PropertyToID("_FogPrevTex");
-    private static readonly int FogBlendId = Shader.PropertyToID("_FogBlend");
+    private const int ScreenPass = 0;
+
+    private static readonly int FogSmoothId = Shader.PropertyToID("_FogSmooth");
+    private static readonly int NoiseTexId = Shader.PropertyToID("_NoiseTex");
     private static readonly int FogAreaId = Shader.PropertyToID("_FogArea");
-    private static readonly int FogTexelId = Shader.PropertyToID("_FogTexel");
     private static readonly int UnexploredColorId = Shader.PropertyToID("_UnexploredColor");
     private static readonly int ExploredId = Shader.PropertyToID("_Explored");
-    private static readonly int HazeId = Shader.PropertyToID("_Haze");
+    private static readonly int ExploredTintId = Shader.PropertyToID("_ExploredTint");
+    private static readonly int CloudColorId = Shader.PropertyToID("_CloudColor");
+    private static readonly int CloudsId = Shader.PropertyToID("_Clouds");
+    private static readonly int WobbleId = Shader.PropertyToID("_Wobble");
     private static readonly int CameraPosId = Shader.PropertyToID("_FogCameraPos");
     private static readonly int RayBottomLeftId = Shader.PropertyToID("_RayBL");
     private static readonly int RayBottomRightId = Shader.PropertyToID("_RayBR");
@@ -53,7 +56,7 @@ public class FogOfWarEffect : MonoBehaviour
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        if (_fog == null || _material == null || _fog.Texture == null)
+        if (_fog == null || _material == null || _fog.SmoothTexture == null)
         {
             Graphics.Blit(source, destination);
             return;
@@ -72,18 +75,22 @@ public class FogOfWarEffect : MonoBehaviour
         _material.SetVector(CameraPosId, view.position);
 
         var area = _fog.Area;
-        var texture = _fog.Texture;
-        _material.SetTexture(FogTexId, texture);
-        _material.SetTexture(FogPrevTexId, _fog.PreviousTexture);
-        _material.SetFloat(FogBlendId, _fog.Blend);
+        _material.SetTexture(FogSmoothId, _fog.SmoothTexture);
+        _material.SetTexture(NoiseTexId, _fog.NoiseTexture);
         _material.SetVector(FogAreaId, new Vector4(area.xMin, area.yMin, 1f / area.width, 1f / area.height));
-        _material.SetVector(FogTexelId, new Vector4(
-            _fog.EdgeSoftness / texture.width, _fog.EdgeSoftness / texture.height, 0f, 0f));
         _material.SetColor(UnexploredColorId, _fog.UnexploredColor);
         _material.SetVector(ExploredId, new Vector4(_fog.ExploredDarkening, _fog.ExploredDesaturation, 0f, 0f));
-        _material.SetVector(HazeId, new Vector4(
-            _fog.HazeStrength, 1f / Mathf.Max(1f, _fog.HazeScale), _fog.HazeSpeed * Time.time, 0f));
+        _material.SetColor(ExploredTintId, _fog.ExploredTint);
+        _material.SetColor(CloudColorId, _fog.CloudColor);
 
-        Graphics.Blit(source, destination, _material);
+        // Strength, 1 / size, and how far the clouds have drifted, in metres.
+        var drift = _fog.CloudSpeed * Time.time;
+        _material.SetVector(CloudsId, new Vector4(
+            _fog.CloudStrength, 1f / Mathf.Max(1f, _fog.CloudScale), drift, 0f));
+
+        // How far the edge wavers, metres, and how fast its waves crawl.
+        _material.SetVector(WobbleId, new Vector4(_fog.EdgeWobble, Time.time * 0.03f, 0f, 0f));
+
+        Graphics.Blit(source, destination, _material, ScreenPass);
     }
 }

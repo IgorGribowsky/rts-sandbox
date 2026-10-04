@@ -91,7 +91,7 @@ namespace Assets.Scripts.UI
             }
 
             _fog = GameServices.FogOfWar;
-            if (_fog != null && _fog.Texture != null)
+            if (_fog != null && _fog.SmoothTexture != null)
             {
                 // The fog covers the map and a margin around it; the view
                 // clips the margin off.
@@ -102,7 +102,7 @@ namespace Assets.Scripts.UI
                 _fogLayer.style.bottom = Length.Percent((area.yMin - world.yMin) / world.height * 100f);
                 _fogLayer.style.width = Length.Percent(area.width / world.width * 100f);
                 _fogLayer.style.height = Length.Percent(area.height / world.height * 100f);
-                _fogLayer.style.backgroundImage = new StyleBackground(_fog.Texture);
+                _fogLayer.style.backgroundImage = Background.FromRenderTexture(_fog.SmoothTexture);
                 _view.Add(_fogLayer);
             }
 
@@ -134,7 +134,7 @@ namespace Assets.Scripts.UI
         {
             if (_fogLayer != null)
             {
-                // The texture is refilled in place: draw the layer again.
+                // The texture is redrawn in place every frame: draw the layer again.
                 _fogLayer.style.display = _fog != null && _fog.IsOn ? DisplayStyle.Flex : DisplayStyle.None;
                 _fogLayer.MarkDirtyRepaint();
             }

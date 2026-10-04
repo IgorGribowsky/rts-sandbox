@@ -10,23 +10,41 @@ using UnityEngine;
 ///
 /// Sight is counted on a grid, not with physics, and not every frame: a few
 /// times a second every unit of the player and the allies lights a circle of
-/// its SightRange. The grid goes into a small texture: the camera darkens the
-/// world by it (<see cref="FogOfWarEffect"/>), the minimap lays it over the map.
-/// Between two passes the picture slides from the old texture to the new, so
-/// the edge does not jump.
+/// its SightRange. The grid goes into a small texture, darkness in alpha.
+///
+/// Every frame the video card turns that texture into a smooth one four
+/// times larger: it slides from the previous pass to the newest, so the edge
+/// does not jump, and blurs it, so the edge is a curve and not a staircase of
+/// cells. The camera darkens the world by the smooth texture
+/// (<see cref="FogOfWarEffect"/>), the minimap lays it over the map.
+///
+/// The clouds drifting over the grey are a small tiling noise texture made
+/// once at start, not particles: one picture read per layer, cheap enough
+/// for a phone.
 ///
 /// Switched on and off by GameController.FogOfWarEnabled, also in play mode.
 /// Off, nothing is counted and nothing is drawn; what was explored is kept.
 /// </summary>
 public class FogOfWar : MonoBehaviour
 {
-    // Darkness written into the texture's alpha: black, grey, clear. The
-    // shader and the minimap read only the alpha.
-    private const byte UnexploredDarkness = 255;
-    private const byte ExploredDarkness = 128;
+    // Darkness written into the alpha: black, grey, clear.
+    private const float UnexploredDarkness = 1f;
+    private const float ExploredDarkness = 0.5f;
+
+    // The smooth texture is this many times larger than the grid.
+    private const int Upscale = 4;
+    private const int NoiseSize = 128;
+
+    private const int ComposePass = 1;
+    private const int BlurPass = 2;
+
+    private static readonly int FogTexId = Shader.PropertyToID("_FogTex");
+    private static readonly int FogPrevTexId = Shader.PropertyToID("_FogPrevTex");
+    private static readonly int FogBlendId = Shader.PropertyToID("_FogBlend");
+    private static readonly int BlurStepId = Shader.PropertyToID("_BlurStep");
 
     [Header("Grid")]
-    [Tooltip("Side of one fog cell, metres. Smaller is a rounder edge and a dearer pass. Read at start.")]
+    [Tooltip("Side of one fog cell, metres. Smaller is a truer edge and a dearer pass. Read at start.")]
     [Min(0.25f)]
     public float CellSize = 1f;
 
@@ -38,6 +56,19 @@ public class FogOfWar : MonoBehaviour
     [Min(0.02f)]
     public float UpdateInterval = 0.15f;
 
+    [Header("Edge")]
+    [Tooltip("Over how many metres at the end of the sight radius the view fades out.")]
+    [Min(0f)]
+    public float EdgeFeather = 3f;
+
+    [Tooltip("Blur of the fog, metres. Rounds off the cells.")]
+    [Range(0f, 6f)]
+    public float EdgeSoftness = 1.5f;
+
+    [Tooltip("How far the edge wavers like a cloud, metres. Zero is a clean circle.")]
+    [Range(0f, 4f)]
+    public float EdgeWobble = 1.2f;
+
     [Header("Look")]
     public Shader FogShader;
 
@@ -46,26 +77,29 @@ public class FogOfWar : MonoBehaviour
 
     [Tooltip("How much darker the explored ground is.")]
     [Range(0f, 1f)]
-    public float ExploredDarkening = 0.5f;
+    public float ExploredDarkening = 0.45f;
 
     [Tooltip("How much colour the explored ground loses.")]
     [Range(0f, 1f)]
-    public float ExploredDesaturation = 0.75f;
+    public float ExploredDesaturation = 0.7f;
 
-    [Tooltip("Width of the soft edge, in cells.")]
-    [Range(0f, 4f)]
-    public float EdgeSoftness = 1.5f;
+    [Tooltip("Multiplied over the explored ground: a cold tint reads as fog.")]
+    public Color ExploredTint = new Color(0.82f, 0.88f, 1f);
 
-    [Tooltip("Slow drifting haze over the explored ground. Zero turns it off.")]
-    [Range(0f, 0.5f)]
-    public float HazeStrength = 0.12f;
+    [Header("Clouds")]
+    [Tooltip("Colour of the mist drifting over the explored ground.")]
+    public Color CloudColor = new Color(0.62f, 0.67f, 0.75f);
 
-    [Tooltip("Size of the haze patches, metres.")]
+    [Tooltip("How thick the mist is. Zero turns it off.")]
+    [Range(0f, 1f)]
+    public float CloudStrength = 0.35f;
+
+    [Tooltip("Size of the cloud patches, metres.")]
     [Min(1f)]
-    public float HazeScale = 14f;
+    public float CloudScale = 24f;
 
-    [Tooltip("How fast the haze drifts, metres per second.")]
-    public float HazeSpeed = 0.6f;
+    [Tooltip("How fast the clouds drift, metres per second.")]
+    public float CloudSpeed = 0.8f;
 
     [Header("Measured")]
     [Tooltip("What the last pass of sight cost, milliseconds. Read only.")]
@@ -74,9 +108,13 @@ public class FogOfWar : MonoBehaviour
     private GameController _game;
     private FogGrid _grid;
     private Rect _area;
-    private byte[] _pixels;
+    private Color32[] _pixels;
     private Texture2D _current;
     private Texture2D _previous;
+    private RenderTexture _smooth;
+    private RenderTexture _blurTemp;
+    private Texture2D _noise;
+    private Material _composeMaterial;
     private float _passTime;
     private float _timer;
     private bool _wasOn;
@@ -88,16 +126,13 @@ public class FogOfWar : MonoBehaviour
     public bool IsOn => _game != null && _game.FogOfWarEnabled;
 
     /// <summary>
-    /// The newest pass: white, alpha is the darkness. Covers <see cref="Area"/>,
-    /// bottom row is the smallest Z.
+    /// The fog as it is drawn this frame: white, alpha is the darkness, smooth.
+    /// Covers <see cref="Area"/>, bottom row is the smallest Z.
     /// </summary>
-    public Texture2D Texture => _current;
+    public RenderTexture SmoothTexture => _smooth;
 
-    /// <summary>The previous pass, to slide from.</summary>
-    public Texture2D PreviousTexture => _previous;
-
-    /// <summary>How far the picture has slid from the previous pass to the newest, 0..1.</summary>
-    public float Blend => Mathf.Clamp01((Time.time - _passTime) / UpdateInterval);
+    /// <summary>Tiling noise for the clouds and the wobble of the edge.</summary>
+    public Texture2D NoiseTexture => _noise;
 
     /// <summary>The ground the fog covers, x and z in metres: the map plus the margin.</summary>
     public Rect Area => _area;
@@ -119,11 +154,27 @@ public class FogOfWar : MonoBehaviour
         _area = new Rect(center - size / 2f, size);
 
         _grid = new FogGrid(width, height);
-        _pixels = new byte[width * height * 4];
-        _current = CreateTexture("Fog Of War");
-        _previous = CreateTexture("Fog Of War Previous");
+        _pixels = new Color32[width * height];
+        for (var i = 0; i < _pixels.Length; i++)
+        {
+            _pixels[i] = new Color32(255, 255, 255, 255);
+        }
+
+        _current = CreateTexture("Fog Of War", width, height);
+        _previous = CreateTexture("Fog Of War Previous", width, height);
         Upload(_current);
         Upload(_previous);
+
+        _smooth = CreateRenderTexture("Fog Of War Smooth", width * Upscale, height * Upscale);
+        _blurTemp = CreateRenderTexture("Fog Of War Blur", width * Upscale, height * Upscale);
+        _noise = CreateNoise();
+
+        if (FogShader != null)
+        {
+            _composeMaterial = new Material(FogShader) { hideFlags = HideFlags.HideAndDontSave };
+        }
+
+        Compose(1f);
     }
 
     private void Start()
@@ -175,14 +226,14 @@ public class FogOfWar : MonoBehaviour
         }
 
         _timer -= Time.deltaTime;
-        if (_wasOn && _timer > 0f)
+        if (!_wasOn || _timer <= 0f)
         {
-            return;
+            _timer = UpdateInterval;
+            Pass(snap: !_wasOn);
+            _wasOn = true;
         }
 
-        _timer = UpdateInterval;
-        Pass(snap: !_wasOn);
-        _wasOn = true;
+        Compose(Mathf.Clamp01((Time.time - _passTime) / UpdateInterval));
     }
 
     private void OnDestroy()
@@ -199,6 +250,10 @@ public class FogOfWar : MonoBehaviour
 
         Destroy(_current);
         Destroy(_previous);
+        Destroy(_noise);
+        Destroy(_composeMaterial);
+        ReleaseRenderTexture(_smooth);
+        ReleaseRenderTexture(_blurTemp);
     }
 
     /// <summary>
@@ -211,6 +266,7 @@ public class FogOfWar : MonoBehaviour
 
         _grid.BeginPass();
 
+        var feather = EdgeFeather / CellSize;
         var all = UnitRegistry.All;
         for (var i = 0; i < all.Count; i++)
         {
@@ -230,15 +286,18 @@ public class FogOfWar : MonoBehaviour
             _grid.Reveal(
                 (position.x - _area.xMin) / CellSize,
                 (position.z - _area.yMin) / CellSize,
-                sight / CellSize);
+                sight / CellSize,
+                feather);
         }
 
         var cells = _grid.Cells;
+        var light = _grid.Light;
         for (var i = 0; i < cells.Length; i++)
         {
-            _pixels[i * 4 + 3] = cells[i] == FogState.Visible ? (byte)0
+            var darkness = cells[i] == FogState.Visible ? ExploredDarkness * (1f - light[i])
                 : cells[i] == FogState.Explored ? ExploredDarkness
                 : UnexploredDarkness;
+            _pixels[i].a = (byte)Mathf.RoundToInt(darkness * 255f);
         }
 
         if (snap || SystemInfo.copyTextureSupport == UnityEngine.Rendering.CopyTextureSupport.None)
@@ -257,15 +316,34 @@ public class FogOfWar : MonoBehaviour
         LastPassMilliseconds = (float)_stopwatch.Elapsed.TotalMilliseconds;
     }
 
-    private Texture2D CreateTexture(string name)
+    /// <summary>
+    /// The smooth texture for this frame: previous and newest pass mixed by
+    /// blend and blurred, in two strokes, across and then along.
+    /// </summary>
+    private void Compose(float blend)
     {
-        // White with darkness in alpha: the minimap tints it, the shader reads alpha.
-        for (var i = 0; i < _pixels.Length; i++)
+        if (_composeMaterial == null)
         {
-            _pixels[i] = (i & 3) == 3 ? UnexploredDarkness : (byte)255;
+            return;
         }
 
-        return new Texture2D(_grid.Width, _grid.Height, TextureFormat.RGBA32, false)
+        // A Gaussian of nine taps read as five: the outer tap lies 3.23 steps out.
+        var stepX = EdgeSoftness / 3.23f / _area.width;
+        var stepY = EdgeSoftness / 3.23f / _area.height;
+
+        _composeMaterial.SetTexture(FogTexId, _current);
+        _composeMaterial.SetTexture(FogPrevTexId, _previous);
+        _composeMaterial.SetFloat(FogBlendId, blend);
+        _composeMaterial.SetVector(BlurStepId, new Vector4(stepX, 0f, 0f, 0f));
+        Graphics.Blit(_current, _blurTemp, _composeMaterial, ComposePass);
+
+        _composeMaterial.SetVector(BlurStepId, new Vector4(0f, stepY, 0f, 0f));
+        Graphics.Blit(_blurTemp, _smooth, _composeMaterial, BlurPass);
+    }
+
+    private static Texture2D CreateTexture(string name, int width, int height)
+    {
+        return new Texture2D(width, height, TextureFormat.RGBA32, false)
         {
             name = name,
             filterMode = FilterMode.Bilinear,
@@ -274,9 +352,102 @@ public class FogOfWar : MonoBehaviour
         };
     }
 
+    private static RenderTexture CreateRenderTexture(string name, int width, int height)
+    {
+        var texture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32)
+        {
+            name = name,
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            useMipMap = false,
+            hideFlags = HideFlags.HideAndDontSave,
+        };
+        texture.Create();
+        return texture;
+    }
+
+    private static void ReleaseRenderTexture(RenderTexture texture)
+    {
+        if (texture != null)
+        {
+            texture.Release();
+            Destroy(texture);
+        }
+    }
+
     private void Upload(Texture2D texture)
     {
-        texture.LoadRawTextureData(_pixels);
+        texture.SetPixels32(_pixels);
         texture.Apply(false, false);
+    }
+
+    /// <summary>
+    /// Tiling value noise in three octaves. Red is the clouds; green and blue
+    /// are two unrelated layers that push the edge sideways.
+    /// </summary>
+    private static Texture2D CreateNoise()
+    {
+        var pixels = new Color32[NoiseSize * NoiseSize];
+        for (var y = 0; y < NoiseSize; y++)
+        {
+            for (var x = 0; x < NoiseSize; x++)
+            {
+                pixels[y * NoiseSize + x] = new Color32(
+                    (byte)(Octaves(x, y, 0) * 255f),
+                    (byte)(Octaves(x, y, 101) * 255f),
+                    (byte)(Octaves(x, y, 211) * 255f),
+                    255);
+            }
+        }
+
+        var texture = new Texture2D(NoiseSize, NoiseSize, TextureFormat.RGBA32, false)
+        {
+            name = "Fog Of War Noise",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Repeat,
+            hideFlags = HideFlags.HideAndDontSave,
+        };
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+        return texture;
+    }
+
+    private static float Octaves(int x, int y, int seed)
+    {
+        // 8, 16 and 32 lattice cells across the texture: each tiles on its own.
+        return ValueNoise(x, y, 8, seed) * 0.55f
+            + ValueNoise(x, y, 16, seed + 7) * 0.3f
+            + ValueNoise(x, y, 32, seed + 13) * 0.15f;
+    }
+
+    private static float ValueNoise(int x, int y, int cells, int seed)
+    {
+        var step = (float)NoiseSize / cells;
+        var fx = x / step;
+        var fy = y / step;
+        var x0 = Mathf.FloorToInt(fx);
+        var y0 = Mathf.FloorToInt(fy);
+        var tx = Smooth(fx - x0);
+        var ty = Smooth(fy - y0);
+
+        float Lattice(int lx, int ly) => Hash(((lx % cells) + cells) % cells, ((ly % cells) + cells) % cells, seed);
+
+        return Mathf.Lerp(
+            Mathf.Lerp(Lattice(x0, y0), Lattice(x0 + 1, y0), tx),
+            Mathf.Lerp(Lattice(x0, y0 + 1), Lattice(x0 + 1, y0 + 1), tx),
+            ty);
+    }
+
+    private static float Smooth(float t) => t * t * (3f - 2f * t);
+
+    private static float Hash(int x, int y, int seed)
+    {
+        unchecked
+        {
+            var h = (uint)(x * 374761393 + y * 668265263 + seed * 2147483647);
+            h = (h ^ (h >> 13)) * 1274126177u;
+            h ^= h >> 16;
+            return (h & 0xFFFFFF) / (float)0xFFFFFF;
+        }
     }
 }

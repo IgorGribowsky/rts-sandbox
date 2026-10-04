@@ -93,5 +93,37 @@ namespace RtsSandbox.Rules.Tests
 
             Assert.AreEqual(FogState.Unexplored, grid[5, 5]);
         }
+
+        [Test]
+        public void Light_IsFullInside_FadesOverFeather_AndIsZeroOutside()
+        {
+            var grid = new FogGrid(20, 20);
+
+            grid.BeginPass();
+            grid.Reveal(10.5f, 10.5f, 6f, 2f);
+
+            Assert.AreEqual(1f, grid.Light[10 * 20 + 10]);
+            // Centre of cell (15, 10) is 5 away: half way into the 2-cell feather.
+            Assert.AreEqual(0.5f, grid.Light[10 * 20 + 15], 1e-4f);
+            Assert.AreEqual(FogState.Visible, grid[15, 10]);
+            Assert.AreEqual(0f, grid.Light[10 * 20 + 17]);
+        }
+
+        [Test]
+        public void Light_OfOverlappingCircles_IsTheBrighter_AndNextPassClearsIt()
+        {
+            var grid = new FogGrid(20, 20);
+
+            grid.BeginPass();
+            grid.Reveal(10f, 10f, 6f, 2f);
+            grid.Reveal(15f, 10f, 3f, 1f);
+
+            Assert.AreEqual(1f, grid.Light[10 * 20 + 15]);
+
+            grid.BeginPass();
+
+            Assert.AreEqual(0f, grid.Light[10 * 20 + 15]);
+            Assert.AreEqual(FogState.Explored, grid[15, 10]);
+        }
     }
 }
