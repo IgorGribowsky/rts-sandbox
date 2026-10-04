@@ -4,7 +4,8 @@
 //
 // The picture is white and takes its colour from _Color. Optional motion:
 // _Pulse breathes the alpha, _Scroll slides the picture along V (a pattern
-// running along an arrow), _Spin turns it around its centre (a ring).
+// running along an arrow), _Spin turns it around its centre (a ring),
+// _FadeIn makes the start of the quad (V = 0) come out of nothing.
 Shader "RTS/GroundMark"
 {
     Properties
@@ -15,6 +16,7 @@ Shader "RTS/GroundMark"
         _PulseSpeed ("Pulse speed", Float) = 3
         _Scroll ("Scroll along V, per second", Float) = 0
         _Spin ("Spin, turns per second", Float) = 0
+        _FadeIn ("Fade in over this part of V", Range(0, 1)) = 0
     }
 
     SubShader
@@ -39,6 +41,7 @@ Shader "RTS/GroundMark"
             float _PulseSpeed;
             float _Scroll;
             float _Spin;
+            float _FadeIn;
 
             struct appdata
             {
@@ -50,6 +53,7 @@ Shader "RTS/GroundMark"
             {
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float raw : TEXCOORD1;
             };
 
             v2f vert (appdata v)
@@ -66,6 +70,7 @@ Shader "RTS/GroundMark"
 
                 uv.y -= _Time.y * _Scroll;
                 o.uv = uv;
+                o.raw = v.uv.y;
                 return o;
             }
 
@@ -74,6 +79,10 @@ Shader "RTS/GroundMark"
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
                 float breath = 1 - _Pulse * (0.5 + 0.5 * sin(_Time.y * _PulseSpeed));
                 col.a *= breath;
+                if (_FadeIn > 0)
+                {
+                    col.a *= saturate(i.raw / _FadeIn);
+                }
                 return col;
             }
             ENDCG

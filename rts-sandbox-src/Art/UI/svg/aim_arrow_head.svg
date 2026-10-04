@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Head of a skill-shot arrow (M-020), pointing up. -->
+  <polygon points="64,6 122,120 6,120" fill="none" stroke="#0a0d16" stroke-width="12" stroke-opacity="0.5" stroke-linejoin="round"/>
+  <polygon points="64,6 122,120 6,120" fill="#fff" fill-opacity="0.38" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+</svg>

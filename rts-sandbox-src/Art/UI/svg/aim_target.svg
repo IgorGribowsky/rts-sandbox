@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Target mark (M-020): a ring, four brackets that turn slowly and a dot
+       in the middle. Under a unit for a unit skill, on the spot for a blink. -->
+  <circle cx="128" cy="128" r="96" fill="none" stroke="#0a0d16" stroke-width="10" stroke-opacity="0.55"/>
+  <circle cx="128" cy="128" r="96" fill="#fff" fill-opacity="0.12" stroke="#fff" stroke-width="5"/>
+  <g fill="none" stroke="#0a0d16" stroke-width="17" stroke-opacity="0.5" stroke-linecap="round"><path d="M 236.62 174.11 A 118 118 0 0 1 174.11 236.62"/><path d="M 81.89 236.62 A 118 118 0 0 1 19.38 174.11"/><path d="M 19.38 81.89 A 118 118 0 0 1 81.89 19.38"/><path d="M 174.11 19.38 A 118 118 0 0 1 236.62 81.89"/></g>
+  <g fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"><path d="M 236.62 174.11 A 118 118 0 0 1 174.11 236.62"/><path d="M 81.89 236.62 A 118 118 0 0 1 19.38 174.11"/><path d="M 19.38 81.89 A 118 118 0 0 1 81.89 19.38"/><path d="M 174.11 19.38 A 118 118 0 0 1 236.62 81.89"/></g>
+  <circle cx="128" cy="128" r="9" fill="#fff"/>
+</svg>

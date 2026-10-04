@@ -19,7 +19,7 @@ OUT_SPRITES = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'UI', 'S
 SPRITES = {'bar_frame', 'bar_fill'}
 # Pictures for materials in the world (grid, aim hints) go to Assets/Textures/.
 OUT_TEXTURES = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'Textures'))
-TEXTURES = {'grid_cell'}
+TEXTURES = {'grid_cell', 'aim_range', 'aim_area', 'aim_arrow_body', 'aim_arrow_head', 'aim_target'}
 TMP = os.path.join(HERE, '.render')
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 

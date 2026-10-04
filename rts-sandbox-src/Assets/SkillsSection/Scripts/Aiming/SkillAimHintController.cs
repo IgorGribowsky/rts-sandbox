@@ -1,12 +1,19 @@
 using Assets.Scripts.Infrastructure.Events;
+using Assets.Scripts.Infrastructure.Helpers;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Assets.SkillsSection.Scripts.Aiming
 {
     /// <summary>
-    /// Draws the aiming hints while a skill key is held (M-020): a thin circle of
-    /// the reach around the caster plus one hint picked by the action asset.
+    /// Draws the aiming hints while a skill is aimed (M-020): the circle of the
+    /// reach around the caster plus one hint picked by the action asset.
+    ///
+    /// The hints are pictures lying on the ground, in the manner of Dota and
+    /// League of Legends (T-061): a range ring with ticks that turn slowly, a
+    /// wide arrow with chevrons running along it, an area that breathes, a
+    /// target mark that locks onto a unit in gold. How each one moves is set in
+    /// its material (RTS/GroundMark); the colours are here.
     ///
     /// It only draws. Whether the cast is possible, how far it reaches and what it
     /// costs is decided by the skill system (M-015): SkillController turns this on
@@ -16,44 +23,45 @@ namespace Assets.SkillsSection.Scripts.Aiming
     public class SkillAimHintController : MonoBehaviour
     {
         [Header("Look")]
-        [Tooltip("Material of every hint line. Empty means an unlit one is made at " +
-                 "runtime, so the lines never turn magenta.")]
-        public Material LineMaterial;
+        public Material RangeMaterial;
+        public Material AreaMaterial;
+        public Material ArrowBodyMaterial;
+        public Material ArrowHeadMaterial;
+        public Material TargetMaterial;
 
         public Color RangeColor = new Color(1f, 1f, 1f, 0.35f);
 
         public Color HintColor = new Color(0.35f, 0.8f, 1f, 0.9f);
 
-        public float LineWidth = 0.08f;
+        [Tooltip("The target mark once it sits on a unit: the cast will go to this one.")]
+        public Color LockedColor = new Color(1f, 0.8f, 0.32f, 0.95f);
 
         [Header("Shape")]
         [Tooltip("Height the hints are drawn at, to keep them off the ground surface.")]
         public float GroundHeight = 0.05f;
 
-        [Range(12, 128)]
-        public int CircleSegments = 64;
+        public float ArrowWidth = 1.1f;
 
-        [Tooltip("Half the length of a stroke of the cross.")]
-        public float CrossSize = 0.5f;
+        public float ArrowHeadLength = 1.2f;
 
-        public float ArrowHeadLength = 0.8f;
+        [Tooltip("The arrow starts this far from the caster's centre.")]
+        public float ArrowStartOffset = 0.6f;
 
-        [Range(5f, 80f)]
-        public float ArrowHeadAngle = 25f;
+        [Tooltip("Diameter of the target mark on the ground with no unit under it.")]
+        public float TargetSize = 1.3f;
+
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int TilingId = Shader.PropertyToID("_MainTex_ST");
 
         private PlayerEventController _playerEventController;
 
         private Transform _container;
 
-        private LineRenderer _rangeCircle;
-        private LineRenderer _areaCircle;
-        private LineRenderer _arrowShaft;
-        private LineRenderer _arrowHead;
-        private LineRenderer _crossFirst;
-        private LineRenderer _crossSecond;
-
-        /// <summary>Made only when nothing is assigned in the inspector.</summary>
-        private Material _fallbackMaterial;
+        private Decal _range;
+        private Decal _area;
+        private Decal _arrowBody;
+        private Decal _arrowHead;
+        private Decal _target;
 
         private GameObject _caster;
         private ActiveSkill _skill;
@@ -106,7 +114,7 @@ namespace Assets.SkillsSection.Scripts.Aiming
 
         void Start()
         {
-            CreateLines();
+            CreateDecals();
             HideAll();
         }
 
@@ -116,7 +124,7 @@ namespace Assets.SkillsSection.Scripts.Aiming
             // to draw around any more.
             if (_caster == null || _skill == null)
             {
-                if (_rangeCircle != null && _rangeCircle.enabled)
+                if (_range != null && _range.Visible)
                 {
                     Hide();
                 }
@@ -129,7 +137,7 @@ namespace Assets.SkillsSection.Scripts.Aiming
 
         private void Redraw()
         {
-            if (_rangeCircle == null)
+            if (_range == null)
             {
                 return;
             }
@@ -138,9 +146,16 @@ namespace Assets.SkillsSection.Scripts.Aiming
             var action = _skill.Action;
             var range = GetAimRange(action);
 
-            DrawCircle(_rangeCircle, casterPosition, range, RangeColor);
+            if (range > 0f)
+            {
+                _range.Show(casterPosition, Vector3.forward, new Vector2(range * 2f, range * 2f), RangeColor);
+            }
+            else
+            {
+                _range.Hide();
+            }
 
-            HideHintLines();
+            HideHints();
 
             if (action == null)
             {
@@ -155,11 +170,17 @@ namespace Assets.SkillsSection.Scripts.Aiming
                     DrawArrow(casterPosition, aimPoint);
                     break;
                 case SkillAimHintType.Teleport:
+                    _target.Show(aimPoint, Vector3.forward, new Vector2(TargetSize, TargetSize), HintColor);
+                    break;
                 case SkillAimHintType.TargetUnit:
-                    DrawCross(aimPoint);
+                    DrawTarget(aimPoint);
                     break;
                 case SkillAimHintType.Area:
-                    DrawCircle(_areaCircle, aimPoint, GetAreaRadius(action), HintColor);
+                    var radius = GetAreaRadius(action);
+                    if (radius > 0f)
+                    {
+                        _area.Show(aimPoint, Vector3.forward, new Vector2(radius * 2f, radius * 2f), HintColor);
+                    }
                     break;
             }
         }
@@ -179,7 +200,7 @@ namespace Assets.SkillsSection.Scripts.Aiming
         }
 
         /// <summary>
-        /// Where the hint points. Only the cross on a unit differs: it sticks to the
+        /// Where the hint points. Only the mark on a unit differs: it sticks to the
         /// centre of whoever is under the cursor, and falls back to the cursor when
         /// there is nobody. Allies and enemies look the same (M-020).
         /// </summary>
@@ -225,25 +246,11 @@ namespace Assets.SkillsSection.Scripts.Aiming
             return new Vector3(point.x, GroundHeight, point.z);
         }
 
-        private void DrawCircle(LineRenderer line, Vector3 center, float radius, Color color)
-        {
-            if (line == null || radius <= 0f)
-            {
-                return;
-            }
-
-            line.loop = true;
-            line.positionCount = CircleSegments;
-
-            for (var i = 0; i < CircleSegments; i++)
-            {
-                var angle = i * 2f * Mathf.PI / CircleSegments;
-                line.SetPosition(i, center + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius));
-            }
-
-            Apply(line, color);
-        }
-
+        /// <summary>
+        /// A wide ribbon from the caster to the aim point with chevrons running
+        /// forward, and a head at the end. The chevrons keep their shape however
+        /// long the arrow is: the picture repeats along it, not stretches.
+        /// </summary>
         private void DrawArrow(Vector3 from, Vector3 to)
         {
             var direction = to - from;
@@ -255,128 +262,68 @@ namespace Assets.SkillsSection.Scripts.Aiming
                 return;
             }
 
-            direction.Normalize();
+            var length = direction.magnitude;
+            direction /= length;
 
-            _arrowShaft.loop = false;
-            _arrowShaft.positionCount = 2;
-            _arrowShaft.SetPosition(0, from);
-            _arrowShaft.SetPosition(1, to);
-            Apply(_arrowShaft, HintColor);
+            var head = Mathf.Min(ArrowHeadLength, length);
+            var start = Mathf.Min(ArrowStartOffset, Mathf.Max(0f, length - head));
+            var shaft = length - head - start;
 
-            var back = -direction * ArrowHeadLength;
-            var left = Quaternion.AngleAxis(ArrowHeadAngle, Vector3.up) * back;
-            var right = Quaternion.AngleAxis(-ArrowHeadAngle, Vector3.up) * back;
+            if (shaft > 0.01f)
+            {
+                var shaftCenter = from + direction * (start + shaft / 2f);
+                _arrowBody.Show(shaftCenter, direction, new Vector2(ArrowWidth, shaft), HintColor,
+                    new Vector4(1f, shaft / ArrowWidth, 0f, 0f));
+            }
 
-            _arrowHead.loop = false;
-            _arrowHead.positionCount = 3;
-            _arrowHead.SetPosition(0, to + left);
-            _arrowHead.SetPosition(1, to);
-            _arrowHead.SetPosition(2, to + right);
-            Apply(_arrowHead, HintColor);
+            var headCenter = to - direction * (head / 2f);
+            _arrowHead.Show(headCenter, direction, new Vector2(ArrowWidth * 1.6f, head), HintColor);
         }
 
-        private void DrawCross(Vector3 center)
+        /// <summary>
+        /// The mark of a unit skill: on the spot under the cursor when there is
+        /// nobody, round the unit's feet and gold when there is — the cast goes
+        /// to this one (T-061).
+        /// </summary>
+        private void DrawTarget(Vector3 point)
         {
-            var first = new Vector3(CrossSize, 0f, CrossSize);
-            var second = new Vector3(CrossSize, 0f, -CrossSize);
+            if (_unitUnderCursor == null)
+            {
+                _target.Show(point, Vector3.forward, new Vector2(TargetSize, TargetSize), HintColor);
+                return;
+            }
 
-            _crossFirst.loop = false;
-            _crossFirst.positionCount = 2;
-            _crossFirst.SetPosition(0, center - first);
-            _crossFirst.SetPosition(1, center + first);
-            Apply(_crossFirst, HintColor);
-
-            _crossSecond.loop = false;
-            _crossSecond.positionCount = 2;
-            _crossSecond.SetPosition(0, center - second);
-            _crossSecond.SetPosition(1, center + second);
-            Apply(_crossSecond, HintColor);
+            var size = Mathf.Max(TargetSize * 1.6f, _unitUnderCursor.GetSize() * 2.4f);
+            _target.Show(point, Vector3.forward, new Vector2(size, size), LockedColor);
         }
 
-        private void Apply(LineRenderer line, Color color)
+        private void CreateDecals()
         {
-            line.startWidth = LineWidth;
-            line.endWidth = LineWidth;
-            line.startColor = color;
-            line.endColor = color;
-            line.enabled = true;
-        }
-
-        private void CreateLines()
-        {
-            // At the root and not under the player controller: the lines live in world
+            // At the root and not under the player controller: the hints live in world
             // coordinates and must not inherit anybody's transform.
             _container = new GameObject("SkillAimHints").transform;
 
-            _rangeCircle = CreateLine("RangeCircle");
-            _areaCircle = CreateLine("AreaCircle");
-            _arrowShaft = CreateLine("ArrowShaft");
-            _arrowHead = CreateLine("ArrowHead");
-            _crossFirst = CreateLine("CrossFirst");
-            _crossSecond = CreateLine("CrossSecond");
-        }
+            var quad = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
 
-        private LineRenderer CreateLine(string lineName)
-        {
-            var lineObject = new GameObject(lineName);
-            lineObject.transform.SetParent(_container, false);
-
-            // Turned face up so the ribbon of the line lies flat on the ground
-            // instead of standing towards the camera.
-            lineObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-            var line = lineObject.AddComponent<LineRenderer>();
-            line.useWorldSpace = true;
-            line.alignment = LineAlignment.TransformZ;
-            line.textureMode = LineTextureMode.Stretch;
-            line.numCapVertices = 0;
-            line.numCornerVertices = 2;
-            line.shadowCastingMode = ShadowCastingMode.Off;
-            line.receiveShadows = false;
-            line.lightProbeUsage = LightProbeUsage.Off;
-            line.sharedMaterial = GetLineMaterial();
-            line.enabled = false;
-
-            return line;
-        }
-
-        private Material GetLineMaterial()
-        {
-            if (LineMaterial != null)
-            {
-                return LineMaterial;
-            }
-
-            if (_fallbackMaterial == null)
-            {
-                _fallbackMaterial = new Material(Shader.Find("Sprites/Default"));
-            }
-
-            return _fallbackMaterial;
+            _range = new Decal("Range", _container, quad, RangeMaterial);
+            _area = new Decal("Area", _container, quad, AreaMaterial);
+            _arrowBody = new Decal("ArrowBody", _container, quad, ArrowBodyMaterial);
+            _arrowHead = new Decal("ArrowHead", _container, quad, ArrowHeadMaterial);
+            _target = new Decal("Target", _container, quad, TargetMaterial);
         }
 
         private void HideAll()
         {
-            if (_rangeCircle != null)
-            {
-                _rangeCircle.enabled = false;
-            }
-
-            HideHintLines();
+            _range?.Hide();
+            HideHints();
         }
 
-        private void HideHintLines()
+        private void HideHints()
         {
-            if (_areaCircle == null)
-            {
-                return;
-            }
-
-            _areaCircle.enabled = false;
-            _arrowShaft.enabled = false;
-            _arrowHead.enabled = false;
-            _crossFirst.enabled = false;
-            _crossSecond.enabled = false;
+            _area?.Hide();
+            _arrowBody?.Hide();
+            _arrowHead?.Hide();
+            _target?.Hide();
         }
 
         private void CursorMovedHandler(CursorMovedEventArgs args)
@@ -391,10 +338,57 @@ namespace Assets.SkillsSection.Scripts.Aiming
             {
                 Destroy(_container.gameObject);
             }
+        }
 
-            if (_fallbackMaterial != null)
+        /// <summary>
+        /// One picture lying flat on the ground: a quad turned face up, its V axis
+        /// along the given direction. Colour and tiling go through a property
+        /// block, so the materials stay shared and untouched.
+        /// </summary>
+        private sealed class Decal
+        {
+            private readonly Transform _transform;
+            private readonly MeshRenderer _renderer;
+            private readonly MaterialPropertyBlock _block = new MaterialPropertyBlock();
+
+            public bool Visible => _renderer.enabled;
+
+            public Decal(string name, Transform parent, Mesh quad, Material material)
             {
-                Destroy(_fallbackMaterial);
+                var go = new GameObject(name);
+                go.transform.SetParent(parent, false);
+                go.AddComponent<MeshFilter>().sharedMesh = quad;
+
+                _transform = go.transform;
+                _renderer = go.AddComponent<MeshRenderer>();
+                _renderer.sharedMaterial = material;
+                _renderer.shadowCastingMode = ShadowCastingMode.Off;
+                _renderer.receiveShadows = false;
+                _renderer.lightProbeUsage = LightProbeUsage.Off;
+                _renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+                _renderer.enabled = false;
+            }
+
+            public void Show(Vector3 center, Vector3 forward, Vector2 size, Color color, Vector4? tiling = null)
+            {
+                if (_renderer.sharedMaterial == null)
+                {
+                    return;
+                }
+
+                _transform.SetPositionAndRotation(center,
+                    Quaternion.LookRotation(forward, Vector3.up) * Quaternion.Euler(90f, 0f, 0f));
+                _transform.localScale = new Vector3(size.x, size.y, 1f);
+
+                _block.SetColor(ColorId, color);
+                _block.SetVector(TilingId, tiling ?? new Vector4(1f, 1f, 0f, 0f));
+                _renderer.SetPropertyBlock(_block);
+                _renderer.enabled = true;
+            }
+
+            public void Hide()
+            {
+                _renderer.enabled = false;
             }
         }
     }
