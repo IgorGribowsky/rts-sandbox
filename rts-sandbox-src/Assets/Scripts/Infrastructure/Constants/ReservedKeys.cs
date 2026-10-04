@@ -26,6 +26,8 @@ namespace Assets.Scripts.Infrastructure.Constants
             KeyCode.Space,      // camera to the most important unit
             KeyCode.LeftShift,  // add the order to the queue
             KeyCode.F8,         // fix the camera
+            KeyCode.Equals,     // gather: the key with "+" on it, M-023
+            KeyCode.KeypadPlus, // gather, number pad
 
             // production
             KeyCode.Alpha1,

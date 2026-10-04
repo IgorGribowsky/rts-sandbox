@@ -181,6 +181,12 @@ public class UnitEventManager : MonoBehaviour
         ProduceCommandReceived?.Invoke(new ProduceCommandReceivedEventArgs(unitId));
     }
 
+    public event GatherCommandReceivedHandler GatherCommandReceived;
+    public void OnGatherCommandReceived(bool addToCommandsQueue = false)
+    {
+        GatherCommandReceived?.Invoke(new GatherCommandReceivedEventArgs(addToCommandsQueue));
+    }
+
     public event HoldCommandReceivedHandler HoldCommandReceived;
     public void OnHoldCommandReceived(bool addToCommandsQueue = false)
     {

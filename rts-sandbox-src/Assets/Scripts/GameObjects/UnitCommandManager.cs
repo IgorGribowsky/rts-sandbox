@@ -59,6 +59,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.BuildCommandReceived += StartBuildCommand;
             _unitEventManager.MineCommandReceived += StartMineCommand;
             _unitEventManager.HarvestingCommandReceived += StartHarvestingCommand;
+            _unitEventManager.GatherCommandReceived += StartGatherCommand;
             _unitEventManager.SkillCastCommandReceived += StartSkillCastCommand;
 
             _unitEventManager.MoveActionEnded += RunNextCommand;
@@ -84,6 +85,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.BuildCommandReceived -= StartBuildCommand;
             _unitEventManager.MineCommandReceived -= StartMineCommand;
             _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
+            _unitEventManager.GatherCommandReceived -= StartGatherCommand;
             _unitEventManager.SkillCastCommandReceived -= StartSkillCastCommand;
 
             _unitEventManager.MoveActionEnded -= RunNextCommand;
@@ -161,6 +163,11 @@ namespace Assets.Scripts.GameObjects
             var harvestingCommand = new HarvestingCommand(_unitEventManager, args);
 
             StartCommand(harvestingCommand, args.AddToCommandsQueue);
+        }
+
+        protected void StartGatherCommand(GatherCommandReceivedEventArgs args)
+        {
+            StartCommand(new GatherCommand(_unitEventManager, gameObject), args.AddToCommandsQueue);
         }
 
         protected void StartSkillCastCommand(SkillCastCommandReceivedEventArgs args)
@@ -499,6 +506,53 @@ namespace Assets.Scripts.GameObjects
             public void Start()
             {
                 _unitEventManager.OnHarvestingActionStarted(args.Resource, args.Storage, args.ToStorage);
+            }
+        }
+
+        /// <summary>
+        /// "Gather" (M-023): the target is chosen when the order starts, not when
+        /// it was given, so a queued order goes to what is nearest by then. Runs
+        /// as an ordinary harvesting or mining action from there on.
+        /// </summary>
+        private class GatherCommand : ICommand
+        {
+            public UnitCommandKind Kind => UnitCommandKind.Gather;
+
+            private readonly UnitEventManager _unitEventManager;
+            private readonly GameObject _unit;
+
+            public GatherCommand(UnitEventManager unitEventManager, GameObject unit)
+            {
+                _unitEventManager = unitEventManager;
+                _unit = unit;
+            }
+
+            public bool Check()
+            {
+                return GatherTargets.TryFind(_unit, out _);
+            }
+
+            public void Start()
+            {
+                if (!GatherTargets.TryFind(_unit, out var target))
+                {
+                    // Gone between Check and Start: end at once so the queue moves on.
+                    _unitEventManager.OnHarvestingActionEnded();
+                    return;
+                }
+
+                switch (target.Kind)
+                {
+                    case GatherTargetKind.Deliver:
+                        _unitEventManager.OnHarvestingActionStarted(null, target.Target, true);
+                        break;
+                    case GatherTargetKind.Harvest:
+                        _unitEventManager.OnHarvestingActionStarted(target.Target, null, false);
+                        break;
+                    case GatherTargetKind.Mine:
+                        _unitEventManager.OnMineActionStarted(target.Target);
+                        break;
+                }
             }
         }
 

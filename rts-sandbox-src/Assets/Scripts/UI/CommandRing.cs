@@ -51,6 +51,9 @@ namespace Assets.Scripts.UI
         private readonly Label _manaLabel;
         private readonly RingButton _attack;
         private readonly RingButton _hold;
+        private readonly RingButton _gather;
+        private readonly IVisualElementScheduledItem _gatherCheck;
+        private bool _canGatherNow;
 
         private GameObject _unit;
         private UnitValues _values;
@@ -90,6 +93,17 @@ namespace Assets.Scripts.UI
             Place(_hold, HoldAngle, SmallButtonRadius, SmallButtonSize);
             _container.Add(_hold);
 
+            _gather = new RingButton("ring-button--small");
+            _gather.AddToClassList("ring-gather");
+            _gather.Clicked += OnGatherClicked;
+            Place(_gather, GatherAngle, SmallButtonRadius, SmallButtonSize);
+            _container.Add(_gather);
+
+            // Whether there is anything to gather changes as the worker walks and
+            // trees run out; no event says so, so it is looked at twice a second.
+            _gatherCheck = _container.schedule.Execute(RefreshGather).Every(500);
+            _gatherCheck.Pause();
+
             // At the start of each band, low on the sides: the top of the ring
             // belongs to the skills.
             _hpLabel = CreateValueLabel("ring-value--hp", 158f);
@@ -105,6 +119,7 @@ namespace Assets.Scripts.UI
         {
             _events.SelectionChanged -= OnSelectionChanged;
             _commands.ModesChanged -= RefreshHighlights;
+            _gatherCheck.Pause();
             Unbind();
         }
 
@@ -210,6 +225,14 @@ namespace Assets.Scripts.UI
             _hold.style.display = canHold ? DisplayStyle.Flex : DisplayStyle.None;
             _hold.Interactive = _ownUnit;
 
+            var canGather = GatherTargets.CanGather(unit);
+            _gather.style.display = canGather ? DisplayStyle.Flex : DisplayStyle.None;
+            if (canGather)
+            {
+                RefreshGather();
+                _gatherCheck.Resume();
+            }
+
             var hasMana = _mana != null && _mana.MaximumMana > 0f;
             _manaGauge.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
             _manaLabel.style.display = hasMana ? DisplayStyle.Flex : DisplayStyle.None;
@@ -228,6 +251,8 @@ namespace Assets.Scripts.UI
 
         private void Unbind()
         {
+            _gatherCheck?.Pause();
+
             if (_unitEvents != null)
             {
                 _unitEvents.HealthPointsChanged -= OnHealthChanged;
@@ -285,6 +310,21 @@ namespace Assets.Scripts.UI
             _attack.SetActive(_ownUnit && (_commands.IsAClick
                 || kind == UnitCommandKind.AMove || kind == UnitCommandKind.Attack));
             _hold.SetActive(_ownUnit && kind == UnitCommandKind.Hold);
+            _gather.SetActive(_ownUnit && (kind == UnitCommandKind.Gather
+                || kind == UnitCommandKind.Harvest || kind == UnitCommandKind.Mine));
+        }
+
+        /// <summary>Usable only when there is something to gather or somewhere to deliver (M-023).</summary>
+        private void RefreshGather()
+        {
+            if (_unit == null)
+            {
+                return;
+            }
+
+            _canGatherNow = _ownUnit && GatherTargets.TryFind(_unit, out _);
+            _gather.Interactive = _canGatherNow;
+            _gather.EnableInClassList("is-unavailable", !_canGatherNow);
         }
 
         // --- clicks ----------------------------------------------------------------
@@ -297,6 +337,11 @@ namespace Assets.Scripts.UI
         private void OnHoldClicked()
         {
             _commands.Hold(_commands.IsQueueModifierHeld);
+        }
+
+        private void OnGatherClicked()
+        {
+            _commands.Gather(_commands.IsQueueModifierHeld);
         }
     }
 }

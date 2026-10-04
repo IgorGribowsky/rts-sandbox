@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.GameObjects;
+using Assets.Scripts.GameObjects.UnitBehaviour;
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
@@ -182,6 +183,23 @@ public class UnitsController : MonoBehaviour
         builder = SelectedUnits.FirstOrDefault();
         var response = builder?.GetComponent<BuilderValues>()?.IsBuilder ?? false;
         return response;
+    }
+
+    /// <summary>"Gather" (M-023): every selected worker of ours goes to work on its own.</summary>
+    public void OnGatherKeyDown(bool addToCommandsQueue = false)
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        foreach (var unit in SelectedUnits)
+        {
+            if (GatherTargets.CanGather(unit))
+            {
+                unit.GetComponent<UnitEventManager>().OnGatherCommandReceived(addToCommandsQueue);
+            }
+        }
     }
 
     public void OnHoldKeyDown(bool addToCommandsQueue = false)

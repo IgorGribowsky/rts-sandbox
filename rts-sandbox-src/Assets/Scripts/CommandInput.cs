@@ -162,6 +162,12 @@ public class CommandInput : MonoBehaviour
         _unitsController.OnHoldKeyDown(addToQueue);
     }
 
+    /// <summary>`+` or the gather button: workers go to the nearest work (M-023).</summary>
+    public void Gather(bool addToQueue)
+    {
+        _unitsController.OnGatherKeyDown(addToQueue);
+    }
+
     /// <summary>Digit 1..0 or a hire card: the N-th unit of the selected building.</summary>
     public void Produce(int index)
     {

@@ -227,6 +227,18 @@
     background-image: var(--img-hold);
 }
 
+.ring-gather > .ring-button__icon {
+    background-image: var(--img-gather);
+}
+
+.ring-button.is-unavailable > .ring-button__icon {
+    -unity-background-image-tint-color: var(--tint-disabled);
+}
+
+.ring-button.is-unavailable > .ring-button__frame {
+    -unity-background-image-tint-color: var(--tint-disabled);
+}
+
 /* --- skill buttons ---------------------------------------------------------- */
 
 .ring-button--skill > .ring-button__frame {
