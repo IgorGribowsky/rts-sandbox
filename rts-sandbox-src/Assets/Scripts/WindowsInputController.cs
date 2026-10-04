@@ -147,8 +147,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (Input.mouseScrollDelta.y != 0 && !pointerOverUI)
         {
-            var zoomDelta = -1 * Input.mouseScrollDelta.y * Time.deltaTime * _cameraController.SensitivityZoom;
-            _cameraController.ChangeZoom(zoomDelta);
+            _cameraController.ZoomByNotches(-Input.mouseScrollDelta.y);
         }
 
         if (Input.GetKey(ReturnCameraKey))

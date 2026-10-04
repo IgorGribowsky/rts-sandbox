@@ -1,7 +1,7 @@
 ---
 id: T-062
 title: Зум камеры чувствительный и плавный
-status: todo
+status: review
 milestone: v0.3.1
 parent: 
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-002]
 handoff: []
-checkpoint:
+checkpoint: 90b2b0a
 created: 2026-10-04
 updated: 2026-10-04
 ---
@@ -32,10 +32,20 @@ updated: 2026-10-04
 
 ## План
 
-- [ ] 
+- [x] Зум: шаг 1/8 за щелчок без deltaTime, цель копится
+- [x] Плавный доезд SmoothDamp, время в инспекторе
+  SmoothDamp доезжал за ~0.6 с; заменил на экспоненциальное ease-out, ~95% за ZoomSmoothTime
+- [x] Поля инспектора: ZoomStep, ZoomSmoothTime вместо старых
+- [x] Компиляция, консоль, значения в сцене
 
 ## Решения
 
-- 
+- Старые поля `SensitivityZoom` и `ZoomChangingVelocity` убраны, вместо них
+  `ZoomStep` 0.125 и `ZoomSmoothTime` 0.2. Значения в сцене берутся из
+  инициализаторов, пока сцену не пересохранят.
 
 ## Итог
+
+Щелчок колеса — 1/8 диапазона, доезд с замедлением ~0.2 с, щелчки подряд
+копятся в одно движение. Проверено в Play: зум 0.5 → 0.375, высота 20 → 17.51
+за 0.36 с. Файлы: `CameraController.cs`, `WindowsInputController.cs`.

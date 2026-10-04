@@ -9,13 +9,16 @@ public class CameraController : MonoBehaviour
     public float Sensitivity = 30f;
     public float MoveCameraBorderSize = 20f;
 
+    // Target zoom, 0 is MinY and 1 is MaxY; the camera eases towards it (M-002).
     public float Zoom = 0.5f;
-    public float SensitivityZoom = 0.5f;
-    public float ZoomChangingVelocity = 0.3f;
+    [Tooltip("Zoom change per wheel notch, as a share of the whole MinY..MaxY range.")]
+    public float ZoomStep = 0.125f;
+    [Tooltip("Seconds the camera takes to reach the target height, easing out at the end.")]
+    public float ZoomSmoothTime = 0.2f;
     public float MinY = 10f;
     public float MaxY = 30f;
 
-    private float currentZoom; 
+    private float currentZoom;
     private float currentY;
 
     private MapValues _mapValues;
@@ -36,31 +39,31 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (currentZoom != Zoom)
+        if (currentZoom == Zoom)
         {
-            var dif = (Zoom - currentZoom);
-
-            var deltaChange = ZoomChangingVelocity * Time.deltaTime;
-
-            if (Mathf.Abs(dif) > deltaChange)
-            {
-                currentZoom += Mathf.Sign(dif) * deltaChange;
-            }
-            else
-            {
-                currentZoom = Zoom;
-            }
-
-            currentY = MinY + currentZoom * (MaxY - MinY);
-
-            Vector3 newPosition = new Vector3(
-                ControlledCamera.transform.position.x,
-                currentY,
-                ControlledCamera.transform.position.z
-            );
-
-            ControlledCamera.transform.position = newPosition;
+            return;
         }
+
+        // Exponential ease-out: fast at the start, slowing down at the end, about
+        // 95% of the way in ZoomSmoothTime at any FPS. Notches spun in a row only
+        // move the target on, so the camera keeps one continuous motion.
+        var rate = 3f / Mathf.Max(ZoomSmoothTime, 0.01f);
+        currentZoom = Mathf.Lerp(currentZoom, Zoom, 1f - Mathf.Exp(-rate * Time.deltaTime));
+
+        if (Mathf.Abs(Zoom - currentZoom) < 0.0005f)
+        {
+            currentZoom = Zoom;
+        }
+
+        currentY = MinY + currentZoom * (MaxY - MinY);
+
+        Vector3 newPosition = new Vector3(
+            ControlledCamera.transform.position.x,
+            currentY,
+            ControlledCamera.transform.position.z
+        );
+
+        ControlledCamera.transform.position = newPosition;
     }
 
     public void SetZoom(float value)
@@ -70,16 +73,14 @@ public class CameraController : MonoBehaviour
 
     public void ChangeZoom(float value)
     {
-        Zoom += value;
+        Zoom = Mathf.Clamp01(Zoom + value);
+    }
 
-        if (Zoom > 1)
-        {
-            Zoom = 1;
-        }
-        else if (Zoom < 0)
-        {
-            Zoom = 0;
-        }
+    // Wheel notches, positive away from the player: no deltaTime, one notch is
+    // the same step at any FPS.
+    public void ZoomByNotches(float notches)
+    {
+        ChangeZoom(notches * ZoomStep);
     }
 
     public void SwitchFixScreen()
