@@ -81,19 +81,26 @@ public class MiningBehaviour : UnitBehaviourBase
             transform.position = new Vector3(pointToMine.x, transform.position.y, pointToMine.z);
             _heldMineScript.AddMiner(gameObject);
             _miningIsProcessing = true;
-        }
-        else
-        {
-            IsActive = false;
-            if (TriggerEndEventFlag)
-            {
-                _unitEventManager.OnMineActionEnded();
-            }
-
-            Debug.Log("Unable to add miner!");
+            _navmeshMovement.Stop();
+            return;
         }
 
+        Debug.Log("Unable to add miner!");
+
+        // Everything is cleaned up BEFORE the end event: the event starts the
+        // next queued command right away, and a Stop() after it used to cancel
+        // that command's walk on the spot (T-035). The mine is forgotten too,
+        // or an order to the same mine would be taken for "already going".
+        IsActive = false;
+        _mine = null;
+        _heldMineScript = null;
+        _miningIsProcessing = false;
         _navmeshMovement.Stop();
+
+        if (TriggerEndEventFlag)
+        {
+            _unitEventManager.OnMineActionEnded();
+        }
     }
 
     protected void UnitDiedHandler(DiedEventArgs args)

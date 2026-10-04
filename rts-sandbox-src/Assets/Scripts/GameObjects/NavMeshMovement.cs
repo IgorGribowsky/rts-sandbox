@@ -14,6 +14,10 @@ public class NavMeshMovement : MonoBehaviour
     private UnitValues _unitValues;
     private NavMeshAgent _navmeshAgent;
 
+    // How far past the agent's stoppingDistance a unit that has stopped still
+    // counts as arrived at the object it walked to.
+    private const float ArrivalTolerance = 0.1f;
+
     private bool _goToObjectFlag = false;
     private GameObject _destinationObj;
     private Vector3 _currentDestination;
@@ -103,9 +107,18 @@ public class NavMeshMovement : MonoBehaviour
             var v2 = _currentDestination;
             v2.y = 0;
 
-            bool equal = Vector2.Distance(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z)) < epsilon;
+            var distance = Vector2.Distance(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z));
+            bool equal = distance < epsilon;
 
-            if (equal)
+            // The agent brakes at its stoppingDistance and a neighbour can nudge
+            // it a few centimetres off the point: then it stands still short of
+            // epsilon and never arrives (T-035). Standing still within reach
+            // counts as arrived.
+            bool stoppedClose = !_navmeshAgent.pathPending
+                && distance <= _navmeshAgent.stoppingDistance + ArrivalTolerance
+                && _navmeshAgent.velocity.sqrMagnitude < 0.01f;
+
+            if (equal || stoppedClose)
             {
                 _goToObjectFlag = false;
                 OnNavMeshMovementArrive();
