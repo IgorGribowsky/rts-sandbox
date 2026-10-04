@@ -40,7 +40,7 @@ SceneController                        TestScenarios · FPSTracker
 | Движение | `GameObjects/NavMeshMovement.cs` | обёртка NavMeshAgent, подход к объекту | M-006 |
 | Бой | `UnitBehaviour/{Melee,Range}AttackingBehaviour.cs`, `AutoAttack*`, `GameObjects/Projectiles/ProjectileBehavior.cs` | атака, автоатака, снаряды | M-007 |
 | Здоровье | `GameObjects/UnitHealthPoints.cs`, `CallingToAttackWhenAttacked.cs` | урон, смерть, реген, зов на помощь | M-008 |
-| Команды/альянсы | `Scripts/TeamController.cs`, `GameObjects/TeamMember.cs`, `Scripts/PlayerTeamMember.cs` | кто кому свой | M-009 |
+| Команды/альянсы | `Scripts/TeamController.cs`, `GameObjects/TeamMember.cs`, `Scripts/PlayerTeamMember.cs` | кто кому свой; цвет команды — только слоты `TeamColor` (`PaintTeamParts`) | M-009 |
 | Строительство | `Scripts/BuildingController.cs`, `BuildingGridController.cs`, `GameObjects/Building.cs`, `BuildingValues.cs`, `GridSegment.cs` | режим стройки, сетка, прогресс | M-010 |
 | Производство | `GameObjects/UnitProducing.cs` | очередь юнитов в здании | M-011 |
 | Ресурсы | `Resources/{PlayerResources,GameResources,ResourceValues,UnitSupply*}.cs` | золото/дерево/еда, лимит снабжения | M-012 |
@@ -101,4 +101,5 @@ ScriptableObject-ов баланса нет — все числа лежат в 
 - `Abstract/TargetedSkillAction.cs` — только интерфейс `ITargetSelected`,
   реализации каста в цель нет.
 - `PassiveSkill` / `PassiveSkillAction` — типы есть, исполнителя нет.
-- Примитивные кубы вместо моделей: Builder, Barracks, Wall (см. H-001).
+- Примитивные кубы вместо моделей: Builder, Wall (см. H-001). Barracks —
+  куб из `Barracks.fbx` с поясом `TeamColor` (скилл `model-team-color`).
