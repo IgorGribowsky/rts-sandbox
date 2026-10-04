@@ -2,7 +2,7 @@
 id: T-034
 title: Умное построение: сильные и ближние впереди
 status: todo
-milestone: backlog
+milestone: v0.3.1
 parent:
 origin: user
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-003]
 handoff: []
 checkpoint:
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # T-034 · Умное построение: сильные и ближние впереди

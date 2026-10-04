@@ -2,7 +2,7 @@
 id: T-041
 title: Выделение разыменовывается без проверки на уничтоженность
 status: todo
-milestone: backlog
+milestone: v0.3.1
 parent:
 origin: ai
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-003]
 handoff: []
 checkpoint:
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-10-04
 ---
 
 # T-041 · Выделение разыменовывается без проверки на уничтоженность

@@ -2,7 +2,7 @@
 id: T-038
 title: NullReferenceException в UnitProducing.OnDestroy у недостроенного здания
 status: todo
-milestone: backlog
+milestone: v0.3.1
 parent:
 origin: user
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-010, M-011]
 handoff: []
 checkpoint:
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-10-04
 ---
 
 # T-038 · NullReferenceException в UnitProducing.OnDestroy у недостроенного здания

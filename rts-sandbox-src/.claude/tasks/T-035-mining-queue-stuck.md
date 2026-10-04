@@ -2,7 +2,7 @@
 id: T-035
 title: Очередь не едет после отказа в MiningBehaviour
 status: todo
-milestone: backlog
+milestone: v0.3.1
 parent:
 origin: user
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-013, M-004, M-006]
 handoff: []
 checkpoint:
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # T-035 · Очередь не едет после отказа в MiningBehaviour

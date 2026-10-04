@@ -2,7 +2,7 @@
 id: T-037
 title: Проверить, нужен ли ParentMine в HeldMine
 status: todo
-milestone: backlog
+milestone: v0.3.1
 parent:
 origin: ai
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-013]
 handoff: []
 checkpoint:
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # T-037 · Проверить, нужен ли ParentMine в HeldMine
