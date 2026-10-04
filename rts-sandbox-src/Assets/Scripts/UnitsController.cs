@@ -226,6 +226,20 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    /// <summary>`S`: the selection drops its orders and stands (T-032).</summary>
+    public void OnStopKeyDown()
+    {
+        if (SelectedUnitsTeamId != playerTeamId)
+        {
+            return;
+        }
+
+        foreach (var unit in SelectedUnits)
+        {
+            unit.GetComponent<UnitEventManager>().OnStopCommandReceived();
+        }
+    }
+
     public void OnHoldKeyDown(bool addToCommandsQueue = false)
     {
         foreach (var unit in SelectedUnits)

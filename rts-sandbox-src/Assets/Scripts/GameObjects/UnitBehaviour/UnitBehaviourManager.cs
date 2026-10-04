@@ -168,6 +168,27 @@ namespace Assets.Scripts.GameObjects.UnitBehaviour
             _current.Activate(args);
         }
 
+        /// <summary>
+        /// The stop order (T-032): whatever runs is switched off and the unit stops
+        /// where it is. Not left to the idle behaviour — a builder has none, and
+        /// its walk would go on.
+        /// </summary>
+        public void StopCurrent()
+        {
+            if (_current != null && _current is not StunnedBehaviour)
+            {
+                _current.Deactivate();
+                _current = null;
+                CurrentBehaviourInfo = string.Empty;
+            }
+
+            var movement = GetComponent<NavMeshMovement>();
+            if (movement != null)
+            {
+                movement.Stop();
+            }
+        }
+
         private UnitBehaviourBase Select(UnitActionType action, EventArgs args)
         {
             if (!_byAction.TryGetValue(action, out var candidates))

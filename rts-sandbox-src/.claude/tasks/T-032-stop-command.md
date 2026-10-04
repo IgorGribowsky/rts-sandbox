@@ -1,7 +1,7 @@
 ---
 id: T-032
 title: Клавиша S прерывает действия и приказы
-status: todo
+status: review
 milestone: v0.3.2
 parent:
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-001, M-004]
 handoff: []
-checkpoint:
+checkpoint: e3ce292
 created: 2026-09-05
 updated: 2026-10-04
 ---
@@ -37,6 +37,11 @@ updated: 2026-10-04
 автоатакой.
 
 ## План
+- [x] событие `StopCommandReceived` у юнита; `UnitCommandManager` чистит очередь и уходит в Idle
+- [x] `UnitBehaviourManager` гасит текущее поведение и останавливает агента — у строителя нет автоатаки, Idle его не сменит
+- [x] `S` в `WindowsInputController` → `CommandInput.Stop` → `UnitsController`
+- [x] проверка в Play: очередь через Shift, стоп, юнит в Idle
+- [x] доки M-001, M-004
 
 ## Ход работы
 
@@ -44,5 +49,12 @@ updated: 2026-10-04
 
 - 2026-09-05 (концепт).
 - 2026-09-05 (ответ в чате) резервирование клавиши `S` подтверждено.
+- 2026-10-04 стоп — своё событие `StopCommandReceived`, не `Canceled`:
+  `Esc` по зданию отменяет стройку и производство, смешивать их со стопом
+  юнита незачем. Кнопки стопа на кольце нет — в задаче её не просили
+  (Q-22).
+- 2026-10-04 проверено в Play: строитель, лучник, воин, кастер и гигант с
+  очередью из трёх приказов через Shift; после стопа очередь 0, команда
+  Idle, через кадр скорость 0. Боевые — в `AutoAttackIdleBehaviour`.
 
 ## Итог

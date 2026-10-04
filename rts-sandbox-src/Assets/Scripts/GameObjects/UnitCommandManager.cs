@@ -56,6 +56,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.FollowCommandReceived += StartFollowCommand;
             _unitEventManager.AMoveCommandReceived += StartAMoveCommand;
             _unitEventManager.HoldCommandReceived += StartHoldCommand;
+            _unitEventManager.StopCommandReceived += Stop;
             _unitEventManager.BuildCommandReceived += StartBuildCommand;
             _unitEventManager.MineCommandReceived += StartMineCommand;
             _unitEventManager.HarvestingCommandReceived += StartHarvestingCommand;
@@ -82,6 +83,7 @@ namespace Assets.Scripts.GameObjects
             _unitEventManager.FollowCommandReceived -= StartFollowCommand;
             _unitEventManager.AMoveCommandReceived -= StartAMoveCommand;
             _unitEventManager.HoldCommandReceived -= StartHoldCommand;
+            _unitEventManager.StopCommandReceived -= Stop;
             _unitEventManager.BuildCommandReceived -= StartBuildCommand;
             _unitEventManager.MineCommandReceived -= StartMineCommand;
             _unitEventManager.HarvestingCommandReceived -= StartHarvestingCommand;
@@ -175,6 +177,34 @@ namespace Assets.Scripts.GameObjects
             var skillCastCommand = new SkillCastCommand(_unitEventManager, _unitSkills, _behaviourManager, args);
 
             StartCommand(skillCastCommand, args.AddToCommandsQueue);
+        }
+
+        /// <summary>
+        /// `S` (T-032): the unit drops what it is doing and everything it was told
+        /// after, and stands. Idle keeps the auto attack, so it still fights back.
+        /// A stunned unit only loses its orders: the stun goes on, and the unit
+        /// comes out of it idle.
+        /// </summary>
+        protected void Stop(StopCommandReceivedEventArgs args)
+        {
+            TriggerEventCommandsQueueCleared();
+            CommandsQueue.Clear();
+            CommandListInfo.Clear();
+
+            if (_isStunned)
+            {
+                TriggerEventCurrentCommandEnded();
+                SetCurrentCommand(null);
+                CurrentRunningCommandInfo = "";
+                return;
+            }
+
+            if (_behaviourManager != null)
+            {
+                _behaviourManager.StopCurrent();
+            }
+
+            SetIdleState();
         }
 
         protected void RunNextCommand(EventArgs args)

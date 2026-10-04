@@ -12,6 +12,7 @@ public class WindowsInputController : MonoBehaviour
     public KeyCode AClickKey = KeyCode.A;
     public KeyCode FixScreenKey = KeyCode.F8;
     public KeyCode HoldKey = KeyCode.H;
+    public KeyCode StopKey = KeyCode.S;
 
     [Tooltip("Gather: the key with '+' on it. Shift with it queues, like any order (Q-13).")]
     public KeyCode GatherKey = KeyCode.Equals;
@@ -81,6 +82,7 @@ public class WindowsInputController : MonoBehaviour
             AClickKey,
             FixScreenKey,
             HoldKey,
+            StopKey,
             GatherKey,
             GatherKeyAlt,
             OpenBuildingMenuKey,
@@ -380,6 +382,12 @@ public class WindowsInputController : MonoBehaviour
         {
             _commands.NotifyHotkey(HotkeyAction.AClick);
             _commands.EnterAClick();
+        }
+
+        if (Input.GetKeyDown(StopKey))
+        {
+            _commands.NotifyHotkey(HotkeyAction.Stop);
+            _commands.Stop();
         }
 
         if (Input.GetKeyDown(HoldKey))

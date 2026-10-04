@@ -11,6 +11,7 @@ public enum HotkeyAction
     BuildMenu,
     Produce,
     Skill,
+    Stop,
 }
 
 /// <summary>
@@ -174,6 +175,12 @@ public class CommandInput : MonoBehaviour
     }
 
     // --- orders -------------------------------------------------------------
+
+    /// <summary>`S`: drop every order and stand (T-032). Shift means nothing here.</summary>
+    public void Stop()
+    {
+        _unitsController.OnStopKeyDown();
+    }
 
     public void Hold(bool addToQueue)
     {

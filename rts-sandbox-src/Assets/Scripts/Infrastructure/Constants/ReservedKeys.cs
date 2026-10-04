@@ -21,7 +21,7 @@ namespace Assets.Scripts.Infrastructure.Constants
             KeyCode.A,          // a-move
             KeyCode.H,          // hold
             KeyCode.B,          // building menu
-            KeyCode.S,          // reserved for the stop order, T-032
+            KeyCode.S,          // stop, T-032
             KeyCode.Escape,     // cancel
             KeyCode.Space,      // camera to the most important unit
             KeyCode.LeftShift,  // add the order to the queue
