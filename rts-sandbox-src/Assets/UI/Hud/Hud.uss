@@ -27,7 +27,27 @@
 }
 
 .minimap-slot {
-    display: none;
+    margin-right: var(--gap-m);
+}
+
+.minimap {
+    border-radius: var(--radius-m);
+    border-width: 3px;
+    border-color: var(--color-rim);
+    border-top-color: var(--color-rim-light);
+    border-bottom-color: var(--color-rim-dark);
+    background-color: var(--color-panel);
+    overflow: hidden;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: var(--tint-minimap-ground);
+}
+
+.minimap__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .resource-bar {

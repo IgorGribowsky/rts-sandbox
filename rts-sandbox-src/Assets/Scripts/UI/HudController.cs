@@ -28,6 +28,12 @@ namespace Assets.Scripts.UI
         private CommandRing _commandRing;
         private SkillButtons _skillButtons;
         private CardPanel _cardPanel;
+        private Minimap _minimap;
+
+        private MapValues _mapValues;
+        private TeamController _teamController;
+        private CameraController _cameraController;
+        private UnitsController _unitsController;
         private HudTooltip _tooltip;
 
         /// <summary>The root of the HUD tree, null until the document is up.</summary>
@@ -45,6 +51,10 @@ namespace Assets.Scripts.UI
 
             var gameController = GameObject.FindGameObjectWithTag(Tag.GameController.ToString());
             _gameResources = gameController.GetComponent<GameResources>();
+            _mapValues = gameController.GetComponent<MapValues>();
+            _teamController = gameController.GetComponent<TeamController>();
+            _cameraController = player.GetComponent<CameraController>();
+            _unitsController = player.GetComponent<UnitsController>();
         }
 
         private void OnEnable()
@@ -71,6 +81,8 @@ namespace Assets.Scripts.UI
             _skillButtons = null;
             _cardPanel?.Dispose();
             _cardPanel = null;
+            _minimap?.Dispose();
+            _minimap = null;
             _commandRing?.Dispose();
             _commandRing = null;
         }
@@ -98,6 +110,12 @@ namespace Assets.Scripts.UI
                 _playerEventController,
                 _playerTeamId);
             _skillButtons = new SkillButtons(_commandRing, _commands, _playerEventController, _tooltip, _playerTeamId);
+
+            _minimap?.Dispose();
+            _minimap = _mapValues != null && _cameraController != null
+                ? new Minimap(_root.Q<VisualElement>("minimap-slot"), _mapValues, _cameraController,
+                    _teamController, _unitsController)
+                : null;
 
             _cardPanel?.Dispose();
             _cardPanel = new CardPanel(

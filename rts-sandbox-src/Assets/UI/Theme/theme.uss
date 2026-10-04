@@ -41,6 +41,7 @@
     --tint-disabled: rgb(120, 120, 120);
     --tint-passive-frame: rgb(190, 175, 140);
     --color-sweep: rgba(4, 6, 12, 0.62);
+    --tint-minimap-ground: rgb(150, 162, 150);
 
     /* --- fonts ---------------------------------------------------------- */
     --font-display: url("project://database/Assets/UI/Fonts/RussoOne-Regular.ttf");
