@@ -5,9 +5,9 @@
  */
 :root {
     /* --- surfaces ------------------------------------------------------- */
-    --color-panel: rgba(9, 14, 21, 0.9);
+    --color-panel: rgba(9, 14, 21, 0.97);
     --color-panel-raised: rgb(24, 38, 52);
-    --color-panel-sunken: rgba(6, 10, 16, 0.8);
+    --color-panel-sunken: rgba(6, 10, 16, 0.93);
     --color-rim: rgb(110, 147, 170);
     --color-rim-light: rgb(169, 202, 219);
     --color-rim-dark: rgb(4, 7, 11);
@@ -48,8 +48,14 @@
     --tint-passive-frame: rgb(150, 178, 196);
     --color-sweep: rgba(4, 6, 12, 0.62);
     --color-progress-back: rgba(4, 6, 12, 0.7);
-    --tint-minimap-ground: rgb(150, 162, 150);
-    --color-minimap-blocked: rgba(10, 12, 20, 0.78);
+    /* Minimap (T-065.2): the white ground photo multiplied down to dark
+       cold slate, the team dots in their own colours pop on it. */
+    --tint-minimap-ground: rgb(88, 110, 124);
+    --color-minimap-blocked: rgba(3, 6, 10, 0.86);
+    --color-minimap-grid: rgba(169, 202, 219, 0.1);
+    --color-minimap-view: rgb(240, 246, 250);
+    --color-minimap-view-fill: rgba(240, 246, 250, 0.07);
+    --color-minimap-dot-edge: rgba(2, 4, 8, 0.9);
 
     /* --- fonts ---------------------------------------------------------- */
     --font-display: url("project://database/Assets/UI/Fonts/RussoOne-Regular.ttf");

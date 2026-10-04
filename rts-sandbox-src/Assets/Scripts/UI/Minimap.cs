@@ -20,10 +20,17 @@ namespace Assets.Scripts.UI
     /// Over the picture, everything a unit cannot walk on is darkened, taken
     /// from the NavMesh (T-057): on light ground the picture alone does not
     /// tell a rock from a field.
+    ///
+    /// Look of 0.3.1 (T-065.2): the photo is recoloured to dark cold slate so
+    /// the team dots pop, a faint tactical grid lies over it, the map sits in a
+    /// flat panel with corner brackets. Colours come from the theme.
     /// </summary>
     public sealed class Minimap : IDisposable
     {
-        private const float Width = 260f;
+        private const float Width = 268f;
+
+        // One line of the tactical grid every this many metres of the map.
+        private const float GridStep = 10f;
         private const long RedrawMilliseconds = 100;
         private const int GroundPixels = 512;
         private const int BlockedPixels = 256;
@@ -75,7 +82,20 @@ namespace Assets.Scripts.UI
 
             _overlay = new MinimapOverlay(world, camera, teams, selection);
             _view.Add(_overlay);
-            _slot.Add(_view);
+
+            // The panel around the map with a bracket in every corner.
+            var frame = new VisualElement { pickingMode = PickingMode.Ignore };
+            frame.AddToClassList("minimap-frame");
+            frame.Add(_view);
+            foreach (var corner in new[] { "tl", "tr", "bl", "br" })
+            {
+                var bracket = new VisualElement { pickingMode = PickingMode.Ignore };
+                bracket.AddToClassList("minimap-frame__corner");
+                bracket.AddToClassList("minimap-frame__corner--" + corner);
+                frame.Add(bracket);
+            }
+
+            _slot.Add(frame);
 
             _view.RegisterCallback<PointerDownEvent>(OnPointerDown);
             _view.RegisterCallback<PointerMoveEvent>(OnPointerMove);
@@ -324,6 +344,18 @@ namespace Assets.Scripts.UI
             private readonly HashSet<GameObject> _selected = new HashSet<GameObject>();
             private readonly Vector3[] _frameCorners = new Vector3[4];
 
+            private static readonly CustomStyleProperty<Color> GridProperty = new CustomStyleProperty<Color>("--minimap-grid");
+            private static readonly CustomStyleProperty<Color> ViewProperty = new CustomStyleProperty<Color>("--minimap-view");
+            private static readonly CustomStyleProperty<Color> ViewFillProperty = new CustomStyleProperty<Color>("--minimap-view-fill");
+            private static readonly CustomStyleProperty<Color> DotEdgeProperty = new CustomStyleProperty<Color>("--minimap-dot-edge");
+            private static readonly CustomStyleProperty<Color> SelectedProperty = new CustomStyleProperty<Color>("--minimap-selected");
+
+            private Color _grid = new Color(1f, 1f, 1f, 0.08f);
+            private Color _view = Color.white;
+            private Color _viewFill = new Color(1f, 1f, 1f, 0.06f);
+            private Color _dotEdge = new Color(0f, 0f, 0f, 0.85f);
+            private Color _selectedEdge = Color.white;
+
             public MinimapOverlay(Rect world, CameraController camera, TeamController teams, UnitsController selection)
             {
                 _world = world;
@@ -334,6 +366,17 @@ namespace Assets.Scripts.UI
                 AddToClassList("minimap__overlay");
                 pickingMode = PickingMode.Ignore;
                 generateVisualContent += Draw;
+                RegisterCallback<CustomStyleResolvedEvent>(OnStyleResolved);
+            }
+
+            private void OnStyleResolved(CustomStyleResolvedEvent evt)
+            {
+                if (evt.customStyle.TryGetValue(GridProperty, out var grid)) _grid = grid;
+                if (evt.customStyle.TryGetValue(ViewProperty, out var view)) _view = view;
+                if (evt.customStyle.TryGetValue(ViewFillProperty, out var viewFill)) _viewFill = viewFill;
+                if (evt.customStyle.TryGetValue(DotEdgeProperty, out var dotEdge)) _dotEdge = dotEdge;
+                if (evt.customStyle.TryGetValue(SelectedProperty, out var selected)) _selectedEdge = selected;
+                MarkDirtyRepaint();
             }
 
             public Vector3 ToWorld(Vector2 local)
@@ -390,7 +433,9 @@ namespace Assets.Scripts.UI
                     }
                 }
 
-                var outline = new Color(0f, 0f, 0f, 0.85f);
+                var outline = _dotEdge;
+
+                DrawGrid(painter);
 
                 // Buildings first, so that units standing by them stay visible.
                 for (var pass = 0; pass < 2; pass++)
@@ -416,12 +461,12 @@ namespace Assets.Scripts.UI
                         {
                             var half = Mathf.Clamp(record.Size * 1.3f, 3f, 7f);
                             var rect = new Rect(at.x - half, at.y - half, half * 2f, half * 2f);
-                            FillRect(painter, rect, selected ? Color.white : outline, 1.5f);
+                            FillRect(painter, rect, selected ? _selectedEdge : outline, 1.5f);
                             FillRect(painter, rect, color, 0f);
                         }
                         else
                         {
-                            FillCircle(painter, at, selected ? 4.2f : 3.6f, selected ? Color.white : outline);
+                            FillCircle(painter, at, selected ? 4.2f : 3.6f, selected ? _selectedEdge : outline);
                             FillCircle(painter, at, 2.6f, color);
                         }
                     }
@@ -457,9 +502,50 @@ namespace Assets.Scripts.UI
                     _frameCorners[i] = ray.GetPoint(distance);
                 }
 
-                // Dark under light, so the frame reads on any ground.
-                StrokeFrame(painter, 4f, new Color(0f, 0f, 0f, 0.7f));
-                StrokeFrame(painter, 2f, Color.white);
+                // A light veil over what the camera sees, then dark under light,
+                // so the frame reads on any ground.
+                painter.fillColor = _viewFill;
+                painter.BeginPath();
+                painter.MoveTo(ToLocal(_frameCorners[0]));
+                for (var i = 1; i < 4; i++)
+                {
+                    painter.LineTo(ToLocal(_frameCorners[i]));
+                }
+                painter.ClosePath();
+                painter.Fill();
+
+                StrokeFrame(painter, 3.5f, _dotEdge);
+                StrokeFrame(painter, 1.5f, _view);
+            }
+
+            /// <summary>Thin lines every GridStep metres, from the map's own corner.</summary>
+            private void DrawGrid(Painter2D painter)
+            {
+                var size = contentRect.size;
+                if (size.x <= 0f || size.y <= 0f)
+                {
+                    return;
+                }
+
+                painter.lineWidth = 1f;
+                painter.strokeColor = _grid;
+                painter.BeginPath();
+
+                for (var x = Mathf.Ceil(_world.xMin / GridStep) * GridStep; x <= _world.xMax; x += GridStep)
+                {
+                    var u = (x - _world.xMin) / _world.width * size.x;
+                    painter.MoveTo(new Vector2(u, 0f));
+                    painter.LineTo(new Vector2(u, size.y));
+                }
+
+                for (var z = Mathf.Ceil(_world.yMin / GridStep) * GridStep; z <= _world.yMax; z += GridStep)
+                {
+                    var v = (_world.yMax - z) / _world.height * size.y;
+                    painter.MoveTo(new Vector2(0f, v));
+                    painter.LineTo(new Vector2(size.x, v));
+                }
+
+                painter.Stroke();
             }
 
             private void StrokeFrame(Painter2D painter, float width, Color color)

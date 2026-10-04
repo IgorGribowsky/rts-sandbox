@@ -75,13 +75,60 @@
     margin-right: var(--gap-m);
 }
 
-.minimap {
-    border-radius: var(--radius-m);
-    border-width: 3px;
-    border-color: var(--color-rim);
-    border-top-color: var(--color-rim-light);
-    border-bottom-color: var(--color-rim-dark);
+/* A flat panel around the map, a bracket in each corner (T-065.2). */
+.minimap-frame {
+    padding: 6px;
+    border-radius: var(--radius-s);
     background-color: var(--color-panel);
+    border-width: 1px;
+    border-color: var(--color-hairline);
+    border-top-color: var(--color-rim);
+}
+
+.minimap-frame__corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--color-rim-light);
+}
+
+.minimap-frame__corner--tl {
+    left: -1px;
+    top: -1px;
+    border-left-width: 2px;
+    border-top-width: 2px;
+    border-top-left-radius: var(--radius-s);
+}
+
+.minimap-frame__corner--tr {
+    right: -1px;
+    top: -1px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-top-right-radius: var(--radius-s);
+}
+
+.minimap-frame__corner--bl {
+    left: -1px;
+    bottom: -1px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    border-bottom-left-radius: var(--radius-s);
+}
+
+.minimap-frame__corner--br {
+    right: -1px;
+    bottom: -1px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-bottom-right-radius: var(--radius-s);
+}
+
+.minimap {
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: var(--color-rim-dark);
+    background-color: var(--color-panel-sunken);
     overflow: hidden;
     -unity-background-scale-mode: stretch-to-fill;
     -unity-background-image-tint-color: var(--tint-minimap-ground);
@@ -104,6 +151,11 @@
     top: 0;
     right: 0;
     bottom: 0;
+    --minimap-grid: var(--color-minimap-grid);
+    --minimap-view: var(--color-minimap-view);
+    --minimap-view-fill: var(--color-minimap-view-fill);
+    --minimap-dot-edge: var(--color-minimap-dot-edge);
+    --minimap-selected: var(--color-minimap-view);
 }
 
 .resource-bar {
