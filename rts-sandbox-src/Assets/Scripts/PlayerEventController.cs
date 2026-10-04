@@ -59,6 +59,13 @@ public class PlayerEventController : MonoBehaviour
         ResourceChanged?.Invoke(new ResourceChangedEventArgs(name, type, oldValue, newValue));
     }
 
+    /// <summary>Income at a place in the world, for the numbers that pop up over it (M-022).</summary>
+    public event ResourceGainedHandler ResourceGained;
+    public void OnResourceGained(ResourceName name, int amount, Vector3 position)
+    {
+        ResourceGained?.Invoke(new ResourceGainedEventArgs(name, amount, position));
+    }
+
     public event DiedHandler SelectedUnitDied;
     public void OnSelectedUnitDied(GameObject dead)
     {

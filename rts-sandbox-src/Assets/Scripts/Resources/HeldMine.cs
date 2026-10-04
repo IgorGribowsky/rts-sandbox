@@ -1,6 +1,7 @@
 using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
+using Assets.Scripts.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -76,6 +77,7 @@ public class HeldMine : MonoBehaviour
         if (miningProgress > MiningRate)
         {
             _playerResources.AddResource(_resourceValues.ResourceName, MiningValue);
+            _playerEventController.OnResourceGained(_resourceValues.ResourceName, MiningValue, gameObject.GetTopCenter());
             _resourceValues.ResourcesAmount -= MiningValue;
             miningProgress = 0f;
         }

@@ -49,6 +49,29 @@ namespace Assets.Scripts.Infrastructure.Helpers
         }
 
 
+        /// <summary>
+        /// The middle of the top of the object: where numbers and marks over it
+        /// start. Collider first, it is what the game counts as the body.
+        /// </summary>
+        public static Vector3 GetTopCenter(this GameObject gameObject)
+        {
+            var collider = gameObject.GetComponent<Collider>();
+            if (collider != null)
+            {
+                var bounds = collider.bounds;
+                return new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            }
+
+            var renderer = gameObject.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                var bounds = renderer.bounds;
+                return new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            }
+
+            return gameObject.transform.position;
+        }
+
         public static float GetSize(this GameObject gameObject)
         {
             var buildingValues = gameObject.GetComponent<BuildingValues>();

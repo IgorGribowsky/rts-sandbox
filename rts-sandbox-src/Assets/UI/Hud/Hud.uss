@@ -16,6 +16,51 @@
     text-shadow: 0 2px 2px var(--color-text-shadow);
 }
 
+/* --- income numbers over the world ------------------------------------------ */
+
+/* Under every panel: a number never covers a button. */
+.popup-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+/* Placed at the world point by code; the body hangs above it, centred. */
+.popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.popup__body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    flex-direction: row;
+    align-items: center;
+    translate: -50% -100%;
+    transform-origin: center bottom;
+}
+
+.popup__value {
+    font-size: var(--text-l);
+    -unity-text-outline-width: var(--text-outline-thick);
+    color: var(--color-text-income);
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.popup__icon {
+    width: 40px;
+    height: 40px;
+    margin-left: 2px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
 /* --- top left: minimap and resources ------------------------------------ */
 
 .hud-top-left {

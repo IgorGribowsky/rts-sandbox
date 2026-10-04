@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Enums;
+using Assets.Scripts.Infrastructure.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class HarvestedResourcesStorage : MonoBehaviour
     public List<ResourceName> StoredResources = new List<ResourceName>();
 
     private PlayerResources _playerResources;
+    private PlayerEventController _playerEventController;
 
     private void Awake()
     {
@@ -16,11 +18,22 @@ public class HarvestedResourcesStorage : MonoBehaviour
             .FirstOrDefault(x => x.GetComponent<PlayerTeamMember>().TeamId == teamMember.TeamId);
 
         _playerResources = _playerController?.GetComponent<PlayerResources>();
+        _playerEventController = _playerController?.GetComponent<PlayerEventController>();
     }
 
+    /// <summary>
+    /// Hands the load in. Through AddResource, so the number at the top of the
+    /// screen changes too; before T-056 the amount was written past it.
+    /// </summary>
     public void Store(ResourceName resource, int value)
     {
-        _playerResources.ResourcesAmount.First(x => x.ResourceName == resource).Amount += value;
+        if (_playerResources == null)
+        {
+            return;
+        }
+
+        _playerResources.AddResource(resource, value);
+        _playerEventController?.OnResourceGained(resource, value, gameObject.GetTopCenter());
     }
 
     public bool CheckIfCanStore(ResourceName resource)

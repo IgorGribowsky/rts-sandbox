@@ -29,6 +29,7 @@ namespace Assets.Scripts.UI
         private SkillButtons _skillButtons;
         private CardPanel _cardPanel;
         private Minimap _minimap;
+        private ResourcePopups _popups;
 
         private MapValues _mapValues;
         private TeamController _teamController;
@@ -85,6 +86,8 @@ namespace Assets.Scripts.UI
             _minimap = null;
             _commandRing?.Dispose();
             _commandRing = null;
+            _popups?.Dispose();
+            _popups = null;
         }
 
         private void Build()
@@ -97,6 +100,9 @@ namespace Assets.Scripts.UI
                 _gameResources,
                 _playerResources,
                 _playerEventController);
+
+            _popups?.Dispose();
+            _popups = new ResourcePopups(_root.Q<VisualElement>("popup-layer"), _gameResources, _playerEventController);
 
             var hudRoot = _root.Q<VisualElement>("hud-root");
             hudRoot.Q<VisualElement>(className: "tooltip")?.RemoveFromHierarchy();

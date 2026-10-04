@@ -2,6 +2,7 @@
     <ui:Style src="project://database/Assets/UI/Theme/theme.uss" />
     <ui:Style src="project://database/Assets/UI/Hud/Hud.uss" />
     <ui:VisualElement name="hud-root" class="hud-root" picking-mode="Ignore">
+        <ui:VisualElement name="popup-layer" class="popup-layer" picking-mode="Ignore" />
         <ui:VisualElement name="top-left" class="hud-top-left" picking-mode="Ignore">
             <ui:VisualElement name="minimap-slot" class="minimap-slot" picking-mode="Ignore" />
             <ui:VisualElement name="resource-bar" class="resource-bar" picking-mode="Ignore" />

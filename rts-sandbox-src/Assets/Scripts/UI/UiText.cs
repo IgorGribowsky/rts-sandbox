@@ -45,6 +45,12 @@ namespace Assets.Scripts.UI
             return Mathf.CeilToInt(current) + "/" + Mathf.RoundToInt(max);
         }
 
+        /// <summary>Income over the place it came from: "+10".</summary>
+        public static string Income(int amount)
+        {
+            return "+" + amount.ToString(CultureInfo.InvariantCulture);
+        }
+
         /// <summary>Seconds of a cooldown on the button: "4", and "0.6" for the last second.</summary>
         public static string CooldownLeft(float seconds)
         {
