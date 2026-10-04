@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using System.Collections.Generic;
@@ -41,6 +42,9 @@ public class UnitProducing : MonoBehaviour
     /// <summary>Something is in the queue but the clock stands: the supply limit is full.</summary>
     public bool IsStalled => CurrentProducingUnit != null && !isProcessing;
 
+    /// <summary>Where the units born here are sent (T-030); null until the player sets it.</summary>
+    public Vector3? RallyPoint => _rallyPoint;
+
     private TeamMember _teamMember;
     private UnitEventManager _unitEventManager;
     private BuildingValues _buildingValues;
@@ -49,6 +53,10 @@ public class UnitProducing : MonoBehaviour
     private GameResources _gameResources;
 
     private bool isProcessing = false;
+
+    private Vector3? _rallyPoint;
+    private RallyFlag _rallyFlag;
+    private Selectable _selectable;
 
     private readonly List<UnitTypeData> _queue = new List<UnitTypeData>();
 
@@ -60,6 +68,7 @@ public class UnitProducing : MonoBehaviour
         _unitEventManager = GetComponent<UnitEventManager>();
         _teamMember = GetComponent<TeamMember>();
         _buildingValues = GetComponent<BuildingValues>();
+        _selectable = GetComponent<Selectable>();
         _playerResources = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerResources>();
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
@@ -159,6 +168,42 @@ public class UnitProducing : MonoBehaviour
         Cancel(0);
     }
 
+    /// <summary>
+    /// Right click on the ground with this building selected (T-030). Only the
+    /// units born from now on go here: whoever is already out keeps the order
+    /// it got at birth.
+    /// </summary>
+    public void SetRallyPoint(Vector3 point)
+    {
+        point.y = 0.5f;
+        _rallyPoint = point;
+
+        if (_rallyFlag == null)
+        {
+            var team = GameServices.TeamController.Teams.FirstOrDefault(t => t.Id == _teamMember.TeamId);
+            _rallyFlag = RallyFlag.Create(team != null ? team.Color : Color.white);
+        }
+
+        _rallyFlag.Place(point);
+    }
+
+    private void LateUpdate()
+    {
+        // Seen only while this very building is selected.
+        if (_rallyFlag != null)
+        {
+            _rallyFlag.SetVisible(_selectable != null && _selectable.IsSelected);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_rallyFlag != null)
+        {
+            Destroy(_rallyFlag.gameObject);
+        }
+    }
+
     void Update()
     {
         if (isProcessing && CurrentProducingUnit != null)
@@ -185,7 +230,16 @@ public class UnitProducing : MonoBehaviour
 
                 var unit = UnitFactory.Create(produced, positionToSpawn, body.rotation, _teamMember.TeamId);
 
-                unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
+                // The rally point as it stands right now: moving the flag later
+                // does not call this unit back (T-030).
+                if (_rallyPoint.HasValue)
+                {
+                    unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(_rallyPoint.Value);
+                }
+                else
+                {
+                    unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(positionToSpawn + new Vector3(Random.Range(1, 3), 0, Random.Range(-3, 3)));
+                }
 
                 if (_queue.Count > 0)
                 {

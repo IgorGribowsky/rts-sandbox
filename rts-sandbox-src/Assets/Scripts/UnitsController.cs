@@ -257,6 +257,18 @@ public class UnitsController : MonoBehaviour
 
         point.y = 0.5f;
 
+        // Producing buildings in the selection take the click as their rally
+        // point (T-030); they never were in the movable list, so the units of a
+        // mixed selection still walk.
+        foreach (var unit in SelectedUnits)
+        {
+            var producing = unit.GetComponent<UnitProducing>();
+            if (producing != null && producing.enabled)
+            {
+                producing.SetRallyPoint(point);
+            }
+        }
+
         var formation = BuildFormation(point);
         foreach (var unit in GetMovableSelectedUnits())
         {
