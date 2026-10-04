@@ -3,7 +3,7 @@ id: M-027
 title: Туман войны
 status: accepted
 source: concept/processed/Новые механики.txt
-tasks: [T-071.1, T-071.3]
+tasks: [T-071.1, T-071.3, T-071.2]
 ---
 
 # M-027 · Туман войны
