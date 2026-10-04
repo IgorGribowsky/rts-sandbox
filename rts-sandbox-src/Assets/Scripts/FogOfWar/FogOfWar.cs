@@ -33,7 +33,7 @@ public class FogOfWar : MonoBehaviour
 
     // The smooth texture is this many times larger than the grid.
     private const int Upscale = 4;
-    private const int NoiseSize = 128;
+    private const int NoiseSize = 256;
 
     private const int ComposePass = 1;
     private const int BlurPass = 2;
@@ -67,7 +67,7 @@ public class FogOfWar : MonoBehaviour
 
     [Tooltip("How far the edge wavers like a cloud, metres. Zero is a clean circle.")]
     [Range(0f, 4f)]
-    public float EdgeWobble = 1.2f;
+    public float EdgeWobble = 1f;
 
     [Header("Look")]
     public Shader FogShader;
@@ -354,7 +354,12 @@ public class FogOfWar : MonoBehaviour
 
     private static RenderTexture CreateRenderTexture(string name, int width, int height)
     {
-        var texture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32)
+        // Half floats: in eight bits the soft gradients of the fog showed as
+        // steps, and a stepped gradient reads as a low resolution.
+        var format = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf)
+            ? RenderTextureFormat.ARGBHalf
+            : RenderTextureFormat.ARGB32;
+        var texture = new RenderTexture(width, height, 0, format)
         {
             name = name,
             filterMode = FilterMode.Bilinear,
@@ -382,8 +387,9 @@ public class FogOfWar : MonoBehaviour
     }
 
     /// <summary>
-    /// Tiling value noise in three octaves. Red is the clouds; green and blue
-    /// are two unrelated layers that push the edge sideways.
+    /// Tiling value noise. Red is the clouds, four octaves. Green and blue are
+    /// two unrelated layers that push the edge sideways: only the two broad
+    /// octaves, fine ones crumbled the edge into something like pixels.
     /// </summary>
     private static Texture2D CreateNoise()
     {
@@ -393,9 +399,9 @@ public class FogOfWar : MonoBehaviour
             for (var x = 0; x < NoiseSize; x++)
             {
                 pixels[y * NoiseSize + x] = new Color32(
-                    (byte)(Octaves(x, y, 0) * 255f),
-                    (byte)(Octaves(x, y, 101) * 255f),
-                    (byte)(Octaves(x, y, 211) * 255f),
+                    (byte)(CloudOctaves(x, y, 0) * 255f),
+                    (byte)(BroadOctaves(x, y, 101) * 255f),
+                    (byte)(BroadOctaves(x, y, 211) * 255f),
                     255);
             }
         }
@@ -412,12 +418,19 @@ public class FogOfWar : MonoBehaviour
         return texture;
     }
 
-    private static float Octaves(int x, int y, int seed)
+    // Lattice cells across the texture are whole numbers: every octave tiles on its own.
+    private static float CloudOctaves(int x, int y, int seed)
     {
-        // 8, 16 and 32 lattice cells across the texture: each tiles on its own.
-        return ValueNoise(x, y, 8, seed) * 0.55f
-            + ValueNoise(x, y, 16, seed + 7) * 0.3f
-            + ValueNoise(x, y, 32, seed + 13) * 0.15f;
+        return ValueNoise(x, y, 4, seed) * 0.45f
+            + ValueNoise(x, y, 8, seed + 7) * 0.3f
+            + ValueNoise(x, y, 16, seed + 13) * 0.17f
+            + ValueNoise(x, y, 32, seed + 19) * 0.08f;
+    }
+
+    private static float BroadOctaves(int x, int y, int seed)
+    {
+        return ValueNoise(x, y, 4, seed) * 0.7f
+            + ValueNoise(x, y, 8, seed + 7) * 0.3f;
     }
 
     private static float ValueNoise(int x, int y, int cells, int seed)

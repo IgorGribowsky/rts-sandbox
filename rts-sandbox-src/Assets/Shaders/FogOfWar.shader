@@ -79,7 +79,7 @@ Shader "Hidden/RTS/FogOfWar"
                 float2 ground = (_FogCameraPos + ray * depth).xz;
 
                 // The edge wavers: the fog is looked up a little to the side.
-                float2 wobble = tex2D(_NoiseTex, ground / 9.0 + _Wobble.y).gb - 0.5;
+                float2 wobble = tex2D(_NoiseTex, ground / 40.0 + _Wobble.y).gb - 0.5;
                 float2 at = ground + wobble * 2.0 * _Wobble.x;
                 float darkness = tex2D(_FogSmooth, (at - _FogArea.xy) * _FogArea.zw).a;
 
@@ -92,7 +92,7 @@ Shader "Hidden/RTS/FogOfWar"
                 float drift = _Clouds.z * _Clouds.y;
                 float cloudA = tex2D(_NoiseTex, cloudAt + float2(drift, drift * 0.4)).r;
                 float cloudB = tex2D(_NoiseTex, cloudAt * 2.1 + float2(-drift * 0.9, drift * 1.2)).r;
-                float cloud = saturate((cloudA * 0.65 + cloudB * 0.35 - 0.3) * 1.8);
+                float cloud = smoothstep(0.3, 0.85, cloudA * 0.65 + cloudB * 0.35);
 
                 // Mist lies over the grey, and thickest where sight fades out.
                 float edge = grey * (1.0 - grey) * 4.0;
@@ -105,6 +105,11 @@ Shader "Hidden/RTS/FogOfWar"
                 color.rgb = lerp(color.rgb, explored, grey);
                 color.rgb = lerp(color.rgb, _CloudColor.rgb, mist);
                 color.rgb = lerp(color.rgb, _UnexploredColor.rgb, black);
+
+                // Half a step of noise per pixel hides what is left of the
+                // eight-bit steps in the soft gradients.
+                float dither = frac(52.9829189 * frac(dot(i.pos.xy, float2(0.06711056, 0.00583715))));
+                color.rgb += (dither - 0.5) / 255.0;
                 return color;
             }
             ENDCG
