@@ -19,6 +19,13 @@
         public const int MeleeNoPlaceAvoidancePriority = 70;
 
         /// <summary>
+        /// A unit standing idle gives way to everyone who walks, as in WC3: a
+        /// group moving in formation goes through units that already stand
+        /// instead of crawling round them (T-034). Hold position keeps 50.
+        /// </summary>
+        public const int IdleAvoidancePriority = 95;
+
+        /// <summary>
         /// How long an ordinary projectile may stay in the air. Without it a
         /// shot at a target that runs faster than the arrow never lands and
         /// never disappears (T-014).

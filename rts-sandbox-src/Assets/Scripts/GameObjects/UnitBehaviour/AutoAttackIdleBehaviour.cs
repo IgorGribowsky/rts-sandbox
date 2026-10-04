@@ -62,6 +62,7 @@ public class AutoAttackIdleBehaviour : AutoAttackingBehaviourBase
         {
             _returningBackFlag = false;
             _navmeshMovement.Stop();
+            _navmeshMovement.SetAvoidancePriority(GameConstants.IdleAvoidancePriority);
         }
         else if (destinationDifVector.magnitude >= _navmeshMovement.StoppingDistance)
         {

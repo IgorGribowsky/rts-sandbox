@@ -5,6 +5,7 @@ using Assets.Scripts.Infrastructure.Enums;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Extensions;
 using Assets.Scripts.Infrastructure.Helpers;
+using RtsSandbox.Rules;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -48,7 +49,6 @@ public class UnitsController : MonoBehaviour
     /// </summary>
     public GameObject MainSelectedUnit => SelectedUnits.FirstOrDefault();
 
-    private Dictionary<int, UnitMovementMask> SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
     private TeamController _teamController;
     private GameController _gameController;
     private BuildingController _buildingController;
@@ -243,10 +243,10 @@ public class UnitsController : MonoBehaviour
 
         point.y = 0.5f;
 
-        var movableSelectedUnits = GetMovableSelectedUnits();
-        foreach (var unit in movableSelectedUnits)
+        var formation = BuildFormation(point);
+        foreach (var unit in GetMovableSelectedUnits())
         {
-            var pointToMove = point + GetFormationOffset(unit) * ClosenessMultiplier;
+            var pointToMove = point + GetFormationOffset(formation, unit);
             unit.GetComponent<UnitEventManager>().OnMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
     }
@@ -260,9 +260,10 @@ public class UnitsController : MonoBehaviour
 
         point.y = 0.5f;
 
+        var formation = BuildFormation(point);
         foreach (var unit in SelectedUnits)
         {
-            var pointToMove = point + GetFormationOffset(unit) * ClosenessMultiplier;
+            var pointToMove = point + GetFormationOffset(formation, unit);
             unit.GetComponent<UnitEventManager>().OnAMoveCommandReceived(pointToMove, addToCommandsQueue);
         }
     }
@@ -568,8 +569,6 @@ public class UnitsController : MonoBehaviour
         SelectedUnitsTeamId = teamId;
         SelectedUnits.ForEach(unit => unit.GetComponent<Selectable>().SetSelectionState(true));
 
-        CreateMovementMask();
-
         if (_buildingController.BuildingMenuMod)
         {
             if (firstUnit != SelectedUnits.FirstOrDefault())
@@ -596,73 +595,6 @@ public class UnitsController : MonoBehaviour
         return bounds;
     }
 
-    private void CreateMovementMask()
-    {
-        SelectedUnitsMovementMask = new Dictionary<int, UnitMovementMask>();
-        var unitsInserted = 0;
-        var arrayRightSize = 1;
-        var arrayDownSize = 1;
-        var insertDirectionIsRight = false;
-
-        var movableSelectedUnits = GetMovableSelectedUnits();
-
-        foreach (var unit in movableSelectedUnits)
-        {
-            int insertIndexX;
-            int insertIndexY;
-
-            if (insertDirectionIsRight)
-            {
-                insertIndexX = arrayRightSize - 1;
-                insertIndexY = unitsInserted - arrayDownSize * (arrayRightSize - 1);
-            }
-            else
-            {
-                insertIndexY = arrayDownSize - 1;
-                insertIndexX = unitsInserted - arrayRightSize * (arrayDownSize - 1);
-            }
-
-            var unitId = unit.GetInstanceID();
-            var value = new UnitMovementMask
-            {
-                UnitId = unitId,
-                PositionX = insertIndexX,
-                PositionY = insertIndexY,
-                PositionFromCenter = Vector3.zero,
-            };
-
-            SelectedUnitsMovementMask.Add(unitId, value);
-            unitsInserted++;
-
-            if (unitsInserted == movableSelectedUnits.Count)
-            {
-                break;
-            }
-
-            if (unitsInserted == arrayRightSize * arrayDownSize)
-            {
-                if (insertDirectionIsRight)
-                {
-                    arrayDownSize++;
-                }
-                else
-                {
-                    arrayRightSize++;
-                }
-                insertDirectionIsRight = !insertDirectionIsRight;
-            }
-        }
-
-        var centerPoint = (arrayRightSize / 2.0f, arrayDownSize / 2.0f);
-
-        foreach (var unit in movableSelectedUnits)
-        {
-            var value = SelectedUnitsMovementMask[unit.GetInstanceID()];
-
-            value.PositionFromCenter = new Vector3(value.PositionX - centerPoint.Item1 + 0.5f, 0, value.PositionY - centerPoint.Item2 + 0.5f);
-        }
-    }
-
     protected void CursorMovedHandler(CursorMovedEventArgs args)
     {
         _unitUnderCursor = args.UnitUnderCursor;
@@ -684,18 +616,65 @@ public class UnitsController : MonoBehaviour
     }
 
     /// <summary>
-    /// Where this unit stands in the formation, relative to its centre. Only
-    /// units that can move get a place in the mask, so anything else is sent
-    /// straight to the point clicked instead of dropping the whole order with
-    /// a KeyNotFoundException (T-005).
+    /// Where each unit goes for an order to this point (T-034): the places from
+    /// FormationRules — melee in front, the higher Rang in front — turned so that
+    /// the front faces the way the group goes, as in WC3. Built at the order and
+    /// not at the selection, because "front" depends on where the order sends it.
     /// </summary>
-    private Vector3 GetFormationOffset(GameObject unit)
+    private Dictionary<GameObject, Vector3> BuildFormation(Vector3 point)
     {
-        UnitMovementMask mask;
+        var formation = new Dictionary<GameObject, Vector3>();
+        var movable = GetMovableSelectedUnits();
 
-        return SelectedUnitsMovementMask.TryGetValue(unit.GetInstanceID(), out mask)
-            ? mask.PositionFromCenter
-            : Vector3.zero;
+        if (movable.Count == 0)
+        {
+            return formation;
+        }
+
+        var center = Vector3.zero;
+        foreach (var unit in movable)
+        {
+            center += unit.transform.position;
+        }
+
+        center /= movable.Count;
+
+        var forward = point - center;
+        forward.y = 0f;
+        forward = forward.sqrMagnitude > 0.01f ? forward.normalized : Vector3.forward;
+        var right = new Vector3(forward.z, 0f, -forward.x);
+
+        var members = new FormationMember[movable.Count];
+        for (var i = 0; i < movable.Count; i++)
+        {
+            var unit = movable[i];
+            var side = Vector3.Dot(unit.transform.position - center, right);
+            members[i] = new FormationMember(IsMelee(unit), unit.GetComponent<UnitValues>().Rang, unit.GetInstanceID(), side);
+        }
+
+        var places = FormationRules.Arrange(members);
+
+        for (var i = 0; i < movable.Count; i++)
+        {
+            formation[movable[i]] = (right * places[i].Right + forward * places[i].Forward) * ClosenessMultiplier;
+        }
+
+        return formation;
+    }
+
+    /// <summary>
+    /// Only units that can move get a place in the formation, so anything else
+    /// is sent straight to the point clicked (T-005).
+    /// </summary>
+    private static Vector3 GetFormationOffset(Dictionary<GameObject, Vector3> formation, GameObject unit)
+    {
+        return formation.TryGetValue(unit, out var offset) ? offset : Vector3.zero;
+    }
+
+    private static bool IsMelee(GameObject unit)
+    {
+        var behaviours = unit.GetComponent<UnitBehaviourManager>();
+        return behaviours == null || !behaviours.Has<RangeAttackingBehaviour>();
     }
 
     private List<GameObject> GetMovableSelectedUnits()
@@ -704,16 +683,4 @@ public class UnitsController : MonoBehaviour
             .Where(x => x.GetComponent<UnitBehaviourManager>()?.Has<MovementBehaviour>() == true)
             .ToList();
     }
-
-    private class UnitMovementMask
-    {
-        public float UnitId { get; set; }
-
-        public float PositionX { get; set; }
-
-        public float PositionY { get; set; }
-
-        public Vector3 PositionFromCenter { get; set; }
-    }
-
 }
