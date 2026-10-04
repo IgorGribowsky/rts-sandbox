@@ -2,7 +2,7 @@
 id: T-033
 title: Юнит поворачивается перед атакой и кастом
 status: todo
-milestone: backlog
+milestone: v0.3.2
 parent:
 origin: user
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-007, M-015, M-005]
 handoff: []
 checkpoint:
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # T-033 · Юнит поворачивается перед атакой и кастом

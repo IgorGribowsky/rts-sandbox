@@ -2,7 +2,7 @@
 id: T-030
 title: Точка сбора для производящих зданий
 status: todo
-milestone: backlog
+milestone: v0.3.2
 parent:
 origin: user
 needs-design: false
@@ -11,7 +11,7 @@ mechanics: [M-011, M-003]
 handoff: []
 checkpoint:
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # T-030 · Точка сбора для производящих зданий

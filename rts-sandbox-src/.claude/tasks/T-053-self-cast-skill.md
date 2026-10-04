@@ -2,7 +2,7 @@
 id: T-053
 title: Тип каста «без цели» — усиление себя
 status: todo
-milestone: backlog
+milestone: v0.3.2
 parent:
 origin: user
 needs-design: false

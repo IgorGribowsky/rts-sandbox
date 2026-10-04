@@ -2,7 +2,7 @@
 id: T-054
 title: ПКМ по миникарте — приказ идти
 status: todo
-milestone: backlog
+milestone: v0.3.2
 parent:
 origin: user
 needs-design: false

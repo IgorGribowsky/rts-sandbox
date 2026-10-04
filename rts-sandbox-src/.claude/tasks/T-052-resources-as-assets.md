@@ -2,7 +2,7 @@
 id: T-052
 title: Ресурсы как ассеты, а не enum в коде
 status: todo
-milestone: backlog
+milestone: v0.3.2
 parent:
 origin: user
 needs-design: false
