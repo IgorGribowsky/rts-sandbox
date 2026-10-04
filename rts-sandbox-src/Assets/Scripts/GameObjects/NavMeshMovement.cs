@@ -23,6 +23,7 @@ public class NavMeshMovement : MonoBehaviour
     private Vector3 _currentDestination;
     private float _thisObjSize;
     private float _distance;
+    private ObstacleAvoidanceType _normalAvoidance;
 
     public event MoveActionEndedHandler NavMeshMovementArrive;
     public void OnNavMeshMovementArrive()
@@ -39,6 +40,70 @@ public class NavMeshMovement : MonoBehaviour
         _navmeshAgent.speed = _unitValues.MovementSpeed;
 
         _thisObjSize = gameObject.GetSize();
+        _normalAvoidance = _navmeshAgent.obstacleAvoidanceType;
+    }
+
+    /// <summary>
+    /// On the gathering route workers walk through each other, as on gold in
+    /// WC3 (T-063): the unit stops steering around others. Everyone else still
+    /// steers around it, so soldiers do not walk through workers.
+    /// </summary>
+    public void SetPassThrough(bool on)
+    {
+        _navmeshAgent.obstacleAvoidanceType = on ? ObstacleAvoidanceType.NoObstacleAvoidance : _normalAvoidance;
+    }
+
+    /// <summary>
+    /// Walks to a place of its own around the object (ApproachSlots), taking
+    /// one if it holds none there yet. False when the object has no free place:
+    /// the caller picks another object or falls back to GoToObject.
+    /// </summary>
+    public bool TryGoToPlaceAt(GameObject target, float distance, int maxUnits = 0)
+    {
+        var slots = ApproachSlots.Of(target);
+
+        if (!slots.IsHeldBy(gameObject, out var point))
+        {
+            var ring = target.GetSize() + _thisObjSize + distance;
+
+            if (!slots.TryTake(gameObject, target.GetBoundCenter(), ring, _thisObjSize,
+                _navmeshAgent.agentTypeID, maxUnits, out point))
+            {
+                return false;
+            }
+        }
+
+        GoToPlace(point);
+        return true;
+    }
+
+    /// <summary>Gives the place around the object back, if this unit holds one there.</summary>
+    public void ReleasePlaceAt(GameObject target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        var slots = target.GetComponent<ApproachSlots>();
+        if (slots != null)
+        {
+            slots.Release(gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Like GoToObject, but to a point that does not move: NavMeshMovementArrive
+    /// comes when the unit gets there.
+    /// </summary>
+    public void GoToPlace(Vector3 point)
+    {
+        _goToObjectFlag = true;
+        _destinationObj = null;
+
+        _navmeshAgent.avoidancePriority = 90;
+        _navmeshAgent.destination = point;
+        _currentDestination = point;
     }
 
     public void Go(Vector3 destination)

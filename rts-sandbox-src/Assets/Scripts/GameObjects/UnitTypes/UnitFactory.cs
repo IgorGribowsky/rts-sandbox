@@ -165,7 +165,7 @@ public static class UnitFactory
 
             if (type.IsHarvestedResource)
             {
-                unit.AddComponent<HarvestedResource>();
+                unit.AddComponent<HarvestedResource>().MaxHarvesters = type.MaxHarvesters;
             }
         }
 

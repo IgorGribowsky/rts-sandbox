@@ -32,6 +32,9 @@ public class MiningBehaviour : UnitBehaviourBase
 
         var actionArgs = args as MineActionStartedEventArgs;
 
+        // On the way to the mine and in it, workers walk through each other (T-063).
+        _navmeshMovement.SetPassThrough(true);
+
         if (_mine != actionArgs.Mine)
         {
             _mine = actionArgs.Mine;
@@ -57,6 +60,7 @@ public class MiningBehaviour : UnitBehaviourBase
         {
             IsActive = false;
             _miningIsProcessing = false;
+            _navmeshMovement.SetPassThrough(false);
             _navmeshMovement.Stop();
             if (TriggerEndEventFlag)
             {
@@ -95,12 +99,18 @@ public class MiningBehaviour : UnitBehaviourBase
         _mine = null;
         _heldMineScript = null;
         _miningIsProcessing = false;
+        _navmeshMovement.SetPassThrough(false);
         _navmeshMovement.Stop();
 
         if (TriggerEndEventFlag)
         {
             _unitEventManager.OnMineActionEnded();
         }
+    }
+
+    protected override void OnDeactivated()
+    {
+        _navmeshMovement.SetPassThrough(false);
     }
 
     protected void UnitDiedHandler(DiedEventArgs args)

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Tree
   m_EditorClassIdentifier: 
   DisplayName: Tree
+  Description: 
   BodyPrefab: {fileID: 1565109734348995652, guid: 006ef641188f1b7fd2d8f904a28835b8, type: 3}
   HasTeam: 0
   HasValues: 0
@@ -27,7 +28,7 @@ MonoBehaviour:
   ProducesSupply: 0
   StoresHarvestedResources: 0
   IsResourceObject: 1
-  Behaviours: []
+  Behaviours: 
   Stats:
     Id: 0
     IsInvulnerable: 0
@@ -64,7 +65,7 @@ MonoBehaviour:
   Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    ResourcesCanBeHarvested: []
+    ResourcesCanBeHarvested: 
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -77,11 +78,12 @@ MonoBehaviour:
   IsHarvestedResource: 1
   ResourceName: 2
   ResourcesAmount: 100
+  MaxHarvesters: 3
   ParentMineType: {fileID: 0}
   MiningRate: 1
   MiningValue: 10
   MinersMaxCount: 5
-  StoredResources: []
+  StoredResources: 
   HealthBarTemplate: {fileID: 0}
   HealthBarPriority: 0
   ManaBarTemplate: {fileID: 0}
@@ -90,3 +92,6 @@ MonoBehaviour:
   ProducingBarPriority: 0
   Skills: []
   HasMana: 0
+  HasLevels: 0
+  ExperienceTable: {fileID: 0}
+  ExperienceReward: 0

@@ -94,6 +94,8 @@ public class UnitTypeData : ScriptableObject
     public bool IsHarvestedResource = false;
     public ResourceName ResourceName;
     public int ResourcesAmount = 0;
+    [Tooltip("Harvested resource only: how many workers cut at it at once; the rest go to the nearest one with room.")]
+    public int MaxHarvesters = 3;
 
     [Header("Held mine")]
     [Tooltip("What is left on the map when the held mine is destroyed.")]

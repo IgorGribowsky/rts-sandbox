@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class HarvestedResource : MonoBehaviour
 {
+    [Tooltip("How many workers cut at this object at once. The rest go to the nearest one with room (T-063).")]
+    public int MaxHarvesters = 3;
+
     private ResourceValues _resourceValues;
     private PlayerEventController _playerEventController;
 

@@ -52,11 +52,17 @@ public class HarvestingBehaviour : UnitBehaviourBase
 
         var actionArgs = args as HarvestingActionStartedEventArgs;
 
+        if (_storage != actionArgs.Storage)
+        {
+            _navmeshMovement.ReleasePlaceAt(_storage);
+        }
+
         _storage = actionArgs.Storage;
         _harvestedResourcesStorageScript = _storage?.GetComponent<HarvestedResourcesStorage>();
 
-        _resource = actionArgs.Resource;
-        _harvestedResourceScript = _resource?.GetComponent<HarvestedResource>();
+        SetResource(actionArgs.Resource);
+
+        _navmeshMovement.SetPassThrough(true);
 
         _toStorage = actionArgs.ToStorage;
 
@@ -76,6 +82,8 @@ public class HarvestingBehaviour : UnitBehaviourBase
 
     private void FindAndGoToTarget()
     {
+        // Cutting starts on arrival, not while the unit is still walking.
+        _isHarvesting = false;
         _target = _toStorage ? FindStorage() : FindResource();
 
         if (_target == null)
@@ -107,19 +115,63 @@ public class HarvestingBehaviour : UnitBehaviourBase
     {
         if (_resource == null)
         {
-            _resource = gameObject.GetNearestResourceInRadius(GameConstants.ResourceFindDistance, unit =>
-            {
-                var resourceValues = unit.GetComponent<ResourceValues>();
-                return resourceValues.ResourceName == CurrentResource;
-            });
-            _harvestedResourceScript = _resource?.GetComponent<HarvestedResource>();
+            // A tree with room first; when every one is full, the nearest anyway.
+            var found = FindResourceWithRoom(null)
+                ?? gameObject.GetNearestResourceInRadius(GameConstants.ResourceFindDistance, IsSameResource);
+            SetResource(found);
         }
         return _resource;
+    }
+
+    private GameObject FindResourceWithRoom(GameObject except)
+    {
+        return gameObject.GetNearestResourceInRadius(GameConstants.ResourceFindDistance, unit =>
+            unit != except
+            && IsSameResource(unit)
+            && ApproachSlots.TakenCountOf(unit) < MaxHarvestersAt(unit));
+    }
+
+    private bool IsSameResource(GameObject unit)
+    {
+        var resourceValues = unit.GetComponent<ResourceValues>();
+        return resourceValues != null && resourceValues.ResourceName == CurrentResource;
+    }
+
+    private static int MaxHarvestersAt(GameObject resource)
+    {
+        var harvested = resource.GetComponent<HarvestedResource>();
+        return harvested != null ? harvested.MaxHarvesters : 0;
+    }
+
+    /// <summary>Changing the tree gives the place at the old one back.</summary>
+    private void SetResource(GameObject resource)
+    {
+        if (_resource != resource)
+        {
+            _navmeshMovement.ReleasePlaceAt(_resource);
+        }
+
+        _resource = resource;
+        _harvestedResourceScript = _resource != null ? _resource.GetComponent<HarvestedResource>() : null;
+    }
+
+    /// <summary>Off the gathering route: places back, bumping into others again.</summary>
+    private void LeaveRoute()
+    {
+        _navmeshMovement.ReleasePlaceAt(_resource);
+        _navmeshMovement.ReleasePlaceAt(_storage);
+        _navmeshMovement.SetPassThrough(false);
+    }
+
+    protected override void OnDeactivated()
+    {
+        LeaveRoute();
     }
 
     private void HandleNoTarget()
     {
         IsActive = false;
+        LeaveRoute();
         _navmeshMovement.Stop();
         if (TriggerEndEventFlag)
         {
@@ -127,8 +179,40 @@ public class HarvestingBehaviour : UnitBehaviourBase
         }
     }
 
+    /// <summary>
+    /// Every worker walks to a place of its own (T-063): around the storage as
+    /// many as fit, around a tree no more than its MaxHarvesters. A full tree
+    /// sends the worker to the nearest one with room; only when there is none
+    /// does it push in the old way.
+    /// </summary>
     private void MoveToTarget()
     {
+        if (_toStorage)
+        {
+            if (!_navmeshMovement.TryGoToPlaceAt(_target, GameConstants.HarvestingDistance))
+            {
+                _navmeshMovement.GoToObject(_target, GameConstants.HarvestingDistance);
+            }
+            return;
+        }
+
+        if (_navmeshMovement.TryGoToPlaceAt(_resource, GameConstants.HarvestingDistance, MaxHarvestersAt(_resource)))
+        {
+            return;
+        }
+
+        var other = FindResourceWithRoom(_resource);
+        if (other != null)
+        {
+            SetResource(other);
+            _target = other;
+
+            if (_navmeshMovement.TryGoToPlaceAt(other, GameConstants.HarvestingDistance, MaxHarvestersAt(other)))
+            {
+                return;
+            }
+        }
+
         _navmeshMovement.GoToObject(_target, GameConstants.HarvestingDistance);
     }
 
@@ -165,6 +249,9 @@ public class HarvestingBehaviour : UnitBehaviourBase
         {
             StoreResources();
             _toStorage = false;
+
+            // Handing in is instant: the place at the storage is free for the next one.
+            _navmeshMovement.ReleasePlaceAt(_storage);
 
             if (_unitCommandManager.HasCommandInQueue)
             {
