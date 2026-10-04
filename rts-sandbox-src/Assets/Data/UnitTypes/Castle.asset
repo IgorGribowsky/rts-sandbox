@@ -39,6 +39,7 @@ MonoBehaviour:
     MovementSpeed: 0
     Rang: 120
     ProducingTime: 50
+    TurnSpeed: 540
     Damage: 0
     AutoAttackDistance: 8
     AttackRate: 1
@@ -52,6 +53,7 @@ MonoBehaviour:
     RangeAttackProjectile: {fileID: 0}
     ResourceCost:
     - ResourceName: 1
+      Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
       Amount: 320
     SupplyResourceProduces: []
     IsBuilding: 1
@@ -70,6 +72,7 @@ MonoBehaviour:
     IsMiner: 0
     IsHarvestor: 0
     ResourcesCanBeHarvested: 
+    HarvestableResources: []
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -81,12 +84,16 @@ MonoBehaviour:
   IsHeldMine: 0
   IsHarvestedResource: 0
   ResourceName: 0
+  Resource: {fileID: 0}
   ResourcesAmount: 0
+  MaxHarvesters: 3
   ParentMineType: {fileID: 0}
   MiningRate: 1
   MiningValue: 10
   MinersMaxCount: 5
   StoredResources: 02000000
+  ResourcesToStore:
+  - {fileID: 11400000, guid: fc730630a3c9975499c22871ab4abf93, type: 2}
   HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
   HealthBarPriority: 10
   ManaBarTemplate: {fileID: 0}

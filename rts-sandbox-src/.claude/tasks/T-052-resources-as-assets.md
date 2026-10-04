@@ -1,7 +1,7 @@
 ---
 id: T-052
 title: Ресурсы как ассеты, а не enum в коде
-status: todo
+status: in-progress
 milestone: v0.3.2
 parent:
 origin: user
@@ -9,7 +9,7 @@ needs-design: false
 blocked-by: []
 mechanics: [M-012]
 handoff: []
-checkpoint:
+checkpoint: 3732d96
 created: 2026-10-04
 updated: 2026-10-04
 ---
@@ -25,6 +25,12 @@ updated: 2026-10-04
 указать в цене здания и в складе, ничего не меняя в коде.
 
 ## План
+- [x] `ResourceDefinition` (ScriptableObject: имя, тип, иконка); ассеты Gold, Wood, Food в `Assets/Data/ResourceTypes/` (не `Resources/` — это особая папка Unity)
+- [x] фаза 1: новые поля-ссылки рядом со старыми enum-полями, код ещё на старых
+- [x] перенос данных инструментом: 13 типов юнитов, обе сцены; сверка с диска
+- [ ] фаза 2: код на ссылках, enum `ResourceName` и класс `Resource` удалены
+- [ ] проверка: компиляция, тесты, Play — цены, сдача дерева, шахта, еда, панель ресурсов
+- [ ] доки M-012 и соседние
 
 
 ## Решения

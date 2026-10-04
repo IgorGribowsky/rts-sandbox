@@ -93,6 +93,8 @@ public class UnitTypeData : ScriptableObject
     public bool IsHeldMine = false;
     public bool IsHarvestedResource = false;
     public ResourceName ResourceName;
+    [Tooltip("What this mine or tree gives (T-052).")]
+    public ResourceDefinition Resource;
     public int ResourcesAmount = 0;
     [Tooltip("Harvested resource only: how many workers cut at it at once; the rest go to the nearest one with room.")]
     public int MaxHarvesters = 3;
@@ -107,6 +109,8 @@ public class UnitTypeData : ScriptableObject
 
     [Header("Storage")]
     public List<ResourceName> StoredResources = new List<ResourceName>();
+    [Tooltip("What workers may hand in here (T-052).")]
+    public List<ResourceDefinition> ResourcesToStore = new List<ResourceDefinition>();
 
     [Header("Bars")]
     public GameObject HealthBarTemplate;

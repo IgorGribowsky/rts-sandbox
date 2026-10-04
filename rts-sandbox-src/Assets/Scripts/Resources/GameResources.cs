@@ -7,6 +7,9 @@ public class GameResources : MonoBehaviour
 {
     public List<Resource> Resources;
 
+    [UnityEngine.Tooltip("Every resource of the game, in the order the HUD shows them (T-052).")]
+    public List<ResourceDefinition> Definitions = new List<ResourceDefinition>();
+
 }
 
 [Serializable]

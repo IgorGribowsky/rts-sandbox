@@ -125,5 +125,7 @@ public class ResourceAmount
 {
     public ResourceName ResourceName;
 
+    public ResourceDefinition Resource;
+
     public int Amount;
 }

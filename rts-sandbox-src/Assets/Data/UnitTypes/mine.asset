@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: mine
   m_EditorClassIdentifier: 
   DisplayName: mine
+  Description: 
   BodyPrefab: {fileID: 229893291801480186, guid: aec003d8a1cae51b7f2accf910e25821, type: 3}
   HasTeam: 1
   HasValues: 1
@@ -27,7 +28,7 @@ MonoBehaviour:
   ProducesSupply: 0
   StoresHarvestedResources: 0
   IsResourceObject: 1
-  Behaviours: []
+  Behaviours: 
   Stats:
     Id: 9
     IsInvulnerable: 1
@@ -37,6 +38,7 @@ MonoBehaviour:
     MovementSpeed: 0
     Rang: 10
     ProducingTime: 1
+    TurnSpeed: 540
     Damage: 10
     AutoAttackDistance: 8
     AttackRate: 1
@@ -64,7 +66,8 @@ MonoBehaviour:
   Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    ResourcesCanBeHarvested: []
+    ResourcesCanBeHarvested: 
+    HarvestableResources: []
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -76,12 +79,15 @@ MonoBehaviour:
   IsHeldMine: 0
   IsHarvestedResource: 0
   ResourceName: 1
+  Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
   ResourcesAmount: 10000
+  MaxHarvesters: 3
   ParentMineType: {fileID: 0}
   MiningRate: 1
   MiningValue: 10
   MinersMaxCount: 5
-  StoredResources: []
+  StoredResources: 
+  ResourcesToStore: []
   HealthBarTemplate: {fileID: 0}
   HealthBarPriority: 0
   ManaBarTemplate: {fileID: 0}
@@ -90,3 +96,6 @@ MonoBehaviour:
   ProducingBarPriority: 0
   Skills: []
   HasMana: 0
+  HasLevels: 0
+  ExperienceTable: {fileID: 0}
+  ExperienceReward: 0

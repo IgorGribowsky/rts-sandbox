@@ -522,6 +522,10 @@ MonoBehaviour:
   - ResourceName: 3
     ResourceType: 2
     Icon: {fileID: 2800000, guid: 4fe222b1ece0890408b1449e17ba44bf, type: 3}
+  Definitions:
+  - {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
+  - {fileID: 11400000, guid: fc730630a3c9975499c22871ab4abf93, type: 2}
+  - {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
 --- !u!114 &327621833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1606,13 +1610,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourcesAmount:
   - ResourceName: 1
+    Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
     Amount: 300000
   - ResourceName: 2
+    Resource: {fileID: 11400000, guid: fc730630a3c9975499c22871ab4abf93, type: 2}
     Amount: 100000
   - ResourceName: 3
+    Resource: {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
     Amount: 0
   MaxSupplyResourcesAmount:
   - ResourceName: 3
+    Resource: {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
     Amount: 10
 --- !u!114 &1332743808
 MonoBehaviour:

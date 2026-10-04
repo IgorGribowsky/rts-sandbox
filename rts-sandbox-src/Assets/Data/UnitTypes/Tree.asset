@@ -38,6 +38,7 @@ MonoBehaviour:
     MovementSpeed: 0
     Rang: 0
     ProducingTime: 0
+    TurnSpeed: 540
     Damage: 0
     AutoAttackDistance: 0
     AttackRate: 0
@@ -66,6 +67,7 @@ MonoBehaviour:
     IsMiner: 0
     IsHarvestor: 0
     ResourcesCanBeHarvested: 
+    HarvestableResources: []
     HarvestingRate: 1
     HarvestingValuePerTick: 1
     HarvestingMaxValue: 10
@@ -77,6 +79,7 @@ MonoBehaviour:
   IsHeldMine: 0
   IsHarvestedResource: 1
   ResourceName: 2
+  Resource: {fileID: 11400000, guid: fc730630a3c9975499c22871ab4abf93, type: 2}
   ResourcesAmount: 100
   MaxHarvesters: 3
   ParentMineType: {fileID: 0}
@@ -84,6 +87,7 @@ MonoBehaviour:
   MiningValue: 10
   MinersMaxCount: 5
   StoredResources: 
+  ResourcesToStore: []
   HealthBarTemplate: {fileID: 0}
   HealthBarPriority: 0
   ManaBarTemplate: {fileID: 0}

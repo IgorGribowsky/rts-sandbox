@@ -132,6 +132,7 @@ public class HarvestingStats
     public bool IsHarvestor = false;
 
     public List<ResourceName> ResourcesCanBeHarvested = new List<ResourceName>();
+    public List<ResourceDefinition> HarvestableResources = new List<ResourceDefinition>();
 
     public float HarvestingRate = 1f;
     public int HarvestingValuePerTick = 1;
