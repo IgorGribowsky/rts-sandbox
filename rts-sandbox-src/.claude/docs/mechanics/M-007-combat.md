@@ -1,7 +1,7 @@
 ---
 id: M-007
 title: Бой и снаряды
-status: accepted
+status: implemented
 source:
 tasks: [T-064, T-033, T-053, T-070]
 ---

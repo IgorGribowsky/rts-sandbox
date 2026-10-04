@@ -1,7 +1,7 @@
 ---
 id: M-016
 title: Мана
-status: accepted
+status: implemented
 source:
 tasks: [T-043, T-053]
 ---

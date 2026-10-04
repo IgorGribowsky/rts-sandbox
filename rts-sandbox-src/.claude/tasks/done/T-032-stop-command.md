@@ -1,7 +1,7 @@
 ---
 id: T-032
 title: Клавиша S прерывает действия и приказы
-status: review
+status: done
 milestone: v0.3.2
 parent:
 origin: user
@@ -11,7 +11,7 @@ mechanics: [M-001, M-004]
 handoff: []
 checkpoint: e3ce292
 created: 2026-09-05
-updated: 2026-10-04
+updated: 2026-10-05
 ---
 
 # T-032 · Клавиша S прерывает действия и приказы
@@ -58,3 +58,4 @@ updated: 2026-10-04
   Idle, через кадр скорость 0. Боевые — в `AutoAttackIdleBehaviour`.
 
 ## Итог
+`S` — стоп: очередь чистится, поведение гаснет, агент встаёт, юнит в Idle (строитель тоже). Кнопки на кольце нет. Принята 2026-10-05.

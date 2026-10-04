@@ -1,7 +1,7 @@
 ---
 id: M-010
 title: Строительство и сетка застройки
-status: accepted
+status: implemented
 source:
 tasks: [T-043, T-049, T-060, T-067]
 ---

@@ -1,7 +1,7 @@
 ---
 id: T-052
 title: Ресурсы как ассеты, а не enum в коде
-status: review
+status: done
 milestone: v0.3.2
 parent:
 origin: user
@@ -11,7 +11,7 @@ mechanics: [M-012]
 handoff: []
 checkpoint: 3732d96
 created: 2026-10-04
-updated: 2026-10-04
+updated: 2026-10-05
 ---
 
 # T-052 · Ресурсы как ассеты, а не enum в коде
@@ -52,3 +52,4 @@ updated: 2026-10-04
   в панели четвёртый пункт «20». Временный ассет удалён, сцена вернулась.
 
 ## Итог
+Ресурс — ассет `ResourceDefinition` (имя, тип, иконка); enum `ResourceName` удалён, данные 13 типов юнитов и обеих сцен перенесены. Новый ресурс — ассет + строка в `GameResources`. Принята 2026-10-05.
