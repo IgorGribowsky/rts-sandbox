@@ -12,7 +12,31 @@ using UnityEngine;
 public class UnitsController : MonoBehaviour
 {
     public float ClosenessMultiplier = 2.5f;
-    public List<GameObject> SelectedUnits = new List<GameObject>();
+
+    /// <summary>
+    /// The selection, alive units only (T-041). A destroyed object is dropped
+    /// here, at the one entry point, so no caller has to remember to check:
+    /// the died event normally removes a unit first, this is the safety net
+    /// for whatever slips past it.
+    /// </summary>
+    public List<GameObject> SelectedUnits
+    {
+        get
+        {
+            if (_selectedUnits.RemoveAll(unit => unit == null) > 0)
+            {
+                _selectionPruned = true;
+            }
+
+            return _selectedUnits;
+        }
+    }
+
+    private List<GameObject> _selectedUnits = new List<GameObject>();
+
+    // Set by the getter, raised in LateUpdate: telling the HUD from inside a
+    // getter would rebuild it in the middle of whatever loop asked.
+    private bool _selectionPruned;
 
     public Vector3 StartSelectionPoint { get; set; }
 
@@ -408,6 +432,15 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (_selectionPruned)
+        {
+            _selectionPruned = false;
+            RaiseSelectionChanged();
+        }
+    }
+
     public void SelectedUnitDiedHandler(DiedEventArgs args)
     {
         if (SelectedUnits.Remove(args.Dead))
@@ -521,7 +554,7 @@ public class UnitsController : MonoBehaviour
         }
         else
         {
-            SelectedUnits = units;
+            _selectedUnits = units;
         }
     }
 
