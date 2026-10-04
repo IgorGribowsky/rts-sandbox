@@ -8,8 +8,32 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// The build grid (M-010): cells where nothing may be built, the cells under
+/// the cursor while a building is being placed, the ghost of that building,
+/// and the ghosts of buildings queued with Shift.
+///
+/// Every cell under the cursor shows for itself whether it is free (T-060):
+/// a red cell is the one in the way. The ghost turns red when any cell is.
+/// </summary>
 public class BuildingGridController : MonoBehaviour
 {
+    /// <summary>How often the cells under a still cursor look again: units walk in and out.</summary>
+    private const float OccupancyRecheckSeconds = 0.2f;
+
+    private const float GhostAlpha = 0.5f;
+    private const float QueuedGhostAlpha = 0.26f;
+
+    /// <summary>
+    /// The team colour is thinned with white for a ghost that fits, and a
+    /// blocked one is a deep, solid red: a red team still tells them apart.
+    /// </summary>
+    private const float GhostWhitening = 0.4f;
+    private static readonly Color BlockedGhostColor = new Color(0.72f, 0.02f, 0.02f, 0.8f);
+
+    /// <summary>Cells around every building are background: fainter than the ones under the cursor.</summary>
+    private const float BackgroundCellOpacity = 0.45f;
+
     public GameObject GridSegment;
     public Vector3 startGridPoint = new Vector3(-50f, 0.1f, -50f);
     public Vector2 gridSize = new Vector2(100f, 100f);
@@ -18,9 +42,18 @@ public class BuildingGridController : MonoBehaviour
     public Material BuildingRestrictedMaterial;
     public Material BuildingShadowMaterial;
 
+    [Tooltip("See-through look of a building not built yet: under the cursor and queued with Shift (T-060).")]
+    public Material BuildingGhostMaterial;
+
     private List<GridForBuilding> _gridForBuildings = new List<GridForBuilding>();
     private List<GridForShadow> _gridForShadows = new List<GridForShadow>();
     private GameObject cursorGrid;
+    private readonly List<GridSegment> _cursorCells = new List<GridSegment>();
+    private BuildingGhost _cursorGhost;
+    private Vector3 _lastCursorPoint = new Vector3(float.NaN, 0f, 0f);
+    private float _nextOccupancyCheck;
+    private Color _teamColor = Color.white;
+    private UnitsController _unitsController;
     private BuildingController _buildingController;
     private PlayerEventController _playerEventController;
 
@@ -32,6 +65,7 @@ public class BuildingGridController : MonoBehaviour
     public void Awake()
     {
         _buildingController = GetComponent<BuildingController>();
+        _unitsController = GetComponent<UnitsController>();
 
         _playerEventController = GameObject.FindGameObjectWithTag(Tag.PlayerController.ToString())
             .GetComponent<PlayerEventController>();
@@ -73,8 +107,26 @@ public class BuildingGridController : MonoBehaviour
 
     public void Start()
     {
-        cursorGrid = new GameObject();
+        cursorGrid = new GameObject("Building Cursor Grid");
         GenerateRestrictedGridCells();
+
+        var teamId = GetComponent<PlayerTeamMember>()?.TeamId;
+        var team = Assets.Scripts.GameServices.TeamController?.Teams?.FirstOrDefault(t => t.Id == teamId);
+        if (team != null)
+        {
+            _teamColor = Color.Lerp(team.Color, Color.white, GhostWhitening);
+        }
+    }
+
+    /// <summary>A unit may walk onto a cell while the cursor stands still.</summary>
+    private void LateUpdate()
+    {
+        if (!_buildingController.BuildingMod || _cursorCells.Count == 0 || Time.time < _nextOccupancyCheck)
+        {
+            return;
+        }
+
+        RefreshCursorCells();
     }
 
     public bool CheckIfCanBuildAt(Vector3 point, int size, GameObject builder = null)
@@ -180,6 +232,13 @@ public class BuildingGridController : MonoBehaviour
         GridForBuilding gridForBuilding = GenerateGridForBuilding(null, point, buildingType.Building.GridSize, BuildingShadowMaterial, false);
         GridForShadow gridForShadow = ConvertBuildingGridToShadowGrid(buildCommand, gridForBuilding);
 
+        if (BuildingGhostMaterial != null)
+        {
+            gridForShadow.Ghost = new BuildingGhost(buildingType, BuildingGhostMaterial);
+            gridForShadow.Ghost.Place(point);
+            gridForShadow.Ghost.SetColor(WithAlpha(_teamColor, QueuedGhostAlpha));
+        }
+
         _gridForShadows.Add(gridForShadow);
     }
 
@@ -206,6 +265,8 @@ public class BuildingGridController : MonoBehaviour
             {
                 Destroy(gridSegment);
             }
+
+            grid.Ghost?.Destroy();
         }
 
         _gridForShadows.Remove(grid);
@@ -223,8 +284,17 @@ public class BuildingGridController : MonoBehaviour
     {
         var buildingType = _buildingController.Building;
 
-        UpdateCursorPosition();
+        // Another building chosen while placing one: the old cells and ghost go.
+        DestroyGridForCursor();
+
         GenerateGridForCursor(cursorGrid, buildingType.Building.GridSize, buildingType.IsHeldMine);
+        if (BuildingGhostMaterial != null)
+        {
+            _cursorGhost = new BuildingGhost(buildingType, BuildingGhostMaterial);
+        }
+
+        _lastCursorPoint = new Vector3(float.NaN, 0f, 0f);
+        UpdateCursorPosition();
     }
 
     private void UpdateCursorPosition()
@@ -242,18 +312,86 @@ public class BuildingGridController : MonoBehaviour
             cursorGrid.transform.position = _mousePosition.GetGridPoint(gridSize);
         }
 
-        if (buildingType.IsHeldMine)
+        // The cells are looked at again only when the grid point moves, not on
+        // every pixel of the mouse.
+        if (cursorGrid.transform.position != _lastCursorPoint)
         {
-            foreach (Transform gridSegment in cursorGrid.transform)
-            {
-                var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
+            _lastCursorPoint = cursorGrid.transform.position;
+            RefreshCursorCells();
+        }
+    }
 
-                var isRestricted = !isMineUnderCursor;
-                gridSegmentScript.Restricted = isRestricted;
-                var material = isRestricted ? BuildingRestrictedMaterial : BuildingAllowedMaterial;
-                gridSegmentScript.SetMaterial(material);
+    /// <summary>
+    /// Each cell under the cursor red or light by itself, the ghost red if any
+    /// cell is. A held mine goes only onto a mine: all its cells follow that.
+    /// </summary>
+    private void RefreshCursorCells()
+    {
+        _nextOccupancyCheck = Time.time + OccupancyRecheckSeconds;
+
+        var buildingType = _buildingController.Building;
+        if (buildingType == null)
+        {
+            return;
+        }
+
+        GameObject builder = null;
+        _unitsController?.CheckBuilderSelected(out builder);
+
+        var size = buildingType.Building.GridSize;
+        var anyBlocked = false;
+
+        foreach (var cell in _cursorCells)
+        {
+            if (cell == null)
+            {
+                continue;
+            }
+
+            var blocked = buildingType.IsHeldMine
+                ? !isMineUnderCursor
+                : IsCellBlocked(cell.transform.position, size, builder);
+
+            cell.Restricted = buildingType.IsHeldMine && blocked;
+            cell.SetMaterial(blocked ? BuildingRestrictedMaterial : BuildingAllowedMaterial);
+            anyBlocked |= blocked;
+        }
+
+        if (_cursorGhost != null)
+        {
+            _cursorGhost.Place(cursorGrid.transform.position);
+            _cursorGhost.SetColor(anyBlocked ? BlockedGhostColor : WithAlpha(_teamColor, GhostAlpha));
+        }
+    }
+
+    /// <summary>The same test as CheckIfCanBuildAt, for one cell of the building.</summary>
+    private bool IsCellBlocked(Vector3 cellPosition, int size, GameObject builder)
+    {
+        var cell = GameConstants.GridCellSize;
+        var center = new Vector3(cellPosition.x, cursorGrid.transform.position.y, cellPosition.z);
+        var halfExtents = new Vector3(cell / 2f - 0.05f, size * cell / 2f, cell / 2f - 0.05f);
+
+        foreach (var collider in Physics.OverlapBox(center, halfExtents, Quaternion.identity))
+        {
+            if (collider.gameObject == builder)
+            {
+                continue;
+            }
+
+            if (collider.CompareTag(Tag.Unit.ToString())
+                || (collider.CompareTag(Tag.GridSegment.ToString()) && collider.GetComponent<GridSegment>().Restricted))
+            {
+                return true;
             }
         }
+
+        return false;
+    }
+
+    private static Color WithAlpha(Color color, float alpha)
+    {
+        color.a = alpha;
+        return color;
     }
 
     private void DestroyGridForCursor()
@@ -262,6 +400,10 @@ public class BuildingGridController : MonoBehaviour
         {
             Destroy(gridSegment.gameObject);
         }
+
+        _cursorCells.Clear();
+        _cursorGhost?.Destroy();
+        _cursorGhost = null;
     }
 
     private void GenerateRestrictedGridCells()
@@ -344,6 +486,7 @@ public class BuildingGridController : MonoBehaviour
                 gridSegmentScript.SetMaterial(material);
 
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
+                _cursorCells.Add(gridSegmentScript);
             }
         }
     }
@@ -381,7 +524,7 @@ public class BuildingGridController : MonoBehaviour
                 var gridSegment = Instantiate(GridSegment, yCorrectedPosition, Quaternion.identity);
                 var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
                 gridSegmentScript.Restricted = isRestricted;
-                gridSegmentScript.SetMaterial(material);
+                gridSegmentScript.SetMaterial(material, isRestricted ? BackgroundCellOpacity : 1f);
                 gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
                 gridForBuilding.GridSegments.Add(gridSegment);
             }
@@ -403,7 +546,7 @@ public class BuildingGridController : MonoBehaviour
                     var gridSegment = Instantiate(GridSegment, cellPosition, Quaternion.identity);
                     var gridSegmentScript = gridSegment.GetComponent<GridSegment>();
                     gridSegmentScript.Restricted = true;
-                    gridSegmentScript.SetMaterial(BuildingRestrictedMaterial);
+                    gridSegmentScript.SetMaterial(BuildingRestrictedMaterial, BackgroundCellOpacity);
                     gridSegmentScript.ShowOrHideSegment(_buildingController.BuildingMod);
                 }
             }
@@ -426,6 +569,8 @@ public class BuildingGridController : MonoBehaviour
     private class GridForShadow : GridForBuilding
     {
         public IBuildCommand Command { get; set; }
+
+        public BuildingGhost Ghost { get; set; }
     }
 
 }

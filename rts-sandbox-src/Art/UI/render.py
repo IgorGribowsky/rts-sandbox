@@ -17,6 +17,9 @@ SRC = os.path.join(HERE, 'svg')
 OUT = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'UI', 'Icons'))
 OUT_SPRITES = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'UI', 'Sprites'))
 SPRITES = {'bar_frame', 'bar_fill'}
+# Pictures for materials in the world (grid, aim hints) go to Assets/Textures/.
+OUT_TEXTURES = os.path.normpath(os.path.join(HERE, '..', '..', 'Assets', 'Textures'))
+TEXTURES = {'grid_cell'}
 TMP = os.path.join(HERE, '.render')
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
@@ -31,7 +34,9 @@ def render(name):
     with open(html, 'w', encoding='utf-8') as f:
         f.write('<html><body style="margin:0;background:transparent;overflow:hidden">'
                 + svg + '</body></html>')
-    png = os.path.join(OUT_SPRITES if name in SPRITES else OUT, name + '.png')
+    out = OUT_SPRITES if name in SPRITES else OUT_TEXTURES if name in TEXTURES else OUT
+    os.makedirs(out, exist_ok=True)
+    png = os.path.join(out, name + '.png')
     url = 'file:///' + html.replace(os.sep, '/')
     subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--hide-scrollbars',
                     '--default-background-color=00000000', '--window-size=%d,%d' % (w, h),

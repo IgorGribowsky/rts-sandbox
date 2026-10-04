@@ -2,7 +2,6 @@ using Assets.Scripts;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Assets.Scripts.UI
 {
@@ -51,18 +50,12 @@ namespace Assets.Scripts.UI
 
         private static RenderTexture Render(UnitTypeData type)
         {
-            // The body lies switched off on disk (M-021): it is copied switched off
-            // and cleaned before anything in it wakes up.
-            var body = Object.Instantiate(type.BodyPrefab, StagePosition, type.BodyPrefab.transform.rotation);
-            body.SetActive(false);
+            var body = UnitBodyCopy.Create(type, StagePosition, type.BodyPrefab.transform.rotation, PreviewLayer);
 
             var holder = new GameObject("Unit Preview Camera");
             Material paintedMaterial = null;
             try
             {
-                StripToMeshes(body);
-                SetLayer(body.transform, PreviewLayer);
-                body.SetActive(true);
                 paintedMaterial = PaintInTeamColour(body);
 
                 var renderers = body.GetComponentsInChildren<Renderer>();
@@ -133,32 +126,6 @@ namespace Assets.Scripts.UI
             var copy = renderer.material;
             copy.color = team.Color;
             return copy;
-        }
-
-        /// <summary>
-        /// Leaves only what is drawn. An agent or obstacle waking up away from
-        /// the NavMesh complains, colliders would be hit by the game's rays, and
-        /// the bar canvas has nothing to show.
-        /// </summary>
-        private static void StripToMeshes(GameObject body)
-        {
-            foreach (var agent in body.GetComponentsInChildren<NavMeshAgent>(true)) Object.DestroyImmediate(agent);
-            foreach (var obstacle in body.GetComponentsInChildren<NavMeshObstacle>(true)) Object.DestroyImmediate(obstacle);
-            foreach (var collider in body.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(collider);
-            foreach (var canvas in body.GetComponentsInChildren<Canvas>(true))
-            {
-                if (canvas.gameObject != body) Object.DestroyImmediate(canvas.gameObject);
-            }
-            foreach (var behaviour in body.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(behaviour);
-        }
-
-        private static void SetLayer(Transform root, int layer)
-        {
-            root.gameObject.layer = layer;
-            foreach (Transform child in root)
-            {
-                SetLayer(child, layer);
-            }
         }
     }
 }
