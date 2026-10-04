@@ -53,10 +53,10 @@ namespace Assets.Scripts.UI
             var body = UnitBodyCopy.Create(type, StagePosition, type.BodyPrefab.transform.rotation, PreviewLayer);
 
             var holder = new GameObject("Unit Preview Camera");
-            Material paintedMaterial = null;
+            List<Material> paintedMaterials = null;
             try
             {
-                paintedMaterial = PaintInTeamColour(body);
+                paintedMaterials = PaintInTeamColour(body);
 
                 var renderers = body.GetComponentsInChildren<Renderer>();
                 if (renderers.Length == 0)
@@ -99,9 +99,12 @@ namespace Assets.Scripts.UI
             }
             finally
             {
-                if (paintedMaterial != null)
+                if (paintedMaterials != null)
                 {
-                    Object.Destroy(paintedMaterial);
+                    foreach (var material in paintedMaterials)
+                    {
+                        Object.Destroy(material);
+                    }
                 }
 
                 body.SetActive(false);
@@ -111,21 +114,18 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
-        /// The same as TeamMember: the root renderer gets the team colour. Returns
-        /// the material copy made for it, which the caller throws away.
+        /// The same as TeamMember: only the TeamColor parts get the team colour.
+        /// Returns the material copies made for it, which the caller throws away.
         /// </summary>
-        private static Material PaintInTeamColour(GameObject body)
+        private static List<Material> PaintInTeamColour(GameObject body)
         {
-            var renderer = body.GetComponent<Renderer>();
             var team = GameServices.TeamController?.Teams?.FirstOrDefault(t => t.Id == TeamId);
-            if (renderer == null || team == null)
+            if (team == null)
             {
                 return null;
             }
 
-            var copy = renderer.material;
-            copy.color = team.Color;
-            return copy;
+            return TeamMember.PaintTeamParts(body, team.Color);
         }
     }
 }
