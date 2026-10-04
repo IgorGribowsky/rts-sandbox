@@ -1,5 +1,6 @@
 using Assets.Scripts.GameObjects.Projectiles;
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
@@ -69,7 +70,10 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
             }
             else
             {
+                // Standing to shoot, the archer gives way to melee units going
+                // for their places and never shoves them out of the fight (T-064).
                 _navmeshMovement.Stop();
+                _navmeshMovement.SetAvoidancePriority(GameConstants.RangeFireAvoidancePriority);
             }
         }
 

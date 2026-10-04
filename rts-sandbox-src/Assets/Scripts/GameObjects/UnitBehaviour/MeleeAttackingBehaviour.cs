@@ -1,4 +1,5 @@
 using Assets.Scripts.GameObjects.UnitBehaviour;
+using Assets.Scripts.Infrastructure.Constants;
 using Assets.Scripts.Infrastructure.Events;
 using Assets.Scripts.Infrastructure.Helpers;
 using System;
@@ -15,6 +16,9 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
     private float attackAnimation = 0;
     private bool attackIsProcessing = false;
 
+    // The target this unit holds a place around (ApproachSlots), to give it back.
+    private GameObject _placeTarget;
+
     protected override void OnInitialize()
     {
         _navmeshMovement = gameObject.GetComponent<NavMeshMovement>();
@@ -28,8 +32,61 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
 
         var actionArgs = args as AttackActionStartedEventArgs;
 
+        if (_placeTarget != null && _placeTarget != actionArgs.Target)
+        {
+            ReleasePlace();
+        }
+
         Target = actionArgs.Target;
         _targetEventManager = Target.GetComponent<UnitEventManager>();
+    }
+
+    /// <summary>
+    /// The gap to keep from the target at the place: a little inside the
+    /// attack distance, because the agent brakes stoppingDistance short.
+    /// </summary>
+    private float PlaceDistance =>
+        Mathf.Max(0f, _unitValues.MeleeAttackDistance - _navmeshMovement.StoppingDistance - 0.1f);
+
+    /// <summary>
+    /// Is there a free place for this unit around the target. Auto attack asks
+    /// it to prefer an enemy that can still be surrounded (T-064).
+    /// </summary>
+    public bool HasRoomAt(GameObject target)
+    {
+        var ring = target.GetSize() + _navmeshMovement.Size + PlaceDistance;
+        return ApproachSlots.HasRoomFor(target, gameObject, ring, _navmeshMovement.Size);
+    }
+
+    /// <summary>
+    /// To a place of its own around the target, so a group surrounds an enemy
+    /// instead of piling up on one side. No place left: the unit still goes for
+    /// the target the old way and waits behind the others — a target the player
+    /// chose stays the target; one auto attack chose is changed by its next
+    /// search for an enemy with room (AutoAttackingBehaviourBase).
+    /// </summary>
+    private void ApproachTarget()
+    {
+        if (_navmeshMovement.TryGoToPlaceAt(Target, PlaceDistance))
+        {
+            _placeTarget = Target;
+            _navmeshMovement.SetAvoidancePriority(GameConstants.MeleeFightAvoidancePriority);
+            return;
+        }
+
+        _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
+        _navmeshMovement.SetAvoidancePriority(GameConstants.MeleeNoPlaceAvoidancePriority);
+    }
+
+    private void ReleasePlace()
+    {
+        _navmeshMovement.ReleasePlaceAt(_placeTarget);
+        _placeTarget = null;
+    }
+
+    protected override void OnDeactivated()
+    {
+        ReleasePlace();
     }
 
     protected override void PreUpdate()
@@ -43,6 +100,13 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         {
             attackIsProcessing = false;
             attackAnimation = 0;
+
+            // Auto attack switches this behaviour off by the flag, without
+            // Deactivate, so the place is given back here too.
+            if (_placeTarget != null)
+            {
+                ReleasePlace();
+            }
         }
     }
 
@@ -63,11 +127,12 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
 
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
-            _navmeshMovement.GoToObject(Target, _unitValues.MeleeAttackDistance);
+            ApproachTarget();
         }
         else
         {
             _navmeshMovement.Stop();
+            _navmeshMovement.SetAvoidancePriority(GameConstants.MeleeFightAvoidancePriority);
         }
 
         if (distanceToTarget < _unitValues.MeleeAttackDistance + 0.01f

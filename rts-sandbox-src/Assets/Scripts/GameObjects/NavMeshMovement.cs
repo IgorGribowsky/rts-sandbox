@@ -11,6 +11,9 @@ public class NavMeshMovement : MonoBehaviour
     public Vector3 Destination { get => _navmeshAgent.destination; }
     public float StoppingDistance { get => _navmeshAgent.stoppingDistance; }
 
+    /// <summary>The unit's own radius, as distances in the project count it.</summary>
+    public float Size => _thisObjSize;
+
     private UnitValues _unitValues;
     private NavMeshAgent _navmeshAgent;
 
@@ -102,8 +105,25 @@ public class NavMeshMovement : MonoBehaviour
         _destinationObj = null;
 
         _navmeshAgent.avoidancePriority = 90;
-        _navmeshAgent.destination = point;
-        _currentDestination = point;
+
+        // A place around a walking enemy moves every frame; a new path for every
+        // few centimetres would only cost time.
+        var shift = point - _currentDestination;
+        shift.y = 0f;
+        if (shift.magnitude > 0.2f || !_navmeshAgent.hasPath)
+        {
+            _navmeshAgent.destination = point;
+            _currentDestination = point;
+        }
+    }
+
+    /// <summary>
+    /// Who gives way to whom: 0 is the most important, 99 the least. Go and
+    /// GoToObject set 90, Stop sets 50; combat sets its own (T-064).
+    /// </summary>
+    public void SetAvoidancePriority(int priority)
+    {
+        _navmeshAgent.avoidancePriority = priority;
     }
 
     public void Go(Vector3 destination)

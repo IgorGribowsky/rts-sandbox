@@ -9,6 +9,16 @@
         public const float PersecutionDistance = 50f;
 
         /// <summary>
+        /// Who gives way in a fight (T-064), 0 the most important: a melee unit
+        /// at its place around the target goes first, archers standing to shoot
+        /// make way for it and never shove the melee line, a melee unit with no
+        /// place left waits behind both. An ordinary walk is 90.
+        /// </summary>
+        public const int MeleeFightAvoidancePriority = 40;
+        public const int RangeFireAvoidancePriority = 60;
+        public const int MeleeNoPlaceAvoidancePriority = 70;
+
+        /// <summary>
         /// How long an ordinary projectile may stay in the air. Without it a
         /// shot at a target that runs faster than the arrow never lands and
         /// never disappears (T-014).

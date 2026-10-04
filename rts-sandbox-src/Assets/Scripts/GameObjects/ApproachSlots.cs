@@ -11,6 +11,8 @@ using UnityEngine.AI;
 ///
 /// Added to the target on first use and destroyed with it. A unit that died
 /// drops out by itself: its reservation is skipped as soon as it is null.
+/// Places are kept relative to the target, so around a walking enemy they
+/// walk along with it.
 /// </summary>
 public class ApproachSlots : MonoBehaviour
 {
@@ -20,7 +22,7 @@ public class ApproachSlots : MonoBehaviour
     private struct Reservation
     {
         public GameObject Unit;
-        public Vector3 Point;
+        public Vector3 Offset;
         public float Radius;
     }
 
@@ -37,6 +39,27 @@ public class ApproachSlots : MonoBehaviour
     {
         var slots = target.GetComponent<ApproachSlots>();
         return slots != null ? slots.TakenCount : 0;
+    }
+
+    /// <summary>
+    /// Would one more unit of this size fit on this circle — or does it hold a
+    /// place here already. A count, not a search: blocked points are not
+    /// subtracted, which is good enough to choose between targets.
+    /// </summary>
+    public static bool HasRoomFor(GameObject target, GameObject unit, float ringRadius, float unitRadius)
+    {
+        var slots = target.GetComponent<ApproachSlots>();
+        if (slots == null || slots.IsHeldBy(unit, out _))
+        {
+            return true;
+        }
+
+        return slots.TakenCount < CapacityOf(ringRadius, unitRadius);
+    }
+
+    private static int CapacityOf(float ringRadius, float unitRadius)
+    {
+        return Mathf.Max(1, Mathf.FloorToInt(2f * Mathf.PI * ringRadius / (2f * unitRadius * SpacingFactor)));
     }
 
     public int TakenCount
@@ -56,7 +79,7 @@ public class ApproachSlots : MonoBehaviour
         {
             if (reservation.Unit == unit)
             {
-                point = reservation.Point;
+                point = transform.position + reservation.Offset;
                 return true;
             }
         }
@@ -89,7 +112,7 @@ public class ApproachSlots : MonoBehaviour
         toUnit.y = 0f;
         var baseAngle = toUnit.sqrMagnitude > 0.0001f ? Mathf.Atan2(toUnit.z, toUnit.x) : 0f;
 
-        var count = Mathf.Max(1, Mathf.FloorToInt(2f * Mathf.PI * ringRadius / (2f * unitRadius * SpacingFactor)));
+        var count = CapacityOf(ringRadius, unitRadius);
         var step = 2f * Mathf.PI / count;
         var filter = new NavMeshQueryFilter { agentTypeID = agentTypeId, areaMask = NavMesh.AllAreas };
 
@@ -115,7 +138,7 @@ public class ApproachSlots : MonoBehaviour
             }
 
             point = hit.position;
-            _taken.Add(new Reservation { Unit = unit, Point = point, Radius = unitRadius });
+            _taken.Add(new Reservation { Unit = unit, Offset = point - transform.position, Radius = unitRadius });
             return true;
         }
 
@@ -137,7 +160,7 @@ public class ApproachSlots : MonoBehaviour
     {
         foreach (var reservation in _taken)
         {
-            var between = reservation.Point - point;
+            var between = transform.position + reservation.Offset - point;
             between.y = 0f;
 
             if (between.magnitude < (radius + reservation.Radius) * 0.95f)

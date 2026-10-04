@@ -123,11 +123,27 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
 
             var enemyTeamIds = _teamController.GetEnemyTeams(_teamMember.TeamId);
 
-            var target = UnitRegistry.FindNearestOfTeams(
-                _self,
-                _unitValues.AutoAttackDistance,
-                enemyTeamIds,
-                candidate => candidate.Values == null || !candidate.Values.IsInvulnerable);
+            // A melee unit picks an enemy it can still find a place around
+            // (T-064); when every one is surrounded, the nearest anyway.
+            GameObject target = null;
+
+            if (_attackBehaviour is MeleeAttackingBehaviour melee)
+            {
+                target = UnitRegistry.FindNearestOfTeams(
+                    _self,
+                    _unitValues.AutoAttackDistance,
+                    enemyTeamIds,
+                    candidate => IsAttackable(candidate) && melee.HasRoomAt(candidate.GameObject));
+            }
+
+            if (target == null)
+            {
+                target = UnitRegistry.FindNearestOfTeams(
+                    _self,
+                    _unitValues.AutoAttackDistance,
+                    enemyTeamIds,
+                    IsAttackable);
+            }
 
             if (target == null)
             {
@@ -146,6 +162,11 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
 
             _currentTarget = target;
         }
+    }
+
+    private static bool IsAttackable(UnitRecord candidate)
+    {
+        return candidate.Values == null || !candidate.Values.IsInvulnerable;
     }
 
     protected virtual void IfTargetFoundThen(GameObject target)
