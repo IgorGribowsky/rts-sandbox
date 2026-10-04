@@ -1,7 +1,7 @@
 ---
 id: M-023
 title: Кольцо команд
-status: accepted
+status: implemented
 source: concept/processed/Интерфейс добавление.txt
 tasks: [T-045, T-046, T-047, T-048, T-058]
 ---

@@ -1,7 +1,7 @@
 ---
 id: M-017
 title: Полоски над юнитами
-status: accepted
+status: implemented
 source:
 tasks: [T-043, T-059]
 ---

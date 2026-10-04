@@ -1,7 +1,7 @@
 ---
 id: M-025
 title: Миникарта
-status: accepted
+status: implemented
 source: concept/processed/Интерфейс добавление.txt
 tasks: [T-051, T-057]
 ---

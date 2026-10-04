@@ -1,7 +1,7 @@
 ---
 id: M-022
 title: Игровой интерфейс
-status: accepted
+status: implemented
 source: concept/processed/Интерфейс добавление.txt
 tasks: [T-008, T-045, T-049, T-050, T-056]
 ---

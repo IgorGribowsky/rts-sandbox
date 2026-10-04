@@ -1,7 +1,7 @@
 ---
 id: M-013
 title: Шахта и добыча золота
-status: accepted
+status: implemented
 source:
 tasks: [T-043, T-047, T-056]
 ---

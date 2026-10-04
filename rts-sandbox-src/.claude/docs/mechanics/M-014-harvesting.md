@@ -1,7 +1,7 @@
 ---
 id: M-014
 title: Рубка дерева и склад
-status: accepted
+status: implemented
 source:
 tasks: [T-047, T-056]
 ---
