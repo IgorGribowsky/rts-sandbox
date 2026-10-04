@@ -5,9 +5,9 @@
  */
 :root {
     /* --- surfaces ------------------------------------------------------- */
-    --color-panel: rgba(9, 14, 21, 0.97);
+    --color-panel: rgb(9, 14, 21);
     --color-panel-raised: rgb(24, 38, 52);
-    --color-panel-sunken: rgba(6, 10, 16, 0.93);
+    --color-panel-sunken: rgba(6, 10, 16, 0.98);
     --color-rim: rgb(110, 147, 170);
     --color-rim-light: rgb(169, 202, 219);
     --color-rim-dark: rgb(4, 7, 11);
