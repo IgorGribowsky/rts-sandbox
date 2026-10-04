@@ -147,5 +147,89 @@ namespace RtsSandbox.Rules.Tests
             Assert.AreEqual(FogSight.Hidden, FogRules.SightOf(false, true, false, false));
             Assert.AreEqual(FogSight.Visible, FogRules.SightOf(false, true, true, true));
         }
+
+        // --- trees block sight (T-071.2, M-027: "за лесом не видно") ---------
+
+        [Test]
+        public void Blocker_HidesWhatIsBehindIt_ButIsSeenItself()
+        {
+            var grid = new FogGrid(30, 30);
+            for (var y = 13; y <= 17; y++)
+            {
+                grid.SetBlocker(10, y);
+            }
+
+            grid.BeginPass();
+            grid.Reveal(5.5f, 15.5f, 12f);
+
+            Assert.AreEqual(FogState.Visible, grid[10, 15]);
+            Assert.AreEqual(FogState.Unexplored, grid[14, 15]);
+            Assert.AreEqual(FogState.Visible, grid[9, 15]);
+        }
+
+        [Test]
+        public void Blocker_DoesNotHide_WhatIsBesideIt_AlongTheForestEdge()
+        {
+            var grid = new FogGrid(30, 30);
+            for (var x = 4; x <= 25; x++)
+            {
+                grid.SetBlocker(x, 10);
+            }
+
+            grid.BeginPass();
+            grid.Reveal(5.5f, 11.5f, 12f);
+
+            // Along the edge of the forest, on the viewer's side: seen.
+            Assert.AreEqual(FogState.Visible, grid[15, 11]);
+            // The trees of the edge: seen. Behind them: not.
+            Assert.AreEqual(FogState.Visible, grid[12, 10]);
+            Assert.AreEqual(FogState.Unexplored, grid[12, 8]);
+        }
+
+        [Test]
+        public void Blocker_UnderTheViewer_DoesNotBlindIt()
+        {
+            var grid = new FogGrid(20, 20);
+            grid.SetBlocker(10, 10);
+
+            grid.BeginPass();
+            grid.Reveal(10.5f, 10.5f, 5f);
+
+            Assert.AreEqual(FogState.Visible, grid[14, 10]);
+            Assert.AreEqual(FogState.Visible, grid[10, 6]);
+        }
+
+        [Test]
+        public void ClearBlockers_OpensTheViewAgain_OnTheNextPass()
+        {
+            var grid = new FogGrid(30, 30);
+            grid.SetBlocker(10, 15);
+            grid.BeginPass();
+            grid.Reveal(5.5f, 15.5f, 12f);
+            Assert.AreEqual(FogState.Unexplored, grid[14, 15]);
+
+            // The tree is cut down.
+            grid.ClearBlockers();
+            grid.BeginPass();
+            grid.Reveal(5.5f, 15.5f, 12f);
+
+            Assert.AreEqual(FogState.Visible, grid[14, 15]);
+        }
+
+        [Test]
+        public void Blocker_OutsideTheCircle_ChangesNothing()
+        {
+            var open = new FogGrid(40, 40);
+            var withTree = new FogGrid(40, 40);
+            withTree.SetBlocker(35, 35);
+
+            open.BeginPass();
+            open.Reveal(10.5f, 10.5f, 8f, 2f);
+            withTree.BeginPass();
+            withTree.Reveal(10.5f, 10.5f, 8f, 2f);
+
+            CollectionAssert.AreEqual(open.Cells, withTree.Cells);
+            CollectionAssert.AreEqual(open.Light, withTree.Light);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Assets.Scripts.Infrastructure.Enums;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HarvestedResource : MonoBehaviour
@@ -6,8 +7,31 @@ public class HarvestedResource : MonoBehaviour
     [Tooltip("How many workers cut at this object at once. The rest go to the nearest one with room (T-063).")]
     public int MaxHarvesters = 3;
 
+    private static readonly List<HarvestedResource> _all = new List<HarvestedResource>();
+
+    /// <summary>Every tree standing now. Read only — do not hold on to the list.</summary>
+    public static IReadOnlyList<HarvestedResource> All => _all;
+
+    /// <summary>
+    /// Goes up whenever a tree comes or goes: the fog of war rebuilds what
+    /// blocks sight only then, not every pass (T-071.2).
+    /// </summary>
+    public static int Version { get; private set; }
+
     private ResourceValues _resourceValues;
     private PlayerEventController _playerEventController;
+
+    private void OnEnable()
+    {
+        _all.Add(this);
+        Version++;
+    }
+
+    private void OnDisable()
+    {
+        _all.Remove(this);
+        Version++;
+    }
 
     private void Awake()
     {

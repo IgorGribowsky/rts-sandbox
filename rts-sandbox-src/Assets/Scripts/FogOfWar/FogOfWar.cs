@@ -27,6 +27,9 @@ using UnityEngine;
 ///
 /// What the player is shown of the other teams' units is decided after every
 /// pass by <see cref="FogUnitSight"/> (T-071.3).
+///
+/// Trees block sight (T-071.2): every cell a trunk touches is a blocker in
+/// the grid, rebuilt only when a tree comes or goes (cut down).
 /// </summary>
 public class FogOfWar : MonoBehaviour
 {
@@ -118,6 +121,7 @@ public class FogOfWar : MonoBehaviour
     private RenderTexture _blurTemp;
     private Texture2D _noise;
     private Material _composeMaterial;
+    private int _treesVersion = -1;
     private float _passTime;
     private float _timer;
     private bool _wasOn;
@@ -356,6 +360,11 @@ public class FogOfWar : MonoBehaviour
     {
         _stopwatch.Restart();
 
+        if (_treesVersion != HarvestedResource.Version)
+        {
+            RebuildBlockers();
+        }
+
         _grid.BeginPass();
 
         var feather = EdgeFeather / CellSize;
@@ -406,6 +415,38 @@ public class FogOfWar : MonoBehaviour
 
         _stopwatch.Stop();
         LastPassMilliseconds = (float)_stopwatch.Elapsed.TotalMilliseconds;
+    }
+
+    /// <summary>Every cell a tree's trunk touches blocks sight.</summary>
+    private void RebuildBlockers()
+    {
+        _treesVersion = HarvestedResource.Version;
+        _grid.ClearBlockers();
+
+        var trees = HarvestedResource.All;
+        for (var i = 0; i < trees.Count; i++)
+        {
+            var tree = trees[i];
+            var collider = tree != null ? tree.GetComponent<Collider>() : null;
+            if (collider == null)
+            {
+                continue;
+            }
+
+            var bounds = collider.bounds;
+            var xMin = Mathf.FloorToInt((bounds.min.x - _area.xMin) / CellSize);
+            var xMax = Mathf.FloorToInt((bounds.max.x - _area.xMin) / CellSize);
+            var yMin = Mathf.FloorToInt((bounds.min.z - _area.yMin) / CellSize);
+            var yMax = Mathf.FloorToInt((bounds.max.z - _area.yMin) / CellSize);
+
+            for (var y = yMin; y <= yMax; y++)
+            {
+                for (var x = xMin; x <= xMax; x++)
+                {
+                    _grid.SetBlocker(x, y);
+                }
+            }
+        }
     }
 
     /// <summary>
