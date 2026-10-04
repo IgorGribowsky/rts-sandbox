@@ -35,6 +35,9 @@ public class UnitStats
     [Tooltip("How long this one takes to be produced or built.")]
     public float ProducingTime = 1;
 
+    [Tooltip("Degrees per second. Before a blow or a cast the unit turns to face the aim at this speed and does not start until it does (T-033). Walking turns are the NavMeshAgent's own.")]
+    public float TurnSpeed = 540f;
+
     [Header("Attack")]
     public float Damage = 10f;
     public float AutoAttackDistance = 8f;

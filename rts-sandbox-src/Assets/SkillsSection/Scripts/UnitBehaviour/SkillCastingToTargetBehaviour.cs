@@ -37,6 +37,8 @@ public class SkillCastingToTargetBehaviour : SkillCastingBehaviourBase
         return gameObject.GetDistanceTo(_target) <= Skill.CastRange;
     }
 
+    protected override Vector3 AimPoint => _target.transform.position;
+
     protected override void MoveToAim()
     {
         NavmeshMovement.GoToObject(_target, Skill.CastRange);

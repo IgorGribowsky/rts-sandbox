@@ -20,6 +20,8 @@ public abstract class SkillCastingBehaviourBase : UnitBehaviourBase
     protected UnitEventManager UnitEvents;
     protected UnitSkills UnitSkillsScript;
 
+    private UnitValues _unitValues;
+
     protected UnitSkill CastedSkill;
     protected ActiveSkill Skill;
 
@@ -33,6 +35,7 @@ public abstract class SkillCastingBehaviourBase : UnitBehaviourBase
         NavmeshMovement = gameObject.GetComponent<NavMeshMovement>();
         UnitEvents = GetComponent<UnitEventManager>();
         UnitSkillsScript = gameObject.GetComponent<UnitSkills>();
+        _unitValues = gameObject.GetComponent<UnitValues>();
     }
 
     public override void StartAction(EventArgs args)
@@ -79,12 +82,20 @@ public abstract class SkillCastingBehaviourBase : UnitBehaviourBase
             else
             {
                 NavmeshMovement.Stop();
-                _castIsProcessing = true;
+
+                // The cast starts once the caster looks at the aim (T-033).
+                if (Facing.TurnTowards(transform, AimPoint, _unitValues.TurnSpeed))
+                {
+                    _castIsProcessing = true;
+                }
             }
         }
 
         if (_castIsProcessing)
         {
+            // Close the last few degrees of the tolerance, and follow a target that moves.
+            Facing.TurnTowards(transform, AimPoint, _unitValues.TurnSpeed);
+
             _castAnimation += Time.deltaTime;
 
             if (_castAnimation > Skill.CastDuration)
@@ -104,6 +115,9 @@ public abstract class SkillCastingBehaviourBase : UnitBehaviourBase
     protected abstract void ReadAim(EventArgs args);
 
     protected abstract bool IsAimInCastRange();
+
+    /// <summary>Where the caster turns to before the cast starts (T-033).</summary>
+    protected abstract Vector3 AimPoint { get; }
 
     protected abstract void MoveToAim();
 

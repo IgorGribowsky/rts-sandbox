@@ -40,6 +40,12 @@
         /// </summary>
         public const int TargetSearchFrameInterval = 5;
 
+        /// <summary>
+        /// Off by no more than this many degrees, a unit counts as facing what
+        /// it hits or casts at (T-033).
+        /// </summary>
+        public const float FacingToleranceDegrees = 12f;
+
         public const float GridCellSize = 1f;
         public const float GridCellNarrowing = 0.1f;
 

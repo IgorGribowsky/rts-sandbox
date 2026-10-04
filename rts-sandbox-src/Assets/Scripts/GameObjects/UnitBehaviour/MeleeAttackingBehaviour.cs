@@ -124,6 +124,7 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         }
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
+        var facesTarget = false;
 
         if (!attackIsProcessing && distanceToTarget > _unitValues.MeleeAttackDistance)
         {
@@ -133,11 +134,15 @@ public class MeleeAttackingBehaviour : AttackingBehaviourBase
         {
             _navmeshMovement.Stop();
             _navmeshMovement.SetAvoidancePriority(GameConstants.MeleeFightAvoidancePriority);
+
+            // No blow with the back or the side to the enemy (T-033).
+            facesTarget = Facing.TurnTowards(transform, Target.transform.position, _unitValues.TurnSpeed);
         }
 
         if (distanceToTarget < _unitValues.MeleeAttackDistance + 0.01f
             && attackCD <= 0
-            && !attackIsProcessing)
+            && !attackIsProcessing
+            && facesTarget)
         {
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;

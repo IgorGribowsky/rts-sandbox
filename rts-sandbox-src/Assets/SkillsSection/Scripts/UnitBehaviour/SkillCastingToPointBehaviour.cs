@@ -30,6 +30,8 @@ public class SkillCastingToPointBehaviour : SkillCastingBehaviourBase
         return Vector3.Distance(transform.position, _castPoint) <= Skill.CastRange;
     }
 
+    protected override Vector3 AimPoint => _castPoint;
+
     protected override void MoveToAim()
     {
         NavmeshMovement.Go(_castPoint);

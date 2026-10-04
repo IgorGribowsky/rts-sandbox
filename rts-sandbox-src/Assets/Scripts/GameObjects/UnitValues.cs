@@ -39,6 +39,8 @@ public class UnitValues : MonoBehaviour
 
     public float ProducingTime { get => Stats.ProducingTime; set => Stats.ProducingTime = value; }
 
+    public float TurnSpeed { get => Stats.TurnSpeed; set => Stats.TurnSpeed = value; }
+
     public float Damage { get => Stats.Damage; set => Stats.Damage = value; }
 
     public float AutoAttackDistance { get => Stats.AutoAttackDistance; set => Stats.AutoAttackDistance = value; }

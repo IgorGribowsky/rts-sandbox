@@ -62,6 +62,10 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
 
         var distanceToTarget = gameObject.GetDistanceTo(Target);
 
+        // A tower shoots where it stands, the way it always did; a unit turns
+        // to the target first (T-033).
+        var facesTarget = _navmeshMovement == null || _unitValues.IsBuilding;
+
         if (_navmeshMovement != null)
         {
             if (!attackIsProcessing && distanceToTarget > _unitValues.RangeAttackDistance)
@@ -74,13 +78,19 @@ public class RangeAttackingBehaviour : AttackingBehaviourBase
                 // for their places and never shoves them out of the fight (T-064).
                 _navmeshMovement.Stop();
                 _navmeshMovement.SetAvoidancePriority(GameConstants.RangeFireAvoidancePriority);
+
+                if (!facesTarget)
+                {
+                    facesTarget = Facing.TurnTowards(transform, Target.transform.position, _unitValues.TurnSpeed);
+                }
             }
         }
 
 
         if (distanceToTarget < _unitValues.RangeAttackDistance
             && attackCD <= 0
-            && !attackIsProcessing)
+            && !attackIsProcessing
+            && facesTarget)
         {
             attackIsProcessing = true;
             attackCD = _unitValues.AttackRate;

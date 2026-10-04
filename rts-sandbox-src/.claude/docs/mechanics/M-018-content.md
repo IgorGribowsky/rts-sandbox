@@ -29,7 +29,7 @@ tasks: []
 
 | Блок в ассете | Компонент | Что там | У кого есть |
 |---|---|---|---|
-| `Stats` | `UnitValues` | HP, скорость, атака, цена | у всех |
+| `Stats` | `UnitValues` | HP, скорость, поворот (`TurnSpeed`, T-033), атака, цена | у всех |
 | `Building` | `BuildingValues` | сетка, препятствие, что производит | здания и ресурсы |
 | `Builder` | `BuilderValues` | что умеет строить | Builder |
 | `Harvesting` | `HarvestingValues` | добыча и рубка | Builder |
