@@ -34,6 +34,7 @@
     --color-mana-back: rgba(12, 28, 70, 0.9);
     --color-xp: rgb(246, 200, 72);
     --color-xp-back: rgba(64, 48, 8, 0.9);
+    --color-gauge-shine: rgba(255, 255, 255, 0.3);
 
     /* --- icon states (multiplied into the picture) ---------------------- */
     --tint-normal: rgb(255, 255, 255);

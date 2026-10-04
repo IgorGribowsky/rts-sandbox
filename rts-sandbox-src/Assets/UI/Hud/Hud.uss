@@ -161,6 +161,7 @@
 
 .gauge {
     --gauge-edge: var(--color-rim-dark);
+    --gauge-shine: var(--color-gauge-shine);
 }
 
 .gauge--hp {

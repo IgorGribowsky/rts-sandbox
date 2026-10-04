@@ -86,6 +86,8 @@ namespace Assets.Scripts.UI
 
             _hpGauge = CreateGauge("gauge--hp", 150f, 262f, false);
             _manaGauge = CreateGauge("gauge--mana", 278f, 390f, true);
+            _hpGauge.Liquid = true;
+            _manaGauge.Liquid = true;
             _xpGauge = CreateGauge("gauge--xp", 67f, 113f, false);
 
             _attack = new RingButton("ring-button--big");
@@ -279,6 +281,10 @@ namespace Assets.Scripts.UI
             RefreshMana();
             RefreshExperience();
             RefreshHighlights();
+
+            // Another unit: its levels show at once, they do not flow from the last one's.
+            _hpGauge.Snap();
+            _manaGauge.Snap();
         }
 
         private void Unbind()
