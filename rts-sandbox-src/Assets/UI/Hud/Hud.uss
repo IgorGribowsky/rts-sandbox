@@ -147,20 +147,30 @@
 
 /* --- ring buttons ---------------------------------------------------------- */
 
+/* The button takes clicks and never moves; the body inside is what animates. */
 .ring-button {
     position: absolute;
+}
+
+.ring-button__body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     transition-property: scale;
     transition-duration: var(--release-duration);
     transition-timing-function: ease-out-back;
 }
 
-.ring-button:active {
+.ring-button:active > .ring-button__body,
+.ring-button.is-pulsed > .ring-button__body {
     scale: var(--press-scale) var(--press-scale);
     transition-duration: var(--press-duration);
     transition-timing-function: ease-out;
 }
 
-.ring-button.is-inert:active {
+.ring-button.is-inert:active > .ring-button__body {
     scale: 1 1;
 }
 
@@ -177,19 +187,19 @@
     transition-duration: var(--fade-duration);
 }
 
-.ring-button:hover > .ring-button__glow {
+.ring-button:hover .ring-button__glow {
     opacity: 0.3;
 }
 
-.ring-button.is-inert:hover > .ring-button__glow {
+.ring-button.is-inert:hover .ring-button__glow {
     opacity: 0;
 }
 
-.ring-button.is-pulsed > .ring-button__glow {
+.ring-button.is-pulsed .ring-button__glow {
     opacity: 0.75;
 }
 
-.ring-button.is-active > .ring-button__glow {
+.ring-button.is-active .ring-button__glow {
     opacity: 1;
 }
 
@@ -202,11 +212,11 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
-.ring-button--big > .ring-button__frame {
+.ring-button--big .ring-button__frame {
     background-image: var(--img-frame-big);
 }
 
-.ring-button--small > .ring-button__frame {
+.ring-button--small .ring-button__frame {
     background-image: var(--img-frame-small);
 }
 
@@ -227,7 +237,7 @@
     bottom: 0;
 }
 
-.ring-attack > .ring-button__icon {
+.ring-attack .ring-button__icon {
     left: 13%;
     top: 13%;
     width: 74%;
@@ -235,52 +245,52 @@
     background-image: var(--img-sword);
 }
 
-.ring-attack.is-placeholder > .ring-button__icon {
+.ring-attack.is-placeholder .ring-button__icon {
     background-image: var(--img-no-attack);
 }
 
-.ring-attack.is-placeholder > .ring-button__frame {
+.ring-attack.is-placeholder .ring-button__frame {
     -unity-background-image-tint-color: var(--tint-disabled);
 }
 
-.ring-hold > .ring-button__icon {
+.ring-hold .ring-button__icon {
     background-image: var(--img-hold);
 }
 
-.ring-gather > .ring-button__icon {
+.ring-gather .ring-button__icon {
     background-image: var(--img-gather);
 }
 
-.ring-button.is-unavailable > .ring-button__icon {
+.ring-button.is-unavailable .ring-button__icon {
     -unity-background-image-tint-color: var(--tint-disabled);
 }
 
-.ring-button.is-unavailable > .ring-button__frame {
+.ring-button.is-unavailable .ring-button__frame {
     -unity-background-image-tint-color: var(--tint-disabled);
 }
 
 /* --- skill buttons ---------------------------------------------------------- */
 
-.ring-button--skill > .ring-button__frame {
+.ring-button--skill .ring-button__frame {
     background-image: var(--img-frame-small);
 }
 
-.ring-button--skill > .ring-button__icon {
+.ring-button--skill .ring-button__icon {
     left: 12%;
     top: 12%;
     width: 76%;
     height: 76%;
 }
 
-.ring-button--skill.is-no-mana > .ring-button__icon {
+.ring-button--skill.is-no-mana .ring-button__icon {
     -unity-background-image-tint-color: var(--tint-no-mana);
 }
 
-.ring-button--skill.is-cooldown > .ring-button__icon {
+.ring-button--skill.is-cooldown .ring-button__icon {
     -unity-background-image-tint-color: var(--tint-cooldown);
 }
 
-.ring-button--skill.is-passive > .ring-button__frame {
+.ring-button--skill.is-passive .ring-button__frame {
     -unity-background-image-tint-color: var(--tint-passive-frame);
 }
 
@@ -425,11 +435,11 @@
     margin-right: var(--gap-m);
 }
 
-.ring-button--build > .ring-button__frame {
+.ring-button--build .ring-button__frame {
     background-image: var(--img-frame-big);
 }
 
-.build-button > .ring-button__icon {
+.build-button .ring-button__icon {
     background-image: var(--img-build);
 }
 
@@ -445,10 +455,19 @@
     padding-left: 8px;
 }
 
+/* The card takes clicks and stays put; the body lifts and presses. */
 .card {
     width: 116px;
     height: 160px;
     margin-right: var(--gap-m);
+}
+
+.card__body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     padding: 6px;
     background-color: var(--color-panel);
     border-radius: var(--radius-m);
@@ -456,25 +475,23 @@
     border-color: var(--color-rim);
     border-top-color: var(--color-rim-light);
     border-bottom-color: var(--color-rim-dark);
-    transition-property: scale, translate, border-color;
+    transition-property: scale, translate, border-color, background-color;
     transition-duration: var(--release-duration);
     transition-timing-function: ease-out-back;
 }
 
-.card:hover {
+.card:hover > .card__body {
     translate: 0 -6px;
     border-color: var(--color-accent);
 }
 
-.card:active {
+.card:active > .card__body,
+.card.is-pulsed > .card__body {
     scale: 0.93 0.93;
-    transition-duration: var(--press-duration);
-    transition-timing-function: ease-out;
-}
-
-.card.is-pulsed {
     border-color: var(--color-accent);
     background-color: var(--color-panel-raised);
+    transition-duration: var(--press-duration);
+    transition-timing-function: ease-out;
 }
 
 .card__preview {
@@ -484,7 +501,7 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
-.card.is-unaffordable > .card__preview {
+.card.is-unaffordable .card__preview {
     -unity-background-image-tint-color: var(--tint-cooldown);
 }
 

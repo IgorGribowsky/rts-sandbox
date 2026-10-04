@@ -30,6 +30,7 @@ namespace Assets.Scripts.UI
         private readonly RingButton _buildButton;
         private readonly ScrollView _strip;
         private readonly List<UnitCard> _cards = new List<UnitCard>();
+        private readonly Dictionary<int, UnitCard> _hireCards = new Dictionary<int, UnitCard>();
 
         private BuilderValues _builder;
         private BuildingValues _producer;
@@ -50,6 +51,7 @@ namespace Assets.Scripts.UI
             _gameResources = gameResources;
             _tooltip = tooltip;
             _playerTeamId = playerTeamId;
+            UnitPreviewRenderer.TeamId = playerTeamId;
 
             buttonSlot.Clear();
             _buildButton = new RingButton("ring-button--build");
@@ -66,6 +68,7 @@ namespace Assets.Scripts.UI
             _events.SelectionChanged += OnSelectionChanged;
             _events.ResourceChanged += OnResourceChanged;
             _commands.ModesChanged += Refresh;
+            _commands.HotkeyPressed += OnHotkey;
 
             Bind(null, 0);
         }
@@ -76,6 +79,7 @@ namespace Assets.Scripts.UI
             _events.SelectionChanged -= OnSelectionChanged;
             _events.ResourceChanged -= OnResourceChanged;
             _commands.ModesChanged -= Refresh;
+            _commands.HotkeyPressed -= OnHotkey;
             ClearCards();
         }
 
@@ -169,6 +173,7 @@ namespace Assets.Scripts.UI
                     var card = new UnitCard(type, key, _gameResources);
                     card.Clicked += () => _commands.Produce(index);
                     AddCard(card);
+                    _hireCards[index] = card;
                 }
 
                 _strip.scrollOffset = Vector2.zero;
@@ -195,6 +200,22 @@ namespace Assets.Scripts.UI
             RefreshAffordability();
         }
 
+        /// <summary>
+        /// B shows on the build button, a digit on its hire card: the same
+        /// press animation a click gives (M-022).
+        /// </summary>
+        private void OnHotkey(HotkeyAction action, int index)
+        {
+            if (action == HotkeyAction.BuildMenu && _builder != null)
+            {
+                _buildButton.Pulse();
+            }
+            else if (action == HotkeyAction.Produce && _content == "hire" && _hireCards.TryGetValue(index, out var card))
+            {
+                card.Pulse();
+            }
+        }
+
         private void AddCard(UnitCard card)
         {
             card.SecondaryPressed += ShowTooltip;
@@ -212,6 +233,7 @@ namespace Assets.Scripts.UI
             }
 
             _cards.Clear();
+            _hireCards.Clear();
         }
 
         private void OnResourceChanged(ResourceChangedEventArgs args) => RefreshAffordability();

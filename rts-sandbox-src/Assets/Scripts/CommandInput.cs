@@ -2,6 +2,17 @@ using Assets.Scripts.Infrastructure.Events;
 using System;
 using UnityEngine;
 
+/// <summary>What a hot key stands for, to show the press on its button.</summary>
+public enum HotkeyAction
+{
+    AClick,
+    Hold,
+    Gather,
+    BuildMenu,
+    Produce,
+    Skill,
+}
+
 /// <summary>
 /// The one entry point for the player's orders and input modes (M-001, M-022).
 /// The keyboard and the HUD buttons both call these methods and nothing else,
@@ -26,6 +37,13 @@ public class CommandInput : MonoBehaviour
 
     /// <summary>Any mode changed: A-click, build menu, placement, skill aiming.</summary>
     public event Action ModesChanged;
+
+    /// <summary>
+    /// A hot key was pressed. The HUD plays the press on the button or card
+    /// of the same action, as if it had been clicked (M-022). The index is the
+    /// card or skill number, -1 when it does not apply.
+    /// </summary>
+    public event Action<HotkeyAction, int> HotkeyPressed;
 
     public bool IsAClick => _aClick;
 
@@ -184,6 +202,11 @@ public class CommandInput : MonoBehaviour
     public void NotifySkillAimingChanged()
     {
         ModesChanged?.Invoke();
+    }
+
+    public void NotifyHotkey(HotkeyAction action, int index = -1)
+    {
+        HotkeyPressed?.Invoke(action, index);
     }
 
     private void SetAClick(bool state)

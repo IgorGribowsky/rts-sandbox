@@ -9,6 +9,11 @@ namespace Assets.Scripts.UI
     /// what it stands for is happening now (M-023). Press feedback comes from
     /// the :active pseudo state in USS, so it follows the pointer exactly.
     ///
+    /// The element itself only takes clicks and never moves or shrinks; all
+    /// the drawing sits in an inner body, and only the body is animated. A
+    /// button that shrank under the pointer lost the click whenever it was
+    /// released near its edge.
+    ///
     /// The button only reports clicks. What a click does is decided by the
     /// owner, which calls the same entry point the hot key calls.
     /// </summary>
@@ -16,6 +21,7 @@ namespace Assets.Scripts.UI
     {
         private const long PulseMilliseconds = 140;
 
+        private readonly VisualElement _body;
         private readonly VisualElement _glow;
         private readonly VisualElement _frame;
         private readonly VisualElement _icon;
@@ -33,6 +39,9 @@ namespace Assets.Scripts.UI
 
         public VisualElement Icon => _icon;
 
+        /// <summary>Where extra decorations go, so they move with the press.</summary>
+        public VisualElement Body => _body;
+
         /// <summary>Extra layers on top of the picture: cooldown, key letter.</summary>
         public VisualElement Overlay { get; }
 
@@ -40,6 +49,10 @@ namespace Assets.Scripts.UI
         {
             AddToClassList("ring-button");
             AddToClassList(sizeClass);
+
+            _body = new VisualElement { pickingMode = PickingMode.Ignore };
+            _body.AddToClassList("ring-button__body");
+            Add(_body);
 
             _glow = new VisualElement { pickingMode = PickingMode.Ignore };
             _glow.AddToClassList("ring-button__glow");
@@ -53,10 +66,10 @@ namespace Assets.Scripts.UI
             Overlay = new VisualElement { pickingMode = PickingMode.Ignore };
             Overlay.AddToClassList("ring-button__overlay");
 
-            Add(_glow);
-            Add(_frame);
-            Add(_icon);
-            Add(Overlay);
+            _body.Add(_glow);
+            _body.Add(_frame);
+            _body.Add(_icon);
+            _body.Add(Overlay);
 
             _clickable = new Clickable(OnClick);
             this.AddManipulator(_clickable);
@@ -90,12 +103,21 @@ namespace Assets.Scripts.UI
             _icon.style.backgroundImage = texture != null ? new StyleBackground(texture) : StyleKeyword.None;
         }
 
+        /// <summary>
+        /// The press animation without a press: a hot key that does what this
+        /// button does shows on the button too (M-022).
+        /// </summary>
+        public void Pulse()
+        {
+            AddToClassList("is-pulsed");
+            schedule.Execute(() => RemoveFromClassList("is-pulsed")).StartingIn(PulseMilliseconds);
+        }
+
         private void OnClick()
         {
             // A short flash on every press, accepted or not: the player sees the
             // click landed even when it changes nothing.
-            AddToClassList("is-pulsed");
-            schedule.Execute(() => RemoveFromClassList("is-pulsed")).StartingIn(PulseMilliseconds);
+            Pulse();
 
             if (_interactive)
             {

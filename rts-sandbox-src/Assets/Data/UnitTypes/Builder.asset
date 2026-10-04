@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Builder
   m_EditorClassIdentifier: 
   DisplayName: Builder
-  Preview: {fileID: 2800000, guid: 3cf219023227c7543ad446d87eeb462d, type: 3}
   Description: Builds the base, chops wood and mines gold.
   BodyPrefab: {fileID: 7849110260153872687, guid: a2774043cd71325328b82cb6ff251a40, type: 3}
   HasTeam: 1

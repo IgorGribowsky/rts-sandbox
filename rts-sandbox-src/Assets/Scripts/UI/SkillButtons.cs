@@ -56,6 +56,7 @@ namespace Assets.Scripts.UI
 
             _events.SelectionChanged += OnSelectionChanged;
             _commands.ModesChanged += RefreshHighlights;
+            _commands.HotkeyPressed += OnHotkey;
 
             // Cooldowns run on time, not on events, so the buttons look again ten
             // times a second — only while there is a unit with skills to look at.
@@ -67,6 +68,7 @@ namespace Assets.Scripts.UI
         {
             _events.SelectionChanged -= OnSelectionChanged;
             _commands.ModesChanged -= RefreshHighlights;
+            _commands.HotkeyPressed -= OnHotkey;
             _ticker.Pause();
             Unbind();
         }
@@ -172,7 +174,7 @@ namespace Assets.Scripts.UI
             key.AddToClassList("skill-key");
             key.AddToClassList("hud-text");
             key.style.display = skill.Keycode == KeyCode.None ? DisplayStyle.None : DisplayStyle.Flex;
-            button.Add(key);
+            button.Body.Add(key);
 
             CommandRing.Place(button, AngleOf(index, count), CommandRing.SkillRadius, CommandRing.SkillButtonSize);
             _ring.Container.Add(button);
@@ -184,6 +186,14 @@ namespace Assets.Scripts.UI
             button.SecondaryReleased += _ => _tooltip.Hide();
 
             return entry;
+        }
+
+        private void OnHotkey(HotkeyAction action, int index)
+        {
+            if (action == HotkeyAction.Skill && index >= 0 && index < _entries.Count)
+            {
+                _entries[index].Button.Pulse();
+            }
         }
 
         private void OnClicked(int index)

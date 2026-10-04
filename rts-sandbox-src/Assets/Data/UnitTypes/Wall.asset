@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Wall
   m_EditorClassIdentifier: 
   DisplayName: Wall
-  Preview: {fileID: 2800000, guid: 7daec6531228dc24db8fbd4a7caa03fb, type: 3}
   Description: A cheap piece of stone wall that blocks the way.
   BodyPrefab: {fileID: 9084684201828076527, guid: 35b9a4345a6d70361d887ca5645be99c, type: 3}
   HasTeam: 1

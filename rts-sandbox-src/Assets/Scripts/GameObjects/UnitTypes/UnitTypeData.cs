@@ -21,9 +21,6 @@ public class UnitTypeData : ScriptableObject
     [Tooltip("Shown in the editor and in reports. Not used to find the type.")]
     public string DisplayName;
 
-    [Tooltip("The picture on build and hire cards in the HUD (M-024).")]
-    public Texture2D Preview;
-
     [Tooltip("What it is for, a sentence or two, for the card tooltip (M-024).")]
     [TextArea(2, 5)]
     public string Description;

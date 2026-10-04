@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Farm
   m_EditorClassIdentifier: 
   DisplayName: Farm
-  Preview: {fileID: 2800000, guid: 6ae23c77669944342acea2c0ed2a0cd5, type: 3}
   Description: 'Feeds the army: every farm raises the food limit.'
   BodyPrefab: {fileID: 2251361840339160895, guid: 86d2ea216c29874decac44c5b8255680, type: 3}
   HasTeam: 1

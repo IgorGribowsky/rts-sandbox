@@ -129,6 +129,7 @@ namespace Assets.Scripts.UI
 
             _events.SelectionChanged += OnSelectionChanged;
             _commands.ModesChanged += RefreshHighlights;
+            _commands.HotkeyPressed += OnHotkey;
 
             Bind(null, 0);
         }
@@ -137,6 +138,7 @@ namespace Assets.Scripts.UI
         {
             _events.SelectionChanged -= OnSelectionChanged;
             _commands.ModesChanged -= RefreshHighlights;
+            _commands.HotkeyPressed -= OnHotkey;
             _gatherCheck.Pause();
             Unbind();
         }
@@ -385,6 +387,28 @@ namespace Assets.Scripts.UI
         }
 
         // --- clicks ----------------------------------------------------------------
+
+        /// <summary>A hot key of a ring button: the button shows the press too.</summary>
+        private void OnHotkey(HotkeyAction action, int index)
+        {
+            if (_unit == null || _container.resolvedStyle.display == DisplayStyle.None)
+            {
+                return;
+            }
+
+            switch (action)
+            {
+                case HotkeyAction.AClick:
+                    _attack.Pulse();
+                    break;
+                case HotkeyAction.Hold:
+                    if (_hold.resolvedStyle.display != DisplayStyle.None) _hold.Pulse();
+                    break;
+                case HotkeyAction.Gather:
+                    if (_gather.resolvedStyle.display != DisplayStyle.None) _gather.Pulse();
+                    break;
+            }
+        }
 
         private void OnAttackClicked()
         {

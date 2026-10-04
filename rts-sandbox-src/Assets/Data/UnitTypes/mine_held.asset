@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: mine_held
   m_EditorClassIdentifier: 
   DisplayName: Gold Mine
-  Preview: {fileID: 2800000, guid: 936a70e40a8f1854e8448c86c51ac3a4, type: 3}
   Description: Takes over a gold deposit. Builders sent inside bring in gold, the
     more of them the faster.
   BodyPrefab: {fileID: 8439110323046605351, guid: 509f1d52450f36b1676540a1cccb6ccf, type: 3}

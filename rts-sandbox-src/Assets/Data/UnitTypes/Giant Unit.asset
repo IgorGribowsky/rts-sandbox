@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Giant Unit
   m_EditorClassIdentifier: 
   DisplayName: Giant Unit
-  Preview: {fileID: 2800000, guid: b396892ad29615247a766c2a0689dd13, type: 3}
   Description: Huge and slow. Takes a lot of punishment and hits very hard.
   BodyPrefab: {fileID: 7849110260153872687, guid: f854bba153086f1c5f4db2ce43709901, type: 3}
   HasTeam: 1

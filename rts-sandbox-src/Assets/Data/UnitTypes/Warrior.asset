@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Warrior
   m_EditorClassIdentifier: 
   DisplayName: Warrior
-  Preview: {fileID: 2800000, guid: d7d8e47f7f8c48545891aa7c41085040, type: 3}
   Description: A sturdy close-combat fighter. His blade poisons the enemy.
   BodyPrefab: {fileID: 7849110260153872687, guid: 222cad1eaabb1d386abe113037ffd33c, type: 3}
   HasTeam: 1

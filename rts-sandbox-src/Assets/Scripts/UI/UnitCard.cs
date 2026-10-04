@@ -14,6 +14,9 @@ namespace Assets.Scripts.UI
     ///
     /// Reports clicks and the right button; what a click does is the owner's
     /// business, and it calls the same entry point the key calls.
+    ///
+    /// Like the ring buttons, the card itself only takes the click and stays
+    /// put; hovering and pressing move the inner body, never the hit area.
     /// </summary>
     public class UnitCard : VisualElement
     {
@@ -24,6 +27,8 @@ namespace Assets.Scripts.UI
 
         public UnitTypeData Type { get; }
 
+        private readonly VisualElement _body;
+
         public event Action Clicked;
         public event Action<UnitCard> SecondaryPressed;
         public event Action<UnitCard> SecondaryReleased;
@@ -33,18 +38,24 @@ namespace Assets.Scripts.UI
             Type = type;
             AddToClassList("card");
 
+            _body = new VisualElement { pickingMode = PickingMode.Ignore };
+            _body.AddToClassList("card__body");
+            Add(_body);
+
+            // The unit's own 3D body, photographed once (M-024).
             var preview = new VisualElement { pickingMode = PickingMode.Ignore };
             preview.AddToClassList("card__preview");
-            if (type.Preview != null)
+            var picture = UnitPreviewRenderer.Get(type);
+            if (picture != null)
             {
-                preview.style.backgroundImage = new StyleBackground(type.Preview);
+                preview.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(picture));
             }
-            Add(preview);
+            _body.Add(preview);
 
             var name = new Label(type.DisplayName) { pickingMode = PickingMode.Ignore };
             name.AddToClassList("card__name");
             name.AddToClassList("hud-text");
-            Add(name);
+            _body.Add(name);
 
             var costRow = new VisualElement { pickingMode = PickingMode.Ignore };
             costRow.AddToClassList("card__costs");
@@ -71,14 +82,14 @@ namespace Assets.Scripts.UI
                 costRow.Add(item);
                 _costs.Add((cost.ResourceName, cost.Amount, amount));
             }
-            Add(costRow);
+            _body.Add(costRow);
 
             if (!string.IsNullOrEmpty(keyLabel))
             {
                 var key = new Label(keyLabel) { pickingMode = PickingMode.Ignore };
                 key.AddToClassList("card__key");
                 key.AddToClassList("hud-text");
-                Add(key);
+                _body.Add(key);
             }
 
             this.AddManipulator(new Clickable(OnClick));
@@ -117,10 +128,16 @@ namespace Assets.Scripts.UI
             EnableInClassList("is-unaffordable", !allAffordable);
         }
 
-        private void OnClick()
+        /// <summary>The press animation without a press — for the hot key of this card.</summary>
+        public void Pulse()
         {
             AddToClassList("is-pulsed");
             schedule.Execute(() => RemoveFromClassList("is-pulsed")).StartingIn(PulseMilliseconds);
+        }
+
+        private void OnClick()
+        {
+            Pulse();
             Clicked?.Invoke();
         }
 

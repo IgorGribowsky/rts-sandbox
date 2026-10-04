@@ -201,7 +201,7 @@ public class SkillController : MonoBehaviour
     // --- who casts --------------------------------------------------------------
 
     /// <summary>Place of the skill on this key in the main unit's list, -1 when none.</summary>
-    private int IndexOfKey(KeyCode keyCode)
+    public int IndexOfKey(KeyCode keyCode)
     {
         var skills = MainCasterSkills();
         var skill = skills?.GetSkillByKeycode(keyCode);

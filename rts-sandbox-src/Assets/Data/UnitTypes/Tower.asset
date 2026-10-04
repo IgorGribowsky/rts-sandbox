@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Tower
   m_EditorClassIdentifier: 
   DisplayName: Tower
-  Preview: {fileID: 2800000, guid: 16e7946dcb6635b419fbf9e042cfa9f2, type: 3}
   Description: A guard tower. Shoots at every enemy that comes close.
   BodyPrefab: {fileID: 2803515875022785667, guid: 29840fc4ed6de8da391300e626251dba, type: 3}
   HasTeam: 1

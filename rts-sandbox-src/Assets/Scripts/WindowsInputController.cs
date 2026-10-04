@@ -334,6 +334,12 @@ public class WindowsInputController : MonoBehaviour
         if (currentKeyPressed == KeyCode.None && heldSkillKey == KeyCode.None
             && GetAllowedKeyDown(out var keyCode))
         {
+            var skillIndex = _skillController.IndexOfKey(keyCode);
+            if (skillIndex >= 0)
+            {
+                _commands.NotifyHotkey(HotkeyAction.Skill, skillIndex);
+            }
+
             var isSkillExists = _skillController.PrepareSkillCast(keyCode);
             if (isSkillExists)
             {
@@ -354,6 +360,7 @@ public class WindowsInputController : MonoBehaviour
 
         if (KeypadCodeDown(out KeyCode keypadCode, out int num))
         {
+            _commands.NotifyHotkey(HotkeyAction.Produce, num);
             _commands.Produce(num);
         }
 
@@ -366,21 +373,25 @@ public class WindowsInputController : MonoBehaviour
         {
             // Only reached with the menu closed: inside the menu `B` is the
             // letter of a building (Barracks), as it always was.
+            _commands.NotifyHotkey(HotkeyAction.BuildMenu);
             _commands.ToggleBuildMenu();
         }
 
         if (Input.GetKeyDown(AClickKey))
         {
+            _commands.NotifyHotkey(HotkeyAction.AClick);
             _commands.EnterAClick();
         }
 
         if (Input.GetKeyDown(HoldKey))
         {
+            _commands.NotifyHotkey(HotkeyAction.Hold);
             _commands.Hold(isShiftButtonPressed);
         }
 
         if (Input.GetKeyDown(GatherKey) || Input.GetKeyDown(GatherKeyAlt))
         {
+            _commands.NotifyHotkey(HotkeyAction.Gather);
             _commands.Gather(isShiftButtonPressed);
         }
     }
