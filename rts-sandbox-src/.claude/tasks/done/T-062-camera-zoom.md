@@ -1,7 +1,7 @@
 ---
 id: T-062
 title: Зум камеры чувствительный и плавный
-status: review
+status: done
 milestone: v0.3.1
 parent: 
 origin: user

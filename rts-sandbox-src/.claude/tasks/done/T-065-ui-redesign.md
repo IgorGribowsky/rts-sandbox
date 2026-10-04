@@ -1,7 +1,7 @@
 ---
 id: T-065
 title: Новый вид интерфейса
-status: review
+status: done
 milestone: v0.3.1
 parent: 
 origin: user

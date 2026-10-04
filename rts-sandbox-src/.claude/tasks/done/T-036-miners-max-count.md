@@ -1,7 +1,7 @@
 ---
 id: T-036
 title: Увеличение MinersMaxCount в рантайме роняет добычу
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: user

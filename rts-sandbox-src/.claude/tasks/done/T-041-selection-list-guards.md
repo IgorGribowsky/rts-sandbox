@@ -1,7 +1,7 @@
 ---
 id: T-041
 title: Выделение разыменовывается без проверки на уничтоженность
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: ai

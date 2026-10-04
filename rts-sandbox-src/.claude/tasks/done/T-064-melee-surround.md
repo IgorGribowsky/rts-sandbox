@@ -1,7 +1,7 @@
 ---
 id: T-064
 title: Ближники окружают цель, дальники не толкаются
-status: review
+status: done
 milestone: v0.3.1
 parent: 
 origin: user

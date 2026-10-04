@@ -1,7 +1,7 @@
 ---
 id: T-035
 title: Очередь не едет после отказа в MiningBehaviour
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: user

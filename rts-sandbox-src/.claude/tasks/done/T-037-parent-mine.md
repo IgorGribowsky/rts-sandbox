@@ -1,7 +1,7 @@
 ---
 id: T-037
 title: Проверить, нужен ли ParentMine в HeldMine
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: ai

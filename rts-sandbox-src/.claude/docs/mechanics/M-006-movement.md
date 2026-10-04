@@ -1,7 +1,7 @@
 ---
 id: M-006
 title: Движение по NavMesh
-status: accepted
+status: implemented
 source:
 tasks: [T-035, T-063, T-064]
 ---

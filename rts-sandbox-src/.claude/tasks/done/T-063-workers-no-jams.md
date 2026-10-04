@@ -1,7 +1,7 @@
 ---
 id: T-063
 title: Рабочие не застревают друг в друге на сборе
-status: review
+status: done
 milestone: v0.3.1
 parent: 
 origin: user

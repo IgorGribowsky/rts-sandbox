@@ -1,7 +1,7 @@
 ---
 id: T-038
 title: NullReferenceException в UnitProducing.OnDestroy у недостроенного здания
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: user

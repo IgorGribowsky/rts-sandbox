@@ -1,7 +1,7 @@
 ---
 id: M-002
 title: Камера
-status: accepted
+status: implemented
 source:
 tasks: [T-051, T-062]
 ---

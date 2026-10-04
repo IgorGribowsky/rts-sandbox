@@ -1,7 +1,7 @@
 ---
 id: T-066
 title: Кольцо без атаки, урон у меча, чужие кнопки не нажимаются
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: user

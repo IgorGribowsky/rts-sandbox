@@ -1,7 +1,7 @@
 ---
 id: T-034
 title: Умное построение: сильные и ближние впереди
-status: review
+status: done
 milestone: v0.3.1
 parent:
 origin: user
