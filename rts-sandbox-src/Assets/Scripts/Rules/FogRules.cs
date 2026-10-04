@@ -18,6 +18,42 @@ namespace RtsSandbox.Rules
         Visible = 2,
     }
 
+    /// <summary>What the player is shown of one unit under the fog (M-027, T-071.3).</summary>
+    public enum FogSight : byte
+    {
+        /// <summary>Drawn, on the minimap, can be clicked, selected, attacked.</summary>
+        Visible = 0,
+
+        /// <summary>
+        /// A building seen before and not seen now: drawn as it was, on the
+        /// minimap, but cannot be clicked or selected.
+        /// </summary>
+        Remembered = 1,
+
+        /// <summary>Not drawn, not on the minimap, cannot be clicked. Still plays on as usual.</summary>
+        Hidden = 2,
+    }
+
+    /// <summary>Who the player sees under the fog of war (M-027, T-071.3).</summary>
+    public static class FogRules
+    {
+        /// <summary>
+        /// The player's own and allied units are always shown. Anybody else is
+        /// shown while in sight; out of sight a building — anything that cannot
+        /// walk, a mine too — that was seen before stays as remembered,
+        /// everything else is hidden.
+        /// </summary>
+        public static FogSight SightOf(bool isFriendly, bool isStatic, bool isInSight, bool wasSeenBefore)
+        {
+            if (isFriendly || isInSight)
+            {
+                return FogSight.Visible;
+            }
+
+            return isStatic && wasSeenBefore ? FogSight.Remembered : FogSight.Hidden;
+        }
+    }
+
     /// <summary>
     /// The fog of war as a grid of cells (M-027, T-071.1). Positions and radii
     /// are in cells: the caller turns metres into cells.

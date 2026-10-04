@@ -7,9 +7,9 @@
 //   drifting over it, thicker at the edge of sight; black is
 //   _UnexploredColor. The edge wavers a little, like a cloud.
 //
-// 1 Compose, into the smooth texture (FogOfWar): previous and newest pass
-//   mixed by _FogBlend, blurred across.
-// 2 Blur, the same blur along.
+// 1 Compose, into the smooth texture (FogOfWar): the grid stretched with a
+//   cubic B-spline, previous and newest pass mixed by _FogBlend.
+// 2 Blur, run twice: across, then along.
 //
 // Clouds and wobble read a small tiling noise texture instead of working
 // noise out per pixel: cheap on a phone.
@@ -92,7 +92,7 @@ Shader "Hidden/RTS/FogOfWar"
                 float drift = _Clouds.z * _Clouds.y;
                 float cloudA = tex2D(_NoiseTex, cloudAt + float2(drift, drift * 0.4)).r;
                 float cloudB = tex2D(_NoiseTex, cloudAt * 2.1 + float2(-drift * 0.9, drift * 1.2)).r;
-                float cloud = smoothstep(0.3, 0.85, cloudA * 0.65 + cloudB * 0.35);
+                float cloud = smoothstep(0.35, 0.75, cloudA * 0.65 + cloudB * 0.35);
 
                 // Mist lies over the grey, and thickest where sight fades out.
                 float edge = grey * (1.0 - grey) * 4.0;
@@ -115,7 +115,9 @@ Shader "Hidden/RTS/FogOfWar"
             ENDCG
         }
 
-        // 1 Compose: previous and newest pass mixed, blurred across.
+        // 1 Compose: the grid stretched to the smooth texture with a cubic
+        //   B-spline — bilinear left a crease along every cell, and the
+        //   cells showed as squares — previous and newest pass mixed.
         Pass
         {
             CGPROGRAM
@@ -124,27 +126,53 @@ Shader "Hidden/RTS/FogOfWar"
 
             sampler2D _FogTex;
             sampler2D _FogPrevTex;
+            float4 _FogTex_TexelSize;
             float _FogBlend;
-            float4 _BlurStep;
 
-            float Darkness(float2 uv)
+            float4 CubicWeights(float v)
             {
-                return lerp(tex2D(_FogPrevTex, uv).a, tex2D(_FogTex, uv).a, _FogBlend);
+                float4 n = float4(1.0, 2.0, 3.0, 4.0) - v;
+                float4 s = n * n * n;
+                float x = s.x;
+                float y = s.y - 4.0 * s.x;
+                float z = s.z - 4.0 * s.y + 6.0 * s.x;
+                float w = 6.0 - x - y - z;
+                return float4(x, y, z, w) / 6.0;
             }
 
-            fixed4 frag(v2f_img i) : SV_Target
+            // Sixteen texels read as four bilinear taps.
+            float Bicubic(sampler2D tex, float2 uv)
             {
-                float2 step1 = _BlurStep.xy * BlurOffset1;
-                float2 step2 = _BlurStep.xy * BlurOffset2;
-                float d = Darkness(i.uv) * BlurWeight0
-                    + (Darkness(i.uv + step1) + Darkness(i.uv - step1)) * BlurWeight1
-                    + (Darkness(i.uv + step2) + Darkness(i.uv - step2)) * BlurWeight2;
-                return fixed4(1, 1, 1, d);
+                float2 texel = uv * _FogTex_TexelSize.zw - 0.5;
+                float2 f = frac(texel);
+                texel -= f;
+
+                float4 xc = CubicWeights(f.x);
+                float4 yc = CubicWeights(f.y);
+
+                float4 c = texel.xxyy + float2(-0.5, 1.5).xyxy;
+                float4 s = float4(xc.xz + xc.yw, yc.xz + yc.yw);
+                float4 offset = (c + float4(xc.yw, yc.yw) / s) * _FogTex_TexelSize.xxyy;
+
+                float s0 = tex2D(tex, offset.xz).a;
+                float s1 = tex2D(tex, offset.yz).a;
+                float s2 = tex2D(tex, offset.xw).a;
+                float s3 = tex2D(tex, offset.yw).a;
+
+                float sx = s.x / (s.x + s.y);
+                float sy = s.z / (s.z + s.w);
+                return lerp(lerp(s3, s2, sx), lerp(s1, s0, sx), sy);
+            }
+
+            float4 frag(v2f_img i) : SV_Target
+            {
+                float d = lerp(Bicubic(_FogPrevTex, i.uv), Bicubic(_FogTex, i.uv), _FogBlend);
+                return float4(1, 1, 1, d);
             }
             ENDCG
         }
 
-        // 2 Blur along.
+        // 2 Blur, across or along by _BlurStep.
         Pass
         {
             CGPROGRAM
@@ -153,14 +181,14 @@ Shader "Hidden/RTS/FogOfWar"
 
             float4 _BlurStep;
 
-            fixed4 frag(v2f_img i) : SV_Target
+            float4 frag(v2f_img i) : SV_Target
             {
                 float2 step1 = _BlurStep.xy * BlurOffset1;
                 float2 step2 = _BlurStep.xy * BlurOffset2;
                 float d = tex2D(_MainTex, i.uv).a * BlurWeight0
                     + (tex2D(_MainTex, i.uv + step1).a + tex2D(_MainTex, i.uv - step1).a) * BlurWeight1
                     + (tex2D(_MainTex, i.uv + step2).a + tex2D(_MainTex, i.uv - step2).a) * BlurWeight2;
-                return fixed4(1, 1, 1, d);
+                return float4(1, 1, 1, d);
             }
             ENDCG
         }

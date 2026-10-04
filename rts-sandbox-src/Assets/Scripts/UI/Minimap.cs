@@ -27,7 +27,9 @@ namespace Assets.Scripts.UI
     /// flat panel with corner brackets. Colours come from the theme.
     ///
     /// The fog of war (T-071.1) lies between the ground and the dots: the same
-    /// texture the camera darkens the world by, tinted from the theme.
+    /// texture the camera darkens the world by, tinted from the theme. Units the
+    /// fog hides get no dot; remembered buildings and the ghosts of destroyed
+    /// ones keep theirs (T-071.3).
     /// </summary>
     public sealed class Minimap : IDisposable
     {
@@ -520,7 +522,8 @@ namespace Assets.Scripts.UI
                 {
                     foreach (var record in UnitRegistry.All)
                     {
-                        if (record.GameObject == null || record.Values == null)
+                        if (record.GameObject == null || record.Values == null
+                            || record.Sight == RtsSandbox.Rules.FogSight.Hidden)
                         {
                             continue;
                         }
@@ -537,10 +540,7 @@ namespace Assets.Scripts.UI
 
                         if (isBuilding)
                         {
-                            var half = Mathf.Clamp(record.Size * 1.3f, 3f, 7f);
-                            var rect = new Rect(at.x - half, at.y - half, half * 2f, half * 2f);
-                            FillRect(painter, rect, selected ? _selectedEdge : outline, 1.5f);
-                            FillRect(painter, rect, color, 0f);
+                            DrawBuilding(painter, at, record.Size, color, selected ? _selectedEdge : outline);
                         }
                         else
                         {
@@ -550,7 +550,24 @@ namespace Assets.Scripts.UI
                     }
                 }
 
+                var fog = GameServices.FogOfWar;
+                if (fog != null)
+                {
+                    foreach (var ghost in fog.Ghosts)
+                    {
+                        DrawBuilding(painter, ToLocal(ghost.Position), ghost.Size, ColorOf(ghost.TeamId), outline);
+                    }
+                }
+
                 DrawCameraFrame(painter);
+            }
+
+            private static void DrawBuilding(Painter2D painter, Vector2 at, float size, Color color, Color edge)
+            {
+                var half = Mathf.Clamp(size * 1.3f, 3f, 7f);
+                var rect = new Rect(at.x - half, at.y - half, half * 2f, half * 2f);
+                FillRect(painter, rect, edge, 1.5f);
+                FillRect(painter, rect, color, 0f);
             }
 
             private void DrawCameraFrame(Painter2D painter)

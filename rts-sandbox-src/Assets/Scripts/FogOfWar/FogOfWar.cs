@@ -24,6 +24,9 @@ using UnityEngine;
 ///
 /// Switched on and off by GameController.FogOfWarEnabled, also in play mode.
 /// Off, nothing is counted and nothing is drawn; what was explored is kept.
+///
+/// What the player is shown of the other teams' units is decided after every
+/// pass by <see cref="FogUnitSight"/> (T-071.3).
 /// </summary>
 public class FogOfWar : MonoBehaviour
 {
@@ -63,7 +66,7 @@ public class FogOfWar : MonoBehaviour
 
     [Tooltip("Blur of the fog, metres. Rounds off the cells.")]
     [Range(0f, 6f)]
-    public float EdgeSoftness = 1.5f;
+    public float EdgeSoftness = 2.5f;
 
     [Tooltip("How far the edge wavers like a cloud, metres. Zero is a clean circle.")]
     [Range(0f, 4f)]
@@ -120,6 +123,8 @@ public class FogOfWar : MonoBehaviour
     private bool _wasOn;
     private readonly HashSet<int> _sharedTeams = new HashSet<int>();
     private FogOfWarEffect _effect;
+    private FogUnitSight _unitSight;
+    private PlayerEventController _playerEvents;
     private readonly System.Diagnostics.Stopwatch _stopwatch = new System.Diagnostics.Stopwatch();
 
     /// <summary>The fog is on: counted and drawn.</summary>
@@ -136,6 +141,55 @@ public class FogOfWar : MonoBehaviour
 
     /// <summary>The ground the fog covers, x and z in metres: the map plus the margin.</summary>
     public Rect Area => _area;
+
+    /// <summary>Destroyed buildings the player still remembers, for the minimap.</summary>
+    public IReadOnlyList<FogUnitSight.Ghost> Ghosts => _unitSight != null
+        ? _unitSight.Ghosts
+        : (IReadOnlyList<FogUnitSight.Ghost>)System.Array.Empty<FogUnitSight.Ghost>();
+
+    /// <summary>Somebody went into the fog or came out of it.</summary>
+    public event System.Action SightsChanged;
+
+    /// <summary>
+    /// The player may see, click and select this unit. True for anything that
+    /// is not a registered unit, and for everything while there is no fog.
+    /// </summary>
+    public static bool IsSeen(GameObject unit)
+    {
+        var record = UnitRegistry.Of(unit);
+        return record == null || record.Sight == FogSight.Visible;
+    }
+
+    /// <summary>
+    /// The player knows this unit is there: seen now, or a building
+    /// remembered. A right click may aim at it, a selection may not.
+    /// </summary>
+    public static bool IsKnown(GameObject unit)
+    {
+        var record = UnitRegistry.Of(unit);
+        return record == null || record.Sight != FogSight.Hidden;
+    }
+
+    /// <summary>
+    /// May a unit of this team pick the candidate as a target on its own. The
+    /// fog is the player's: it binds the player's team only, the computer's
+    /// teams see everything as before.
+    /// </summary>
+    public static bool CanTarget(int attackerTeamId, UnitRecord candidate)
+    {
+        var fog = GameServices.FogOfWar;
+        return fog == null || fog._unitSight == null || attackerTeamId != fog._unitSight.PlayerTeamId
+            || candidate.Sight == FogSight.Visible;
+    }
+
+    /// <summary>Is the point in a cell somebody on the player's side sees right now.</summary>
+    public bool IsVisibleAt(Vector3 position)
+    {
+        var x = Mathf.FloorToInt((position.x - _area.xMin) / CellSize);
+        var y = Mathf.FloorToInt((position.z - _area.yMin) / CellSize);
+        return x >= 0 && y >= 0 && x < _grid.Width && y < _grid.Height
+            && _grid[x, y] == FogState.Visible;
+    }
 
     private void Awake()
     {
@@ -194,6 +248,11 @@ public class FogOfWar : MonoBehaviour
             }
         }
 
+        _unitSight = new FogUnitSight(this, _sharedTeams) { PlayerTeamId = playerTeamId };
+        UnitRegistry.Registered += OnUnitRegistered;
+        _playerEvents = player.GetComponent<PlayerEventController>();
+        _playerEvents.SelectedUnitDied += OnUnitDied;
+
         var cameraController = player.GetComponent<CameraController>();
         var camera = cameraController != null && cameraController.ControlledCamera != null
             ? cameraController.ControlledCamera
@@ -221,6 +280,11 @@ public class FogOfWar : MonoBehaviour
 
         if (!on)
         {
+            if (_wasOn && _unitSight != null && _unitSight.Update(false))
+            {
+                SightsChanged?.Invoke();
+            }
+
             _wasOn = false;
             return;
         }
@@ -231,6 +295,11 @@ public class FogOfWar : MonoBehaviour
             _timer = UpdateInterval;
             Pass(snap: !_wasOn);
             _wasOn = true;
+
+            if (_unitSight != null && _unitSight.Update(true))
+            {
+                SightsChanged?.Invoke();
+            }
         }
 
         Compose(Mathf.Clamp01((Time.time - _passTime) / UpdateInterval));
@@ -243,6 +312,14 @@ public class FogOfWar : MonoBehaviour
             GameServices.FogOfWar = null;
         }
 
+        UnitRegistry.Registered -= OnUnitRegistered;
+        if (_playerEvents != null)
+        {
+            _playerEvents.SelectedUnitDied -= OnUnitDied;
+        }
+
+        _unitSight?.Clear();
+
         if (_effect != null)
         {
             Destroy(_effect);
@@ -254,6 +331,21 @@ public class FogOfWar : MonoBehaviour
         Destroy(_composeMaterial);
         ReleaseRenderTexture(_smooth);
         ReleaseRenderTexture(_blurTemp);
+    }
+
+    private void OnUnitRegistered(UnitRecord record)
+    {
+        // Before the first pass the grid is all black: wait for the pass.
+        if (_wasOn)
+        {
+            _unitSight.OnRegistered(record, IsOn);
+        }
+    }
+
+    /// <summary>Every death goes out under this name, not only the selected ones'.</summary>
+    private void OnUnitDied(Assets.Scripts.Infrastructure.Events.DiedEventArgs args)
+    {
+        _unitSight.OnDied(args.Dead, IsOn && _wasOn);
     }
 
     /// <summary>
@@ -317,8 +409,9 @@ public class FogOfWar : MonoBehaviour
     }
 
     /// <summary>
-    /// The smooth texture for this frame: previous and newest pass mixed by
-    /// blend and blurred, in two strokes, across and then along.
+    /// The smooth texture for this frame: the grid stretched with a cubic
+    /// B-spline and the previous and newest pass mixed by blend, then blurred
+    /// in two strokes, across and then along.
     /// </summary>
     private void Compose(float blend)
     {
@@ -327,15 +420,17 @@ public class FogOfWar : MonoBehaviour
             return;
         }
 
+        _composeMaterial.SetTexture(FogTexId, _current);
+        _composeMaterial.SetTexture(FogPrevTexId, _previous);
+        _composeMaterial.SetFloat(FogBlendId, blend);
+        Graphics.Blit(_current, _smooth, _composeMaterial, ComposePass);
+
         // A Gaussian of nine taps read as five: the outer tap lies 3.23 steps out.
         var stepX = EdgeSoftness / 3.23f / _area.width;
         var stepY = EdgeSoftness / 3.23f / _area.height;
 
-        _composeMaterial.SetTexture(FogTexId, _current);
-        _composeMaterial.SetTexture(FogPrevTexId, _previous);
-        _composeMaterial.SetFloat(FogBlendId, blend);
         _composeMaterial.SetVector(BlurStepId, new Vector4(stepX, 0f, 0f, 0f));
-        Graphics.Blit(_current, _blurTemp, _composeMaterial, ComposePass);
+        Graphics.Blit(_smooth, _blurTemp, _composeMaterial, BlurPass);
 
         _composeMaterial.SetVector(BlurStepId, new Vector4(0f, stepY, 0f, 0f));
         Graphics.Blit(_blurTemp, _smooth, _composeMaterial, BlurPass);
@@ -387,9 +482,10 @@ public class FogOfWar : MonoBehaviour
     }
 
     /// <summary>
-    /// Tiling value noise. Red is the clouds, four octaves. Green and blue are
-    /// two unrelated layers that push the edge sideways: only the two broad
-    /// octaves, fine ones crumbled the edge into something like pixels.
+    /// Tiling gradient (Perlin) noise. Value noise was tried first: its blobs
+    /// line up along the lattice and read as squares. Red is the clouds, four
+    /// octaves. Green and blue are two unrelated layers that push the edge
+    /// sideways: only the two broad octaves, fine ones crumble the edge.
     /// </summary>
     private static Texture2D CreateNoise()
     {
@@ -399,9 +495,9 @@ public class FogOfWar : MonoBehaviour
             for (var x = 0; x < NoiseSize; x++)
             {
                 pixels[y * NoiseSize + x] = new Color32(
-                    (byte)(CloudOctaves(x, y, 0) * 255f),
-                    (byte)(BroadOctaves(x, y, 101) * 255f),
-                    (byte)(BroadOctaves(x, y, 211) * 255f),
+                    ToByte(CloudOctaves(x, y, 0)),
+                    ToByte(BroadOctaves(x, y, 101)),
+                    ToByte(BroadOctaves(x, y, 211)),
                     255);
             }
         }
@@ -418,40 +514,50 @@ public class FogOfWar : MonoBehaviour
         return texture;
     }
 
+    // Perlin noise lies in about -0.7..0.7; brought into 0..1 around the middle.
+    private static byte ToByte(float noise) => (byte)(Mathf.Clamp01(noise * 0.75f + 0.5f) * 255f);
+
     // Lattice cells across the texture are whole numbers: every octave tiles on its own.
     private static float CloudOctaves(int x, int y, int seed)
     {
-        return ValueNoise(x, y, 4, seed) * 0.45f
-            + ValueNoise(x, y, 8, seed + 7) * 0.3f
-            + ValueNoise(x, y, 16, seed + 13) * 0.17f
-            + ValueNoise(x, y, 32, seed + 19) * 0.08f;
+        return GradientNoise(x, y, 4, seed) * 0.5f
+            + GradientNoise(x, y, 8, seed + 7) * 0.28f
+            + GradientNoise(x, y, 16, seed + 13) * 0.15f
+            + GradientNoise(x, y, 32, seed + 19) * 0.07f;
     }
 
     private static float BroadOctaves(int x, int y, int seed)
     {
-        return ValueNoise(x, y, 4, seed) * 0.7f
-            + ValueNoise(x, y, 8, seed + 7) * 0.3f;
+        return GradientNoise(x, y, 4, seed) * 0.7f
+            + GradientNoise(x, y, 8, seed + 7) * 0.3f;
     }
 
-    private static float ValueNoise(int x, int y, int cells, int seed)
+    private static float GradientNoise(int x, int y, int cells, int seed)
     {
         var step = (float)NoiseSize / cells;
         var fx = x / step;
         var fy = y / step;
         var x0 = Mathf.FloorToInt(fx);
         var y0 = Mathf.FloorToInt(fy);
-        var tx = Smooth(fx - x0);
-        var ty = Smooth(fy - y0);
+        var tx = fx - x0;
+        var ty = fy - y0;
 
-        float Lattice(int lx, int ly) => Hash(((lx % cells) + cells) % cells, ((ly % cells) + cells) % cells, seed);
+        float Corner(int cx, int cy, float dx, float dy)
+        {
+            var angle = Hash(((cx % cells) + cells) % cells, ((cy % cells) + cells) % cells, seed) * Mathf.PI * 2f;
+            return Mathf.Cos(angle) * dx + Mathf.Sin(angle) * dy;
+        }
+
+        var u = Fade(tx);
+        var v = Fade(ty);
 
         return Mathf.Lerp(
-            Mathf.Lerp(Lattice(x0, y0), Lattice(x0 + 1, y0), tx),
-            Mathf.Lerp(Lattice(x0, y0 + 1), Lattice(x0 + 1, y0 + 1), tx),
-            ty);
+            Mathf.Lerp(Corner(x0, y0, tx, ty), Corner(x0 + 1, y0, tx - 1f, ty), u),
+            Mathf.Lerp(Corner(x0, y0 + 1, tx, ty - 1f), Corner(x0 + 1, y0 + 1, tx - 1f, ty - 1f), u),
+            v);
     }
 
-    private static float Smooth(float t) => t * t * (3f - 2f * t);
+    private static float Fade(float t) => t * t * t * (t * (t * 6f - 15f) + 10f);
 
     private static float Hash(int x, int y, int seed)
     {

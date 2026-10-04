@@ -24,6 +24,9 @@ namespace Assets.Scripts.GameObjects
         /// <summary>The skill being cast or walked up to, null for any other order.</summary>
         public UnitSkill CurrentSkill => (CurrentRunningCommand as SkillCastCommand)?.args.UnitSkill;
 
+        /// <summary>Whom the running attack order is after; null for any other order.</summary>
+        public GameObject CurrentAttackTarget => (CurrentRunningCommand as AttackCommand)?.args.Target;
+
         private UnitEventManager _unitEventManager;
 
         private ICommand CurrentRunningCommand;
@@ -264,6 +267,32 @@ namespace Assets.Scripts.GameObjects
             // stood there: take the next one, or go idle.
             SetCurrentCommand(null);
             RunNextCommand(new EventArgs());
+        }
+
+        /// <summary>
+        /// The target of the running attack order went into the fog of war: the
+        /// unit walks to where it was seen last instead, and then goes on with
+        /// its queue (M-027, Q-20). Switched the same way as a new order
+        /// switches an attack off — the walk simply takes the attack's place.
+        /// </summary>
+        public void ReplaceAttackWithMove(Vector3 lastSeen)
+        {
+            if (!(CurrentRunningCommand is AttackCommand))
+            {
+                return;
+            }
+
+            var move = new MoveCommand(_unitEventManager, new MoveCommandReceivedEventArgs(lastSeen));
+
+            TriggerEventCurrentCommandEnded();
+            SetCurrentCommand(move);
+            CurrentRunningCommandInfo = move.GetType().Name;
+
+            // Stunned: the walk waits for the stun to end, as any order does.
+            if (!_isStunned)
+            {
+                move.Start();
+            }
         }
 
         private void SetIdleState()

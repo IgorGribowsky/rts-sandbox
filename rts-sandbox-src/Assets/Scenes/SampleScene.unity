@@ -1448,14 +1448,18 @@ MonoBehaviour:
   CellSize: 1
   EdgeMargin: 10
   UpdateInterval: 0.15
+  EdgeFeather: 3
+  EdgeSoftness: 2.5
+  EdgeWobble: 1
   FogShader: {fileID: 4800000, guid: 7d6339ba798baa94ca9e426918633166, type: 3}
   UnexploredColor: {r: 0, g: 0, b: 0, a: 1}
   ExploredDarkening: 0.5
   ExploredDesaturation: 0.75
-  EdgeSoftness: 1.5
-  HazeStrength: 0.12
-  HazeScale: 14
-  HazeSpeed: 0.6
+  ExploredTint: {r: 0.82, g: 0.88, b: 1, a: 1}
+  CloudColor: {r: 0.62, g: 0.67, b: 0.75, a: 1}
+  CloudStrength: 0.35
+  CloudScale: 24
+  CloudSpeed: 0.8
   LastPassMilliseconds: 0
 --- !u!1001 &341086444
 PrefabInstance:

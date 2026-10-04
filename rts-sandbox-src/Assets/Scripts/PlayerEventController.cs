@@ -68,7 +68,8 @@ public class PlayerEventController : MonoBehaviour
     /// </summary>
     public void OnCriticalHit(GameObject attacker, float damage)
     {
-        if (attacker == null)
+        // A crit from inside the fog of war must not show where the attacker stands.
+        if (attacker == null || !FogOfWar.IsSeen(attacker))
         {
             return;
         }

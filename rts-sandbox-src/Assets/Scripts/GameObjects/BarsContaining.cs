@@ -61,6 +61,24 @@ public class BarsContaining : MonoBehaviour
 
     private bool _needsReorder;
 
+    /// <summary>
+    /// The fog of war hides this unit, or shows only a remembered building
+    /// (T-071.3). Not left to OnBecameInvisible: a hidden unit is still a
+    /// renderer in the camera as far as anything else is concerned.
+    /// </summary>
+    private bool _hiddenByFog;
+
+    public void SetHiddenByFog(bool hidden)
+    {
+        if (_hiddenByFog == hidden)
+        {
+            return;
+        }
+
+        _hiddenByFog = hidden;
+        ApplyContainerState();
+    }
+
     void Awake()
     {
         foreach (Transform child in gameObject.transform)
@@ -94,7 +112,7 @@ public class BarsContaining : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
-        if (!_isVisible || !_hasVisibleBar || _barsContainer == null)
+        if (!_isVisible || !_hasVisibleBar || _hiddenByFog || _barsContainer == null)
         {
             return;
         }
@@ -183,7 +201,7 @@ public class BarsContaining : MonoBehaviour
             return;
         }
 
-        var shouldBeOn = _isVisible && _hasVisibleBar;
+        var shouldBeOn = _isVisible && _hasVisibleBar && !_hiddenByFog;
         if (_barsContainer.gameObject.activeSelf != shouldBeOn)
         {
             _barsContainer.gameObject.SetActive(shouldBeOn);

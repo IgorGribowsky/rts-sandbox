@@ -164,9 +164,15 @@ public abstract class AutoAttackingBehaviourBase : UnitBehaviourBase
         }
     }
 
-    private static bool IsAttackable(UnitRecord candidate)
+    /// <summary>
+    /// Not invulnerable, and seen: a unit of the player does not pick a target
+    /// in the fog of war, and drops one that went there at its next search
+    /// (M-027, Q-20).
+    /// </summary>
+    private bool IsAttackable(UnitRecord candidate)
     {
-        return candidate.Values == null || !candidate.Values.IsInvulnerable;
+        return (candidate.Values == null || !candidate.Values.IsInvulnerable)
+            && FogOfWar.CanTarget(_teamMember.TeamId, candidate);
     }
 
     protected virtual void IfTargetFoundThen(GameObject target)

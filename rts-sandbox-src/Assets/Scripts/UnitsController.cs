@@ -55,6 +55,7 @@ public class UnitsController : MonoBehaviour
     private BuildingGridController _buildingGridController;
     private PlayerResources _playerResources;
     private PlayerEventController _playerEventController;
+    private FogOfWar _fogOfWar;
 
     private int playerTeamId;
     private GameObject _unitUnderCursor;
@@ -70,6 +71,7 @@ public class UnitsController : MonoBehaviour
         _buildingGridController = GetComponent<BuildingGridController>();
         _playerResources = GetComponent<PlayerResources>();
         _playerEventController = GetComponent<PlayerEventController>();
+        _fogOfWar = gameController.GetComponent<FogOfWar>();
     }
 
     private void OnEnable()
@@ -81,6 +83,11 @@ public class UnitsController : MonoBehaviour
 
         _playerEventController.SelectedUnitDied += SelectedUnitDiedHandler;
         _playerEventController.CursorMoved += CursorMovedHandler;
+
+        if (_fogOfWar != null)
+        {
+            _fogOfWar.SightsChanged += FogSightsChangedHandler;
+        }
     }
 
     private void OnDisable()
@@ -92,6 +99,11 @@ public class UnitsController : MonoBehaviour
 
         _playerEventController.SelectedUnitDied -= SelectedUnitDiedHandler;
         _playerEventController.CursorMoved -= CursorMovedHandler;
+
+        if (_fogOfWar != null)
+        {
+            _fogOfWar.SightsChanged -= FogSightsChangedHandler;
+        }
     }
 
     public void RightClickOnResource(GameObject resource, Vector3 point, bool addToCommandsQueue = false)
@@ -476,6 +488,33 @@ public class UnitsController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// A selected unit of another team went into the fog of war: it leaves the
+    /// selection, as in WC3 (M-027, Q-20). The player's own and allied units
+    /// are never hidden, so only someone else's selection can shrink here.
+    /// </summary>
+    private void FogSightsChangedHandler()
+    {
+        var removed = false;
+        for (var i = _selectedUnits.Count - 1; i >= 0; i--)
+        {
+            var unit = _selectedUnits[i];
+            if (unit == null || FogOfWar.IsSeen(unit))
+            {
+                continue;
+            }
+
+            unit.GetComponent<Selectable>()?.SetSelectionState(false);
+            _selectedUnits.RemoveAt(i);
+            removed = true;
+        }
+
+        if (removed)
+        {
+            RaiseSelectionChanged();
+        }
+    }
+
     private void RaiseSelectionChanged()
     {
         _playerEventController.OnSelectionChanged(SelectedUnits, MainSelectedUnit, SelectedUnitsTeamId);
@@ -498,6 +537,7 @@ public class UnitsController : MonoBehaviour
             .Where(o => bounds.Intersects(o.GetComponent<Collider>().bounds))
             .Where(o => o.GetComponent<Selectable>() != null)
             .Where(o => IsAlive(o))
+            .Where(o => FogOfWar.IsSeen(o))
             .OrderByDescending(u => u.GetComponent<UnitValues>().Rang)
             .ToList();
 

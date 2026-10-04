@@ -193,7 +193,7 @@ public class WindowsInputController : MonoBehaviour
             {
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
 
-                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                if (RaycastKnown(ray, clickLayerMask, out var hit))
                 {
                     _commands.ExitAClick();
 
@@ -256,7 +256,7 @@ public class WindowsInputController : MonoBehaviour
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+            if (RaycastSeen(ray, clickLayerMask, out var hit))
             {
                 selectionStarted = true;
                 _unitController.StartSelection(hit.point);
@@ -274,7 +274,7 @@ public class WindowsInputController : MonoBehaviour
             if (selectionStarted)
             {
                 var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+                if (RaycastSeen(ray, clickLayerMask, out var hit))
                 {
                     _unitController.EndSelection(hit.point, isShiftButtonPressed);
                     _selectionBoxController.EndDrawSelection();
@@ -301,7 +301,7 @@ public class WindowsInputController : MonoBehaviour
         if (rightDown)
         {
             var ray = _cameraController.ControlledCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, clickLayerMask))
+            if (RaycastKnown(ray, clickLayerMask, out var hit))
             {
                 var targetGameObject = hit.transform.gameObject;
                 if (targetGameObject.layer == (int)Layer.MovementSurface)
@@ -510,7 +510,7 @@ public class WindowsInputController : MonoBehaviour
             {
                 GameObject unitUnderCursor = null;
 
-                if (Physics.Raycast(ray, out var unitHit, 100f, LayerMask.GetMask(Layer.Unit.ToString())))
+                if (RaycastKnown(ray, LayerMask.GetMask(Layer.Unit.ToString()), out var unitHit))
                 {
                     unitUnderCursor = unitHit.transform.gameObject;
                 }
@@ -522,5 +522,54 @@ public class WindowsInputController : MonoBehaviour
                 lastSnappedPosition = snappedPos;
             }
         }
+    }
+
+    // --- fog of war (M-027, T-071.3) ---------------------------------------------
+
+    private readonly RaycastHit[] _hits = new RaycastHit[16];
+
+    /// <summary>
+    /// The nearest hit the player may select: units in the fog are clicked
+    /// through to whatever lies behind them, usually the ground.
+    /// </summary>
+    private bool RaycastSeen(Ray ray, int mask, out RaycastHit hit)
+    {
+        return RaycastFiltered(ray, mask, FogOfWar.IsSeen, out hit);
+    }
+
+    /// <summary>
+    /// The nearest hit the player may aim at: seen units and remembered
+    /// buildings; hidden units are clicked through.
+    /// </summary>
+    private bool RaycastKnown(Ray ray, int mask, out RaycastHit hit)
+    {
+        return RaycastFiltered(ray, mask, FogOfWar.IsKnown, out hit);
+    }
+
+    private bool RaycastFiltered(Ray ray, int mask, Func<GameObject, bool> isAllowed, out RaycastHit hit)
+    {
+        var count = Physics.RaycastNonAlloc(ray, _hits, 100f, mask);
+        var found = false;
+        hit = default;
+
+        for (var i = 0; i < count; i++)
+        {
+            var candidate = _hits[i];
+            if (found && candidate.distance >= hit.distance)
+            {
+                continue;
+            }
+
+            var gameObject = candidate.transform.gameObject;
+            if (gameObject.layer == (int)Layer.Unit && !isAllowed(gameObject))
+            {
+                continue;
+            }
+
+            hit = candidate;
+            found = true;
+        }
+
+        return found;
     }
 }

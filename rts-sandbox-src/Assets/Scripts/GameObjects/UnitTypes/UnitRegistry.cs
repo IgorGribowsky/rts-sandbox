@@ -1,3 +1,5 @@
+using Assets.Scripts.GameObjects;
+using RtsSandbox.Rules;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,6 +22,30 @@ public sealed class UnitRecord
     /// unit: it comes from the obstacle size, the agent radius or the mesh.
     /// </summary>
     public float Size;
+
+    /// <summary>The unit's orders, taken once. Null for what takes none.</summary>
+    public UnitCommandManager Commands;
+
+    /// <summary>The bars over the unit, taken once. Null for what has none.</summary>
+    public BarsContaining Bars;
+
+    /// <summary>
+    /// Cannot walk: a building, a mine. The fog remembers such a thing where
+    /// it was seen; a mine is not IsBuilding, so the agent decides.
+    /// </summary>
+    public bool IsStatic;
+
+    /// <summary>
+    /// What the player is shown of this unit under the fog of war. Kept by
+    /// FogOfWar; Visible while there is no fog (M-027, T-071.3).
+    /// </summary>
+    public FogSight Sight = FogSight.Visible;
+
+    /// <summary>The player has seen it at least once: a building is then remembered.</summary>
+    public bool WasSeen;
+
+    /// <summary>Where the player saw it last: an attack order whose target went into the fog goes there.</summary>
+    public Vector3 LastSeenPosition;
 
     public int TeamId => Team != null ? Team.TeamId : 0;
 
@@ -54,6 +80,9 @@ public static class UnitRegistry
     /// <summary>Every registered unit. Read only — do not hold on to the list.</summary>
     public static IReadOnlyList<UnitRecord> All => _all;
 
+    /// <summary>A unit has just come in. The fog decides at once whether the player may see it.</summary>
+    public static event System.Action<UnitRecord> Registered;
+
     public static UnitRecord Register(GameObject unit)
     {
         var id = unit.GetInstanceID();
@@ -70,11 +99,16 @@ public static class UnitRegistry
             Team = unit.GetComponent<TeamMember>(),
             Values = unit.GetComponent<UnitValues>(),
             Size = MeasureSize(unit),
+            Commands = unit.GetComponent<UnitCommandManager>(),
+            Bars = unit.GetComponent<BarsContaining>(),
+            IsStatic = unit.GetComponent<NavMeshAgent>() == null,
         };
 
         _all.Add(record);
         _byInstanceId[id] = record;
         TeamList(record.TeamId).Add(record);
+
+        Registered?.Invoke(record);
 
         return record;
     }

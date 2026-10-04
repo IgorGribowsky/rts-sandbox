@@ -125,5 +125,27 @@ namespace RtsSandbox.Rules.Tests
             Assert.AreEqual(0f, grid.Light[10 * 20 + 15]);
             Assert.AreEqual(FogState.Explored, grid[15, 10]);
         }
+
+        [Test]
+        public void SightOf_Friendly_IsAlwaysVisible_EvenInBlack()
+        {
+            Assert.AreEqual(FogSight.Visible, FogRules.SightOf(true, false, false, false));
+            Assert.AreEqual(FogSight.Visible, FogRules.SightOf(true, true, false, false));
+        }
+
+        [Test]
+        public void SightOf_EnemyUnit_IsVisibleInSight_AndHiddenOutOfIt_EvenIfSeenBefore()
+        {
+            Assert.AreEqual(FogSight.Visible, FogRules.SightOf(false, false, true, false));
+            Assert.AreEqual(FogSight.Hidden, FogRules.SightOf(false, false, false, true));
+        }
+
+        [Test]
+        public void SightOf_EnemyBuilding_SeenBefore_IsRemembered_NeverSeen_IsHidden()
+        {
+            Assert.AreEqual(FogSight.Remembered, FogRules.SightOf(false, true, false, true));
+            Assert.AreEqual(FogSight.Hidden, FogRules.SightOf(false, true, false, false));
+            Assert.AreEqual(FogSight.Visible, FogRules.SightOf(false, true, true, true));
+        }
     }
 }
