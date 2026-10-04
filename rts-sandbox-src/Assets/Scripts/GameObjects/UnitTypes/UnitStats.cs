@@ -54,6 +54,10 @@ public class UnitStats
     public float ProjectileSpeed = 12f;
     public GameObject RangeAttackProjectile = null;
 
+    [Header("Vision")]
+    [Tooltip("How far it sees through the fog of war, in metres (M-027). Zero sees nothing: trees, mines.")]
+    public float SightRange = 0f;
+
     [Header("Cost")]
     public List<ResourceAmount> ResourceCost = new List<ResourceAmount>();
     public List<ResourceAmount> SupplyResourceProduces = new List<ResourceAmount>();

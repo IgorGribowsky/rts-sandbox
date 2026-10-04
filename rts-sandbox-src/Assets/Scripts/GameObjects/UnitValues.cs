@@ -86,6 +86,8 @@ public class UnitValues : MonoBehaviour
 
     public float RangeAttackDistance { get => Stats.RangeAttackDistance; set => Stats.RangeAttackDistance = value; }
 
+    public float SightRange { get => Stats.SightRange; set => Stats.SightRange = value; }
+
     public float ProjectileSpeed { get => Stats.ProjectileSpeed; set => Stats.ProjectileSpeed = value; }
 
     public GameObject RangeAttackProjectile { get => Stats.RangeAttackProjectile; set => Stats.RangeAttackProjectile = value; }

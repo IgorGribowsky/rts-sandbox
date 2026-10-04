@@ -55,6 +55,8 @@
        cold slate, the team dots in their own colours pop on it. */
     --tint-minimap-ground: rgb(88, 110, 124);
     --color-minimap-blocked: rgba(3, 6, 10, 0.86);
+    /* Fog of war (T-071.1): full where never seen, half where seen before. */
+    --color-minimap-fog: rgb(1, 2, 4);
     --color-minimap-grid: rgba(169, 202, 219, 0.1);
     --color-minimap-view: rgb(240, 246, 250);
     --color-minimap-view-fill: rgba(240, 246, 250, 0.07);

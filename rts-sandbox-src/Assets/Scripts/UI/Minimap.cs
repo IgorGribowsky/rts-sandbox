@@ -25,6 +25,9 @@ namespace Assets.Scripts.UI
     /// Look of 0.3.1 (T-065.2): the photo is recoloured to dark cold slate so
     /// the team dots pop, a faint tactical grid lies over it, the map sits in a
     /// flat panel with corner brackets. Colours come from the theme.
+    ///
+    /// The fog of war (T-071.1) lies between the ground and the dots: the same
+    /// texture the camera darkens the world by, tinted from the theme.
     /// </summary>
     public sealed class Minimap : IDisposable
     {
@@ -43,6 +46,8 @@ namespace Assets.Scripts.UI
         private readonly UnitsController _selection;
         private readonly CommandInput _commands;
         private readonly IVisualElementScheduledItem _ticker;
+        private readonly FogOfWar _fog;
+        private readonly VisualElement _fogLayer;
 
         private RenderTexture _ground;
         private Texture2D _blocked;
@@ -85,6 +90,22 @@ namespace Assets.Scripts.UI
                 _view.Add(blocked);
             }
 
+            _fog = GameServices.FogOfWar;
+            if (_fog != null && _fog.Texture != null)
+            {
+                // The fog covers the map and a margin around it; the view
+                // clips the margin off.
+                var area = _fog.Area;
+                _fogLayer = new VisualElement { pickingMode = PickingMode.Ignore };
+                _fogLayer.AddToClassList("minimap__fog");
+                _fogLayer.style.left = Length.Percent((area.xMin - world.xMin) / world.width * 100f);
+                _fogLayer.style.bottom = Length.Percent((area.yMin - world.yMin) / world.height * 100f);
+                _fogLayer.style.width = Length.Percent(area.width / world.width * 100f);
+                _fogLayer.style.height = Length.Percent(area.height / world.height * 100f);
+                _fogLayer.style.backgroundImage = new StyleBackground(_fog.Texture);
+                _view.Add(_fogLayer);
+            }
+
             _overlay = new MinimapOverlay(world, camera, teams, selection);
             _view.Add(_overlay);
 
@@ -106,7 +127,19 @@ namespace Assets.Scripts.UI
             _view.RegisterCallback<PointerMoveEvent>(OnPointerMove);
             _view.RegisterCallback<PointerUpEvent>(OnPointerUp);
 
-            _ticker = _view.schedule.Execute(_overlay.MarkDirtyRepaint).Every(RedrawMilliseconds);
+            _ticker = _view.schedule.Execute(Redraw).Every(RedrawMilliseconds);
+        }
+
+        private void Redraw()
+        {
+            if (_fogLayer != null)
+            {
+                // The texture is refilled in place: draw the layer again.
+                _fogLayer.style.display = _fog != null && _fog.IsOn ? DisplayStyle.Flex : DisplayStyle.None;
+                _fogLayer.MarkDirtyRepaint();
+            }
+
+            _overlay.MarkDirtyRepaint();
         }
 
         public void Dispose()

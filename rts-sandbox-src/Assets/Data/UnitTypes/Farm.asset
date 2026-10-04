@@ -50,13 +50,12 @@ MonoBehaviour:
     RangeAttackDistance: 10
     ProjectileSpeed: 12
     RangeAttackProjectile: {fileID: 0}
+    SightRange: 12
     ResourceCost:
-    - ResourceName: 1
-      Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
+    - Resource: {fileID: 11400000, guid: a08ee081c18e0b247a4018728ed02deb, type: 2}
       Amount: 80
     SupplyResourceProduces:
-    - ResourceName: 3
-      Resource: {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
+    - Resource: {fileID: 11400000, guid: aa6a02e92a3a75a4bb6a9002ca713762, type: 2}
       Amount: 6
     IsBuilding: 1
     CanCastSkills: 0
@@ -72,7 +71,6 @@ MonoBehaviour:
   Harvesting:
     IsMiner: 0
     IsHarvestor: 0
-    ResourcesCanBeHarvested: 
     HarvestableResources: []
     HarvestingRate: 1
     HarvestingValuePerTick: 1
@@ -84,7 +82,6 @@ MonoBehaviour:
   IsMine: 0
   IsHeldMine: 0
   IsHarvestedResource: 0
-  ResourceName: 0
   Resource: {fileID: 0}
   ResourcesAmount: 0
   MaxHarvesters: 3
@@ -92,7 +89,6 @@ MonoBehaviour:
   MiningRate: 1
   MiningValue: 10
   MinersMaxCount: 5
-  StoredResources: 
   ResourcesToStore: []
   HealthBarTemplate: {fileID: 5133334966052544803, guid: e391c5f079a247c4f9ee9a4854391ef9, type: 3}
   HealthBarPriority: 10

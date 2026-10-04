@@ -3,7 +3,7 @@ id: M-025
 title: Миникарта
 status: accepted
 source: concept/processed/Интерфейс добавление.txt
-tasks: [T-051, T-057, T-065.2, T-054]
+tasks: [T-051, T-057, T-065.2, T-054, T-071.1]
 ---
 
 # M-025 · Миникарта

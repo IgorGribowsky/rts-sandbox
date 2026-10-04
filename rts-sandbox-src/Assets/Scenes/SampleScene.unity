@@ -1328,6 +1328,7 @@ GameObject:
   - component: {fileID: 327621831}
   - component: {fileID: 327621832}
   - component: {fileID: 327621833}
+  - component: {fileID: 327621834}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GameController
@@ -1397,6 +1398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FriendlyFire: 1
   BuildingCancelRefundPercent: 70
+  FogOfWarEnabled: 1
   StunStarsMaterial: {fileID: 2100000, guid: fb31d3a849b22a5439895fe8d2fae65f, type: 2}
   OwnSelectionColor: {r: 0.428, g: 1, b: 0.099, a: 1}
   EnemySelectionColor: {r: 1, g: 0.15, b: 0.1, a: 1}
@@ -1431,6 +1433,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftTopMapCornerPosition: {x: -70, y: 0, z: 70}
   RightBottomMapCornerPosition: {x: 70, y: 0, z: -75}
+--- !u!114 &327621834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327621828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78a719ba99c97747b25be53a0825c43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FogOfWar
+  CellSize: 1
+  EdgeMargin: 10
+  UpdateInterval: 0.15
+  FogShader: {fileID: 4800000, guid: 7d6339ba798baa94ca9e426918633166, type: 3}
+  UnexploredColor: {r: 0, g: 0, b: 0, a: 1}
+  ExploredDarkening: 0.5
+  ExploredDesaturation: 0.75
+  EdgeSoftness: 1.5
+  HazeStrength: 0.12
+  HazeScale: 14
+  HazeSpeed: 0.6
+  LastPassMilliseconds: 0
 --- !u!1001 &341086444
 PrefabInstance:
   m_ObjectHideFlags: 0

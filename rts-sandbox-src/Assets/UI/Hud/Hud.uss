@@ -155,6 +155,14 @@
     -unity-background-image-tint-color: var(--color-minimap-blocked);
 }
 
+/* Fog of war (T-071.1). Covers a little more than the map: the minimap
+   places it in code, in percent of the map. */
+.minimap__fog {
+    position: absolute;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: var(--color-minimap-fog);
+}
+
 .minimap__overlay {
     position: absolute;
     left: 0;

@@ -5,5 +5,7 @@
         public static TeamController TeamController { get; set; }
 
         public static PlayerEventController PlayerEventController { get; set; }
+
+        public static FogOfWar FogOfWar { get; set; }
     }
 }
