@@ -39,6 +39,28 @@ public class TeamController : MonoBehaviour
         InvalidateTeamCache();
     }
 
+#if UNITY_EDITOR
+    /// <summary>A team's colour changed in the inspector — the placers show it at once.</summary>
+    private void OnValidate()
+    {
+        UnityEditor.EditorApplication.delayCall += () =>
+        {
+            if (this == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            foreach (var placer in FindObjectsByType<UnitPlacer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (placer.gameObject.scene == gameObject.scene)
+                {
+                    placer.PaintPreview();
+                }
+            }
+        };
+    }
+#endif
+
     /// <summary>A peaceful team: an ally to everyone, an enemy to nobody.</summary>
     public bool IsPeaceful(int teamId)
     {

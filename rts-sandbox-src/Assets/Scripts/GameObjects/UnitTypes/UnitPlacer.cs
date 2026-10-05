@@ -8,7 +8,11 @@ using UnityEngine;
 /// Placing units by hand had to keep working, so the placer keeps its own
 /// position, rotation and scale — the unit is built exactly where the marker
 /// stands.
+///
+/// In the editor its preview shows the TeamColor parts in the colour of its
+/// team, the way the unit will look in the game.
 /// </summary>
+[ExecuteAlways]
 public class UnitPlacer : MonoBehaviour
 {
     [Tooltip("What stands here.")]
@@ -45,6 +49,66 @@ public class UnitPlacer : MonoBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
+    private static readonly int ColorId = Shader.PropertyToID("_Color");
+
+    private void OnEnable()
+    {
+        PaintPreview();
+    }
+
+    private void OnValidate()
+    {
+        // Not straight away: Unity does not like renderers touched inside OnValidate.
+        UnityEditor.EditorApplication.delayCall += PaintPreview;
+    }
+
+    /// <summary>
+    /// Paints the preview's TeamColor slots in the colour of <see cref="TeamId"/>,
+    /// taken from the TeamController of the placer's scene. Done with property
+    /// blocks, so neither the shared materials nor the scene change. No such
+    /// team — the slots go back to the model's own colour.
+    /// </summary>
+    public void PaintPreview()
+    {
+        if (this == null || Application.isPlaying)
+        {
+            return;
+        }
+
+        Team team = null;
+        foreach (var controller in FindObjectsByType<TeamController>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (controller.gameObject.scene == gameObject.scene && controller.Teams != null)
+            {
+                team = controller.Teams.Find(t => t != null && t.Id == TeamId);
+                break;
+            }
+        }
+
+        var block = new MaterialPropertyBlock();
+        foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+        {
+            var materials = renderer.sharedMaterials;
+            for (var i = 0; i < materials.Length; i++)
+            {
+                if (materials[i] == null || materials[i].name != TeamMember.TeamColorMaterialName)
+                {
+                    continue;
+                }
+
+                block.Clear();
+                if (team != null)
+                {
+                    block.SetColor(ColorId, team.Color);
+                }
+
+                renderer.SetPropertyBlock(block, i);
+            }
+        }
+    }
+#endif
 
     private void OnDrawGizmos()
     {
