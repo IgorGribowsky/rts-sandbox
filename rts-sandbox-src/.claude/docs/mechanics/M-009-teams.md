@@ -1,7 +1,7 @@
 ---
 id: M-009
 title: Команды и альянсы
-status: accepted
+status: implemented
 source:
 tasks: []
 ---
