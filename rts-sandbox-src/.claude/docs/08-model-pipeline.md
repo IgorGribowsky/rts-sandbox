@@ -1,9 +1,9 @@
 ---
 id: 08
 title: Конвейер моделей и цвет команды
-status: accepted
+status: implemented
 source: concept/processed/Работа с моделями.txt
-tasks: [T-031, T-031.1, T-031.2, T-031.3]
+tasks: [T-031, T-031.1, T-031.2, T-031.3, T-031.4]
 ---
 
 # Конвейер моделей и цвет команды
