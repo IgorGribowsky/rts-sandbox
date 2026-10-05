@@ -101,5 +101,6 @@ ScriptableObject-ов баланса нет — все числа лежат в 
 - `Abstract/TargetedSkillAction.cs` — только интерфейс `ITargetSelected`,
   реализации каста в цель нет.
 - `PassiveSkill` / `PassiveSkillAction` — типы есть, исполнителя нет.
-- Примитивные кубы вместо моделей: Builder, Wall (см. H-001). Barracks —
-  куб из `Barracks.fbx` с поясом `TeamColor` (скилл `model-team-color`).
+- Builder, Barracks, Wall — кубы, но свои FBX (`Builder.fbx`, `Barracks.fbx`,
+  `Wall.fbx`) с частями `TeamColor`; все тела с командой размечены скиллом
+  `model-team-color`, без разметки только mine (по замыслу) и Tree.
