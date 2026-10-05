@@ -5350,6 +5350,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7968450581619302967, guid: b79b4ea1219a3c64a987822345caefb3, type: 3}
+      propertyPath: TeamId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968450581619302967, guid: b79b4ea1219a3c64a987822345caefb3, type: 3}
       propertyPath: ResourcesAmountOverride
       value: 100
       objectReference: {fileID: 0}
